@@ -2,6 +2,10 @@
 from PIL import Image
 from itertools import product
 
+#################
+### Functions ###
+#################
+
 
 # Write function to resize an image by duplicating each pixel according to specified width and height multipliers.
 def resize_image(input_file: str, width_mult: int, height_mult: int) -> str:
@@ -55,9 +59,15 @@ def resize_image(input_file: str, width_mult: int, height_mult: int) -> str:
         return output_file
 
 
+# Write function to replace all occurrences of a specific color in an image with another color.
+def apply_palette(palette_file: str, image_file: str) -> str:
+    pass
+
+
+#############
+### Tests ###
+#############
+
 # Test the resize_image function
 input_file = "test_images/pixel_art_pheonix_base.bmp"
 resize_image(input_file, 2, 2)
-
-
-# Write function to replace all occurrences of a specific color in an image with another color.
