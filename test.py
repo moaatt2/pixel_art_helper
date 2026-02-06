@@ -1,4 +1,4 @@
-
+import json
 from PIL import Image
 from itertools import product
 
@@ -59,8 +59,34 @@ def resize_image(input_file: str, width_mult: int, height_mult: int) -> str:
         return output_file
 
 
+# Helper function to find the closest color in the palette to a given input color.
+def closest_color_euclidean(input_color: tuple, palette: list) -> tuple:
+
+    # Get components of input color
+    r1, g1, b1 = input_color
+
+    # Set default values for loop
+    closest_color = None
+    min_distance = float('inf')
+
+    # Loop over all colors in palette
+    for color in palette:
+
+        # Get components of palette color
+        r2, g2, b2 = color
+        distance = (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
+
+        # Check if current color is the closest so far
+        if distance < min_distance:
+            min_distance = distance
+            closest_color = color
+
+    # Return the closest color found
+    return closest_color
+
+
 # Write function to replace all occurrences of a specific color in an image with another color.
-def apply_palette(palette_file: str, image_file: str) -> str:
+def apply_palette(palette_file: str, image_file: str, color_selection_func: function) -> str:
     pass
 
 
@@ -71,3 +97,8 @@ def apply_palette(palette_file: str, image_file: str) -> str:
 # Test the resize_image function
 input_file = "test_images/pixel_art_pheonix_base.bmp"
 resize_image(input_file, 2, 2)
+
+# Test the apply_palette function
+palette_file = "palettes/ring_lord_rings.json"
+image_file = "test_images/pixel_art_pheonix_base.bmp"
+apply_palette(palette_file, image_file, closest_color_euclidean)
