@@ -86,8 +86,43 @@ def closest_color_euclidean(input_color: tuple, palette: list) -> tuple:
 
 
 # Write function to replace all occurrences of a specific color in an image with another color.
-def apply_palette(palette_file: str, image_file: str, color_selection_func: function) -> str:
-    pass
+def apply_palette(palette_file: str, image_file: str, color_selection_func: object) -> str:
+
+    # Load palette
+    with open(palette_file, 'r') as pf:
+        palette = json.load(pf)
+
+    # Convert hex colors to RGB tuples
+    for name, hex_color in palette.items():
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+        palette[name] = (r, g, b)
+
+    # Open image & create new output image
+    with Image.open(image_file) as img:
+        width, height = img.size
+        new_img = Image.new("RGBA", (width, height))
+
+        # Loop over all pixels in input image
+        for x, y in product(range(width), range(height)):
+
+            # Find best matching color from palette and set pixel in new image
+            pixel = img.getpixel((x, y))
+            new_color = color_selection_func(pixel, list(palette.values()))
+            new_img.putpixel((x, y), new_color)
+
+        # Construct output filename
+        input_filename  = image_file.split(".")[0]
+        input_extension = image_file.split(".")[-1]
+        palette_name    = palette_file.split("/")[-1].split(".")[0]
+        output_file = f"{input_filename}_{palette_name}.{input_extension}"
+
+        # Save modified image
+        new_img.save(output_file)
+
+        # Return output filename
+        return output_file
 
 
 #############
