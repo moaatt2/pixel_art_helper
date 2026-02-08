@@ -1,5 +1,6 @@
 import json
 from PIL import Image
+from typing import Optional
 from itertools import product
 
 #################
@@ -123,6 +124,51 @@ def apply_palette(palette_file: str, image_file: str, color_selection_func: obje
 
         # Return output filename
         return output_file
+
+
+# Return True if pixel is white (or close) false otherwise
+def ignore_white(pixel: tuple) -> bool:
+    r, g, b = pixel[0], pixel[1], pixel[2]
+
+    if r > 250 and g > 250 and b > 250:
+        return True
+    else:
+        return False
+
+
+# Get average color of an image, ignoring pixels that match the ignore function. Return the average color as a hex string.
+def get_average_color(filename: str, ignore_function: object = None) -> Optional[str]:
+
+    # Instantiate accumulators
+    total_r, total_g, total_b = 0, 0, 0
+    count = 0
+
+    # Open image and loop over all pixels
+    with Image.open(filename) as img:
+        width, height = img.size
+        for x, y in product(range(width), range(height)):
+            pixel = img.getpixel((x, y))
+
+            # If pixel matches ignore function skip it
+            if ignore_function is not None and ignore_function(pixel):
+                continue
+
+            # Add values to accumulators
+            total_r += pixel[0]
+            total_g += pixel[1]
+            total_b += pixel[2]
+            count += 1
+
+
+    # Calculate Average color
+    if count == 0:
+        return None
+    else:
+        average_r = hex(total_r // count)[-2:]
+        average_g = hex(total_g // count)[-2:]
+        average_b = hex(total_b // count)[-2:]
+
+        return f"{average_r}{average_g}{average_b}".upper()
 
 
 #############
