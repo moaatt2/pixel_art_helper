@@ -1,4 +1,7 @@
+import os
+import glob
 import json
+import numpy as np
 from PIL import Image
 from typing import Optional
 from itertools import product
@@ -84,6 +87,59 @@ def closest_color_euclidean(input_color: tuple, palette: list) -> tuple:
 
     # Return the closest color found
     return closest_color
+
+
+# Take channel value and apply gamma correction
+def gamma_correction(value: float) -> float:
+    if value <= 0.04045:
+        return value / 12.92
+    else:
+        return ((value + 0.055) /1.055) ** 2.4
+
+
+# Helper function to apply CIELABs nonlinear transfer function
+def cielab_ntf(value: float) -> float:
+    if value > 216 / 24389:
+        return value ** 1/3
+    else:
+        return value / (72/841) + 4/29
+
+
+# Helper function to convert RGB to cielab for cie_lab delta e metrics
+def rgb_to_cielab(input_color: tuple) -> tuple:
+    r, g, b = input_color
+
+    # Normalize RGB
+    r = r/255.0
+    g = g/255.0
+    b = b/255.0
+    
+    # Apply gamma correction
+    r = gamma_correction(r)
+    g = gamma_correction(g)
+    b = gamma_correction(b)
+
+    # Convert to XYZ
+    m = np.array([
+        [0.4124564, 0.3575761, 0.1804375],
+        [0.2126729, 0.7151522, 0.0721750],
+        [0.0193339, 0.1191920, 0.9503041],
+    ])
+
+    x, y, z = m @ np.array([r, g, b])
+
+    # Normalized by white reference - D65
+    x = float(x) / 0.95047
+    y = float(y) / 1.00000
+    z = float(z) / 1.08883
+
+    # Convert to CIELAB
+    l = 116 * cielab_ntf(y) - 16
+    a = 500 * (cielab_ntf(x) - cielab_ntf(y))
+    b = 200 * (cielab_ntf(y) - cielab_ntf(z))
+
+    # Return LAB values
+    return (l, a, b)
 
 
 # Write function to replace all occurrences of a specific color in an image with another color.
@@ -175,11 +231,16 @@ def get_average_color(filename: str, ignore_function: object = None) -> Optional
 ### Tests ###
 #############
 
-# Test the resize_image function
-input_file = "test_images/pixel_art_pheonix_base.bmp"
-resize_image(input_file, 2, 2)
+# # Test the resize_image function
+# input_file = "test_images/pixel_art_pheonix_base.bmp"
+# resize_image(input_file, 2, 2)
 
-# Test the apply_palette function
-palette_file = "palettes/ring_lord_rings.json"
-image_file = "test_images/pixel_art_pheonix_base.bmp"
-apply_palette(palette_file, image_file, closest_color_euclidean)
+# # Test the apply_palette function
+# palette_file = "palettes/ring_lord_rings.json"
+# image_file = "test_images/pixel_art_pheonix_base.bmp"
+# apply_palette(palette_file, image_file, closest_color_euclidean)
+
+print(rgb_to_cielab((255, 255, 255)))
+print(rgb_to_cielab((255, 255, 255)))
+
+
