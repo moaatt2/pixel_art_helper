@@ -100,7 +100,7 @@ def gamma_correction(value: float) -> float:
 # Helper function to apply CIELABs nonlinear transfer function
 def cielab_ntf(value: float) -> float:
     if value > 216 / 24389:
-        return value ** 1/3
+        return value ** (1/3)
     else:
         return value / (72/841) + 4/29
 
@@ -240,24 +240,35 @@ def get_average_color(filename: str, ignore_function: object = None) -> Optional
 # image_file = "test_images/pixel_art_pheonix_base.bmp"
 # apply_palette(palette_file, image_file, closest_color_euclidean)
 
-print("RGB TO CIELAB Black (0, 0, 0) -> (0, 0, 0)")
-print(rgb_to_cielab((0, 0, 0)))
+## RGB TO CIELAB tests
+print("RGB TO CIELAB Black (0, 0, 0)")
+print("Expected: (0, 0, 0)")
+print(f"Result:   {rgb_to_cielab((0, 0, 0))}")
 print()
 
-print("RGB TO CIELAB White (255, 255, 255) -> (100, 0, 0)")
-print(rgb_to_cielab((255, 255, 255)))
+print("RGB TO CIELAB Grey (127, 127, 127)")
+print("Expected: (53.5850, 0, 0)")
+print(f"Result:   {rgb_to_cielab((128, 128, 128))}")
 print()
 
-print("RGB TO CIELAB Red (255, 0, 0) -> (53.2408, 80.0925, 67.2032)")
-print(rgb_to_cielab((255, 0, 0)))
+print("RGB TO CIELAB White (255, 255, 255)")
+print("Expected: (100, 0, 0)")
+print(f"Result:   {rgb_to_cielab((255, 255, 255))}")
 print()
 
-print("RGB TO CIELAB Green (0, 255, 0) -> (87.7347, -86.1827, 83.1793)")
-print(rgb_to_cielab((0, 255, 0)))
+print("RGB TO CIELAB Red (255, 0, 0)")
+print("Expected: (53.2408, 80.0925, 67.2032)")
+print(f"Result:   {rgb_to_cielab((255, 0, 0))}")
 print()
 
-print("RGB TO CIELAB Blue (0, 0, 255) -> (32.2970, 79.1875, -107.8602)")
-print(rgb_to_cielab((0, 0, 255)))
+print("RGB TO CIELAB Green (0, 255, 0)")
+print("Expected: (87.7347, -86.1827, 83.1793)")
+print(f"Result:   {rgb_to_cielab((0, 255, 0))}")
+print()
+
+print("RGB TO CIELAB Blue (0, 0, 255)")
+print("Expected: (32.2970, 79.1875, -107.8602)")
+print(f"Result:   {rgb_to_cielab((0, 0, 255))}")
 print()
 
 
