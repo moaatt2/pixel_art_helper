@@ -142,6 +142,16 @@ def rgb_to_cielab(input_color: tuple) -> tuple:
     return (l, a, b)
 
 
+# Helper function to calculate delta e for 2 colors using cielab 76 formula
+def cielab_76(color_1: tuple[float, float, float], color_2: tuple[float, float, float]) -> float:
+    l1, a1, b1 = color_1
+    l2, a2, b2 = color_2
+
+    squared_distance = (l1-l2)**2 + (a1-a2)**2 + (b1-b2)**2
+
+    return squared_distance ** (1/2)
+
+
 # Write function to replace all occurrences of a specific color in an image with another color.
 def apply_palette(palette_file: str, image_file: str, color_selection_func: object) -> str:
 
