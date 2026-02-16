@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 from typing import Optional
 from itertools import product
+from math import sqrt, atan2, degrees, sin, cos, exp
 
 #################
 ### Functions ###
@@ -150,6 +151,72 @@ def cielab_76(color_1: tuple[float, float, float], color_2: tuple[float, float, 
     squared_distance = (l1-l2)**2 + (a1-a2)**2 + (b1-b2)**2
 
     return squared_distance ** (1/2)
+
+
+# Helper function to calculate delta e for 2 colors using cielab 00 formula
+def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, float]) -> float:
+    l1, a1, b1 = color_1
+    l2, a2, b2 = color_2
+
+    kl = 1
+    kc = 1
+    kh = 1
+
+    dlp = l2 - l1
+
+    lh = (l1 + l2) / 2
+
+    cs1 = (a1**2 + b1**2) ** (1/2)
+    cs2 = (a2**2 + b2**2) ** (1/2)
+
+    ch = (cs1 + cs2) / 2
+
+    ap1 = a1 + a1/2 * (1 - sqrt(ch**7/(ch**7 + 25**7)))
+    ap2 = a2 + a2/2 * (1 - sqrt(ch**7/(ch**7 + 25**7)))
+
+    cp1 = sqrt(ap1**2 + b1**2)
+    cp2 = sqrt(ap2**2 + b2**2)
+
+    chp = (cp2 + cp2) /2
+    dcp = cp2 - cp1
+
+    hp1 = degrees(atan2(b1, ap1)) % 360
+    hp2 = degrees(atan2(b2, ap2)) % 360
+
+    dhp = None
+    if abs(hp2 - hp1) <= 180:
+        dhp = hp2 - hp1
+    elif (hp2 - hp1) > 180:
+        dhp = hp2 - hp1 - 360
+    elif (hp2 - hp1) < -180:
+        dhp = hp2 - hp1 + 360
+    else:
+        print("uh-oh")
+    
+    dHp = 2 * sqrt(cp1 * cp2) * degrees(sin(dhp/2))
+
+    hhp = None
+    if abs(hp1 - hp2) <= 180:
+        (hp1 + hp2) / 2
+    elif hp1 + hp2 < 360:
+        (hp1 + hp2 + 360) / 2
+    elif hp1 + hp2 > 360:
+        (hp1 + hp2 - 360) / 2
+    else:
+        print("uh-oh")
+
+
+    t = 1 - 0.17*degrees(cos(hhp - 30)) + 0.24*cos(2*hhp) + 0.32 * cos(3*hhp + 6) - 0.20*cos(4*hhp - 63)
+
+    sl = 1 + (0.015 * (lh - 50)**2) / sqrt(20 + (lh - 50)**2)
+
+    sc = 1 + 0.045 * chp
+
+    sh = 1 + 0.015 * chp * t
+
+    rt = -2 * sqrt(chp ** 7 / (chp **7 + 25**7)) * sin(60 * exp(-1 * ((hhp - 275)/25)**2))
+
+    de = sqrt((dlp/(kl * sl))**2 + (dcp/(kc * sc))**2 + (dhp/(kh * sh))**2 + rt * (dcp/(kc * sc)) * (dhp/(kh * sh)))
 
 
 # Write function to replace all occurrences of a specific color in an image with another color.
