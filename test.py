@@ -177,7 +177,7 @@ def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, 
     cp1 = sqrt(ap1**2 + b1**2)
     cp2 = sqrt(ap2**2 + b2**2)
 
-    chp = (cp2 + cp2) /2
+    chp = (cp1 + cp2) /2
     dcp = cp2 - cp1
 
     hp1 = degrees(atan2(b1, ap1)) % 360
@@ -197,11 +197,11 @@ def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, 
 
     hhp = None
     if abs(hp1 - hp2) <= 180:
-        (hp1 + hp2) / 2
+        hhp = (hp1 + hp2) / 2
     elif hp1 + hp2 < 360:
-        (hp1 + hp2 + 360) / 2
+        hhp = (hp1 + hp2 + 360) / 2
     elif hp1 + hp2 > 360:
-        (hp1 + hp2 - 360) / 2
+        hhp = (hp1 + hp2 - 360) / 2
     else:
         print("uh-oh")
 
@@ -216,7 +216,9 @@ def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, 
 
     rt = -2 * sqrt(chp ** 7 / (chp **7 + 25**7)) * sin(60 * exp(-1 * ((hhp - 275)/25)**2))
 
-    de = sqrt((dlp/(kl * sl))**2 + (dcp/(kc * sc))**2 + (dhp/(kh * sh))**2 + rt * (dcp/(kc * sc)) * (dhp/(kh * sh)))
+    de = sqrt((dlp/(kl * sl))**2 + (dcp/(kc * sc))**2 + (dHp/(kh * sh))**2 + rt * (dcp/(kc * sc)) * (dHp/(kh * sh)))
+
+    return de
 
 
 # Write function to replace all occurrences of a specific color in an image with another color.
@@ -317,35 +319,107 @@ def get_average_color(filename: str, ignore_function: object = None) -> Optional
 # image_file = "test_images/pixel_art_pheonix_base.bmp"
 # apply_palette(palette_file, image_file, closest_color_euclidean)
 
-## RGB TO CIELAB tests
-print("RGB TO CIELAB Black (0, 0, 0)")
-print("Expected: (0, 0, 0)")
-print(f"Result:   {rgb_to_cielab((0, 0, 0))}")
+# ## RGB TO CIELAB tests
+# print("RGB TO CIELAB Black (0, 0, 0)")
+# print("Expected: (0, 0, 0)")
+# print(f"Result:   {rgb_to_cielab((0, 0, 0))}")
+# print()
+
+# print("RGB TO CIELAB Grey (127, 127, 127)")
+# print("Expected: (53.5850, 0, 0)")
+# print(f"Result:   {rgb_to_cielab((128, 128, 128))}")
+# print()
+
+# print("RGB TO CIELAB White (255, 255, 255)")
+# print("Expected: (100, 0, 0)")
+# print(f"Result:   {rgb_to_cielab((255, 255, 255))}")
+# print()
+
+# print("RGB TO CIELAB Red (255, 0, 0)")
+# print("Expected: (53.2408, 80.0925, 67.2032)")
+# print(f"Result:   {rgb_to_cielab((255, 0, 0))}")
+# print()
+
+# print("RGB TO CIELAB Green (0, 255, 0)")
+# print("Expected: (87.7347, -86.1827, 83.1793)")
+# print(f"Result:   {rgb_to_cielab((0, 255, 0))}")
+# print()
+
+# print("RGB TO CIELAB Blue (0, 0, 255)")
+# print("Expected: (32.2970, 79.1875, -107.8602)")
+# print(f"Result:   {rgb_to_cielab((0, 0, 255))}")
+# print()
+
+
+## CIELAB 2000 Delta E tests
+print("Identical Colors")
+color_1, color_2 = (50, 2.6772, -79.7751), (50, 2.6772, -79.7751)
+ee, de = 0, cielab_00(color_1, color_2)
+print(f"Color 1: {color_1}")
+print(f"Color 2: {color_2}")
+print(f"Actual Result:   {de:.4f}")
+print(f"Expected Result: {ee:.4f}")
+print(f"Difference:      {abs(ee-de):.4f}")
 print()
 
-print("RGB TO CIELAB Grey (127, 127, 127)")
-print("Expected: (53.5850, 0, 0)")
-print(f"Result:   {rgb_to_cielab((128, 128, 128))}")
+print("Small Hue Shift")
+color_1, color_2 = (50, 2.6772, -79.7751), (50, 0.0000, -82.7485)
+ee, de = 2.0425, cielab_00(color_1, color_2)
+print(f"Color 1: {color_1}")
+print(f"Color 2: {color_2}")
+print(f"Actual Result:   {de:.4f}")
+print(f"Expected Result: {ee:.4f}")
+print(f"Difference:      {abs(ee-de):.4f}")
 print()
 
-print("RGB TO CIELAB White (255, 255, 255)")
-print("Expected: (100, 0, 0)")
-print(f"Result:   {rgb_to_cielab((255, 255, 255))}")
+print("Medium Hue Shift")
+color_1, color_2 = (50, 2.8361, -74.0200), (50, 0.0000, -82.7485)
+ee, de = 3.4412, cielab_00(color_1, color_2)
+print(f"Color 1: {color_1}")
+print(f"Color 2: {color_2}")
+print(f"Actual Result:   {de:.4f}")
+print(f"Expected Result: {ee:.4f}")
+print(f"Difference:      {abs(ee-de):.4f}")
 print()
 
-print("RGB TO CIELAB Red (255, 0, 0)")
-print("Expected: (53.2408, 80.0925, 67.2032)")
-print(f"Result:   {rgb_to_cielab((255, 0, 0))}")
+print("Large Hue Shift")
+color_1, color_2 = (50, -1.3802, -84.2814), (50, 0.0000, -82.7485)
+ee, de = 1, cielab_00(color_1, color_2)
+print(f"Color 1: {color_1}")
+print(f"Color 2: {color_2}")
+print(f"Actual Result:   {de:.4f}")
+print(f"Expected Result: {ee:.4f}")
+print(f"Difference:      {abs(ee-de):.4f}")
 print()
 
-print("RGB TO CIELAB Green (0, 255, 0)")
-print("Expected: (87.7347, -86.1827, 83.1793)")
-print(f"Result:   {rgb_to_cielab((0, 255, 0))}")
+print("Symmetry Test")
+color_1, color_2 = (50, 0.0000, -82.7485), (50, -1.3802, -84.2814)
+ee, de = cielab_00(color_2, color_1), cielab_00(color_1, color_2)
+print(f"Color 1: {color_1}")
+print(f"Color 2: {color_2}")
+print(f"Actual Result:   {de:.4f}")
+print(f"Expected Result: {ee:.4f}")
+print(f"Difference:      {abs(ee-de):.4f}")
 print()
 
-print("RGB TO CIELAB Blue (0, 0, 255)")
-print("Expected: (32.2970, 79.1875, -107.8602)")
-print(f"Result:   {rgb_to_cielab((0, 0, 255))}")
+print("Low Chroma Test")
+color_1, color_2 = (50, 0, 0), (50, -1, -2)
+ee, de = 2.3669, cielab_00(color_1, color_2)
+print(f"Color 1: {color_1}")
+print(f"Color 2: {color_2}")
+print(f"Actual Result:   {de:.4f}")
+print(f"Expected Result: {ee:.4f}")
+print(f"Difference:      {abs(ee-de):.4f}")
+print()
+
+print("Low Chroma Test")
+color_1, color_2 = (90, -2.0831, 1.4410), (59, -0.4250, -1.4530)
+ee, de = 2.3669, cielab_00(color_1, color_2)
+print(f"Color 1: {color_1}")
+print(f"Color 2: {color_2}")
+print(f"Actual Result:   {de:.4f}")
+print(f"Expected Result: {ee:.4f}")
+print(f"Difference:      {abs(ee-de):.4f}")
 print()
 
 
