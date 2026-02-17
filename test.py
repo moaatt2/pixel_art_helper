@@ -5,7 +5,23 @@ import numpy as np
 from PIL import Image
 from typing import Optional
 from itertools import product
-from math import sqrt, atan2, degrees, sin, cos, exp
+from math import sqrt, atan2, degrees, sin, cos, exp, radians
+
+################################
+### Function Unit Conversion ###
+################################
+
+def sin_d(x):
+    return sin(radians(x))
+
+
+def cos_d(x):
+    return cos(radians(x))
+
+
+def atan2_d(y, x):
+    return degrees(atan2(y, x))
+
 
 #################
 ### Functions ###
@@ -180,8 +196,8 @@ def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, 
     chp = (cp1 + cp2) /2
     dcp = cp2 - cp1
 
-    hp1 = degrees(atan2(b1, ap1)) % 360
-    hp2 = degrees(atan2(b2, ap2)) % 360
+    hp1 = atan2_d(b1, ap1) % 360
+    hp2 = atan2_d(b2, ap2) % 360
 
     dhp = None
     if abs(hp2 - hp1) <= 180:
@@ -193,7 +209,7 @@ def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, 
     else:
         print("uh-oh")
     
-    dHp = 2 * sqrt(cp1 * cp2) * degrees(sin(dhp/2))
+    dHp = 2 * sqrt(cp1 * cp2) * sin_d(dhp/2)
 
     hhp = None
     if abs(hp1 - hp2) <= 180:
@@ -206,7 +222,7 @@ def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, 
         print("uh-oh")
 
 
-    t = 1 - 0.17*degrees(cos(hhp - 30)) + 0.24*cos(2*hhp) + 0.32 * cos(3*hhp + 6) - 0.20*cos(4*hhp - 63)
+    t = 1 - 0.17*cos_d(hhp - 30) + 0.24*cos_d(2*hhp) + 0.32 * cos_d(3*hhp + 6) - 0.20*cos_d(4*hhp - 63)
 
     sl = 1 + (0.015 * (lh - 50)**2) / sqrt(20 + (lh - 50)**2)
 
@@ -214,7 +230,7 @@ def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, 
 
     sh = 1 + 0.015 * chp * t
 
-    rt = -2 * sqrt(chp ** 7 / (chp **7 + 25**7)) * sin(60 * exp(-1 * ((hhp - 275)/25)**2))
+    rt = -2 * sqrt(chp ** 7 / (chp **7 + 25**7)) * sin_d(60 * exp(-1 * ((hhp - 275)/25)**2))
 
     de = sqrt((dlp/(kl * sl))**2 + (dcp/(kc * sc))**2 + (dHp/(kh * sh))**2 + rt * (dcp/(kc * sc)) * (dHp/(kh * sh)))
 
@@ -412,9 +428,9 @@ print(f"Expected Result: {ee:.4f}")
 print(f"Difference:      {abs(ee-de):.4f}")
 print()
 
-print("Low Chroma Test")
+print("Large Lighness Difference")
 color_1, color_2 = (90, -2.0831, 1.4410), (59, -0.4250, -1.4530)
-ee, de = 2.3669, cielab_00(color_1, color_2)
+ee, de = 23.0539, cielab_00(color_1, color_2)
 print(f"Color 1: {color_1}")
 print(f"Color 2: {color_2}")
 print(f"Actual Result:   {de:.4f}")
