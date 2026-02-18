@@ -237,6 +237,34 @@ def cielab_00(color_1: tuple[float, float, float], color_2: tuple[float, float, 
     return de
 
 
+# Find the color in the palette with the lowest delta_e
+def closest_color_cie_76(color: tuple, palette: list) -> tuple:
+    closest = None
+    min_de = float('inf')
+    for option in palette:
+        de = cielab_76(color, option)
+
+        if de < min_de:
+            closest = option
+            min_de = de
+    
+    return closest
+
+
+# Find the color in the palette with the lowest delta_e
+def closest_color_cie_00(color: tuple, palette: list) -> tuple:
+    closest = None
+    min_de = float('inf')
+    for option in palette:
+        de = cielab_00(color, option)
+
+        if de < min_de:
+            closest = option
+            min_de = de
+    
+    return closest
+
+
 # Write function to replace all occurrences of a specific color in an image with another color.
 def apply_palette(palette_file: str, image_file: str, color_selection_func: object) -> str:
 
@@ -367,75 +395,75 @@ def get_average_color(filename: str, ignore_function: object = None) -> Optional
 # print()
 
 
-## CIELAB 2000 Delta E tests
-print("Identical Colors")
-color_1, color_2 = (50, 2.6772, -79.7751), (50, 2.6772, -79.7751)
-ee, de = 0, cielab_00(color_1, color_2)
-print(f"Color 1: {color_1}")
-print(f"Color 2: {color_2}")
-print(f"Actual Result:   {de:.4f}")
-print(f"Expected Result: {ee:.4f}")
-print(f"Difference:      {abs(ee-de):.4f}")
-print()
+# ## CIELAB 2000 Delta E tests
+# print("Identical Colors")
+# color_1, color_2 = (50, 2.6772, -79.7751), (50, 2.6772, -79.7751)
+# ee, de = 0, cielab_00(color_1, color_2)
+# print(f"Color 1: {color_1}")
+# print(f"Color 2: {color_2}")
+# print(f"Actual Result:   {de:.4f}")
+# print(f"Expected Result: {ee:.4f}")
+# print(f"Difference:      {abs(ee-de):.4f}")
+# print()
 
-print("Small Hue Shift")
-color_1, color_2 = (50, 2.6772, -79.7751), (50, 0.0000, -82.7485)
-ee, de = 2.0425, cielab_00(color_1, color_2)
-print(f"Color 1: {color_1}")
-print(f"Color 2: {color_2}")
-print(f"Actual Result:   {de:.4f}")
-print(f"Expected Result: {ee:.4f}")
-print(f"Difference:      {abs(ee-de):.4f}")
-print()
+# print("Small Hue Shift")
+# color_1, color_2 = (50, 2.6772, -79.7751), (50, 0.0000, -82.7485)
+# ee, de = 2.0425, cielab_00(color_1, color_2)
+# print(f"Color 1: {color_1}")
+# print(f"Color 2: {color_2}")
+# print(f"Actual Result:   {de:.4f}")
+# print(f"Expected Result: {ee:.4f}")
+# print(f"Difference:      {abs(ee-de):.4f}")
+# print()
 
-print("Medium Hue Shift")
-color_1, color_2 = (50, 2.8361, -74.0200), (50, 0.0000, -82.7485)
-ee, de = 3.4412, cielab_00(color_1, color_2)
-print(f"Color 1: {color_1}")
-print(f"Color 2: {color_2}")
-print(f"Actual Result:   {de:.4f}")
-print(f"Expected Result: {ee:.4f}")
-print(f"Difference:      {abs(ee-de):.4f}")
-print()
+# print("Medium Hue Shift")
+# color_1, color_2 = (50, 2.8361, -74.0200), (50, 0.0000, -82.7485)
+# ee, de = 3.4412, cielab_00(color_1, color_2)
+# print(f"Color 1: {color_1}")
+# print(f"Color 2: {color_2}")
+# print(f"Actual Result:   {de:.4f}")
+# print(f"Expected Result: {ee:.4f}")
+# print(f"Difference:      {abs(ee-de):.4f}")
+# print()
 
-print("Large Hue Shift")
-color_1, color_2 = (50, -1.3802, -84.2814), (50, 0.0000, -82.7485)
-ee, de = 1, cielab_00(color_1, color_2)
-print(f"Color 1: {color_1}")
-print(f"Color 2: {color_2}")
-print(f"Actual Result:   {de:.4f}")
-print(f"Expected Result: {ee:.4f}")
-print(f"Difference:      {abs(ee-de):.4f}")
-print()
+# print("Large Hue Shift")
+# color_1, color_2 = (50, -1.3802, -84.2814), (50, 0.0000, -82.7485)
+# ee, de = 1, cielab_00(color_1, color_2)
+# print(f"Color 1: {color_1}")
+# print(f"Color 2: {color_2}")
+# print(f"Actual Result:   {de:.4f}")
+# print(f"Expected Result: {ee:.4f}")
+# print(f"Difference:      {abs(ee-de):.4f}")
+# print()
 
-print("Symmetry Test")
-color_1, color_2 = (50, 0.0000, -82.7485), (50, -1.3802, -84.2814)
-ee, de = cielab_00(color_2, color_1), cielab_00(color_1, color_2)
-print(f"Color 1: {color_1}")
-print(f"Color 2: {color_2}")
-print(f"Actual Result:   {de:.4f}")
-print(f"Expected Result: {ee:.4f}")
-print(f"Difference:      {abs(ee-de):.4f}")
-print()
+# print("Symmetry Test")
+# color_1, color_2 = (50, 0.0000, -82.7485), (50, -1.3802, -84.2814)
+# ee, de = cielab_00(color_2, color_1), cielab_00(color_1, color_2)
+# print(f"Color 1: {color_1}")
+# print(f"Color 2: {color_2}")
+# print(f"Actual Result:   {de:.4f}")
+# print(f"Expected Result: {ee:.4f}")
+# print(f"Difference:      {abs(ee-de):.4f}")
+# print()
 
-print("Low Chroma Test")
-color_1, color_2 = (50, 0, 0), (50, -1, -2)
-ee, de = 2.3669, cielab_00(color_1, color_2)
-print(f"Color 1: {color_1}")
-print(f"Color 2: {color_2}")
-print(f"Actual Result:   {de:.4f}")
-print(f"Expected Result: {ee:.4f}")
-print(f"Difference:      {abs(ee-de):.4f}")
-print()
+# print("Low Chroma Test")
+# color_1, color_2 = (50, 0, 0), (50, -1, -2)
+# ee, de = 2.3669, cielab_00(color_1, color_2)
+# print(f"Color 1: {color_1}")
+# print(f"Color 2: {color_2}")
+# print(f"Actual Result:   {de:.4f}")
+# print(f"Expected Result: {ee:.4f}")
+# print(f"Difference:      {abs(ee-de):.4f}")
+# print()
 
-print("Large Lighness Difference")
-color_1, color_2 = (90, -2.0831, 1.4410), (59, -0.4250, -1.4530)
-ee, de = 23.0539, cielab_00(color_1, color_2)
-print(f"Color 1: {color_1}")
-print(f"Color 2: {color_2}")
-print(f"Actual Result:   {de:.4f}")
-print(f"Expected Result: {ee:.4f}")
-print(f"Difference:      {abs(ee-de):.4f}")
-print()
+# print("Large Lighness Difference")
+# color_1, color_2 = (90, -2.0831, 1.4410), (59, -0.4250, -1.4530)
+# ee, de = 23.0539, cielab_00(color_1, color_2)
+# print(f"Color 1: {color_1}")
+# print(f"Color 2: {color_2}")
+# print(f"Actual Result:   {de:.4f}")
+# print(f"Expected Result: {ee:.4f}")
+# print(f"Difference:      {abs(ee-de):.4f}")
+# print()
 
 
