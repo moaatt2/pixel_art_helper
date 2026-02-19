@@ -266,7 +266,7 @@ def closest_color_cie_00(color: tuple, palette: list) -> tuple:
 
 
 # Write function to replace all occurrences of a specific color in an image with another color.
-def apply_palette(palette_file: str, image_file: str, color_selection_func: object) -> str:
+def apply_palette(palette_file: str, image_file: str, color_selection_func: object, selection_func_color_space: str) -> str:
 
     # Load palette
     with open(palette_file, 'r') as pf:
@@ -278,6 +278,18 @@ def apply_palette(palette_file: str, image_file: str, color_selection_func: obje
         g = int(hex_color[2:4], 16)
         b = int(hex_color[4:6], 16)
         palette[name] = (r, g, b)
+    
+    # Instantiate color mapping dict
+    color_map = dict()
+
+    # If selection function is in cielab color space prep a lookup table to get values
+    palette_map = dict()
+    palette_lab = list()
+    if selection_func_color_space == "cielab":
+        for color in palette.items():
+            cielab = rgb_to_cielab(color)
+            palette_map[str(cielab)] = color
+            palette_lab.append(cielab)
 
     # Open image & create new output image
     with Image.open(image_file) as img:
@@ -287,9 +299,22 @@ def apply_palette(palette_file: str, image_file: str, color_selection_func: obje
         # Loop over all pixels in input image
         for x, y in product(range(width), range(height)):
 
-            # Find best matching color from palette and set pixel in new image
+            # get pixel in rgb color
             pixel = img.getpixel((x, y))
-            new_color = color_selection_func(pixel, list(palette.values()))
+
+            # Find best color
+            if str(pixel) in color_map:
+                new_color = color_map[str(pixel)]
+            elif selection_func_color_space == "cielab":
+                pixel_lab = rgb_to_cielab(pixel)
+                best_lab = color_selection_func(pixel_lab, palette_lab)
+                new_color = palette_lab[str(best_lab)]
+                color_map[str(pixel)] = new_color
+            else:
+                new_color = color_selection_func(pixel, list(palette.values()))
+                color_map[str(pixel)] = new_color
+
+
             new_img.putpixel((x, y), new_color)
 
         # Construct output filename
