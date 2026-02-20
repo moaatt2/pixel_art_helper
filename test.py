@@ -3,9 +3,18 @@ import glob
 import json
 import numpy as np
 from PIL import Image
-from typing import Optional
+from typing import Optional, Tuple
 from itertools import product
 from math import sqrt, atan2, degrees, sin, cos, exp, radians
+
+#################
+### Load Data ###
+#################
+
+# Load wire guage data
+with open("data/wire_gauges.json") as file:
+    wire_gauges = json.load(file)
+
 
 ################################
 ### Function Unit Conversion ###
