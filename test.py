@@ -12,7 +12,7 @@ from math import sqrt, atan2, degrees, sin, cos, exp, radians
 ################
 
 # Width reduction value assuming a 30 degree angle
-angle_factor = 0.866
+ANGLE_FACTOR = 0.866
 
 
 #################
@@ -395,13 +395,15 @@ def get_average_color(filename: str, ignore_function: object = None) -> Optional
 # Estimate physical size of resulting inlay project based on wire size
 def estimate_size(filename: str, gauge: int, gauge_system: str, internal_diameter: float, units: str) -> Tuple[float, float]:
 
+    # Verify gauge system
+    gauge_system = gauge_system.lower()
+    assert gauge_system in ('awg', 'swg'), "Invalid gauge system. Must be one of [AWG, SWG]"
+
     # Find wire diameter
     wire_diameter = wire_gauges[gauge_system][str(gauge)][units]
 
-    # Calculate AR
+    # Calculate AR and apply sanity filter
     ar = internal_diameter / wire_diameter
-
-    # Ensure ring AR is reasonable
     assert ar >= 2, "ring too small for inlay"
 
     # Calculate Ring Width
@@ -410,8 +412,12 @@ def estimate_size(filename: str, gauge: int, gauge_system: str, internal_diamete
     with Image.open(filename) as img:
         width_px, height_px = img.size
 
-        height = ring_diameter * 1 + (height_px - 1)/2
-        width  = angle_factor * ring_diameter + (ring_diameter - wire_diameter) * (width_px - 1)
+        height = ring_diameter * (1 + (height_px - 1)/2)
+        width  = ANGLE_FACTOR * (ring_diameter + (ring_diameter - wire_diameter) * (width_px - 1))
+
+        height, width = round(height, 2), round(width, 2)
+
+        return (width, height)
 
 
 #############
@@ -530,4 +536,7 @@ def estimate_size(filename: str, gauge: int, gauge_system: str, internal_diamete
 # print(f"Difference:      {abs(ee-de):.4f}")
 # print()
 
+
+size = estimate_size("test_images/finalists/metroid_c1_2x2.bmp", 16, "SWG", 1/4, "inches")
+print(size)
 
