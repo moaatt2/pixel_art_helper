@@ -7,6 +7,14 @@ from typing import Optional, Tuple
 from itertools import product
 from math import sqrt, atan2, degrees, sin, cos, exp, radians
 
+################
+### Settings ###
+################
+
+# Width reduction value assuming a 30 degree angle
+angle_factor = 0.866
+
+
 #################
 ### Load Data ###
 #################
@@ -382,6 +390,28 @@ def get_average_color(filename: str, ignore_function: object = None) -> Optional
         average_b = hex(total_b // count)[-2:]
 
         return f"{average_r}{average_g}{average_b}".upper()
+
+
+# Estimate physical size of resulting inlay project based on wire size
+def estimate_size(filename: str, gauge: int, gauge_system: str, internal_diameter: float, units: str) -> Tuple[float, float]:
+
+    # Find wire diameter
+    wire_diameter = wire_gauges[gauge_system][str(gauge)][units]
+
+    # Calculate AR
+    ar = internal_diameter / wire_diameter
+
+    # Ensure ring AR is reasonable
+    assert ar >= 2, "ring too small for inlay"
+
+    # Calculate Ring Width
+    ring_diameter = 2*wire_diameter + internal_diameter
+
+    with Image.open(filename) as img:
+        width_px, height_px = img.size
+
+        height = ring_diameter * 1 + (height_px - 1)/2
+        width  = angle_factor * ring_diameter + (ring_diameter - wire_diameter) * (width_px - 1)
 
 
 #############
