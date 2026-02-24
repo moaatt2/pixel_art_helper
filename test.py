@@ -420,6 +420,33 @@ def estimate_size(filename: str, gauge: int, gauge_system: str, internal_diamete
         return (width, height)
 
 
+# Function to rotate an image
+def rotate_image(image: Image.Image, angle: float, clockwise: bool = False) -> Image.Image:
+
+    # Adjust angle if clockwise is desired
+    angle = -angle if clockwise else angle
+
+    # Rotate image and expand incase it isnt large enough
+    return image.rotate(angle, expand=True)
+
+
+# Wrapper to rotate an image from a file and save the result to a new file
+def rotate_image_f(filename: str, angle: float, clockwise: bool = False) -> str:
+    with Image.open(filename) as img:
+
+        # Apply rotate logic
+        rotated_img = rotate_image(img, angle, clockwise)
+
+        # Construct output filename
+        input_filename  = filename.split(".")[0]
+        input_extension = filename.split(".")[-1]
+        output_file = f"{input_filename}_rotated.{input_extension}"
+
+        rotated_img.save(output_file)
+
+        return output_file
+
+
 #############
 ### Tests ###
 #############
@@ -537,6 +564,10 @@ def estimate_size(filename: str, gauge: int, gauge_system: str, internal_diamete
 # print()
 
 
-size = estimate_size("test_images/finalists/metroid_c1_2x2.bmp", 16, "SWG", 1/4, "inches")
-print(size)
+# Test Size Estimation Function
+# size = estimate_size("test_images/finalists/metroid_c1_2x2.bmp", 16, "SWG", 1/4, "inches")
+# print(size)
+
+# Test Rotate Function
+rotate_image_f("test_images/finalists/metroid_c1_2x2.bmp", 90, True)
 
