@@ -35,8 +35,6 @@ window.config(menu=menu_bar)
 
 # TODO
 
-# Have tool bar on top (file, settings etc)
-
 # Have image preview on Right
 
 # Have Options bar, colapsable sections on left
