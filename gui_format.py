@@ -1,4 +1,5 @@
 import tkinter
+from tkinter import ttk
 
 ################################
 ### Initalize Tkinter Window ###
@@ -33,11 +34,22 @@ window.config(menu=menu_bar)
 ### Tkinter Layout ###
 ######################
 
-# TODO
+# Create paned window to split options and image preview
+paned = ttk.Panedwindow(window, orient=tkinter.HORIZONTAL)
+paned.pack(fill="both", expand=True)
 
-# Have image preview on Right
+# Container for options on left
+sidebar = ttk.Frame(paned)
+paned.add(sidebar, weight=1)
 
-# Have Options bar, colapsable sections on left
+# Container for image preview on right
+preview = ttk.Frame(paned)
+paned.add(preview, weight=3)
+
+
+###################
+### Options Bar ###
+###################
 
 
 #######################
