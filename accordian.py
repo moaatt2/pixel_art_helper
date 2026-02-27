@@ -6,7 +6,7 @@ Compliant with Python 2.5-2.7
 Author: @ifthisthenbreak
 '''
 
-from Tkinter import Tk, Frame, PhotoImage, Label
+from tkinter import Tk, Frame, PhotoImage, Label
 
 
 class Chord(Frame):
@@ -68,7 +68,7 @@ class Accordion(Frame):
         
             
 if __name__ == '__main__':
-    from Tkinter import Entry, Button, Text
+    from tkinter import Entry, Button, Text
 
 
     root = Tk()
