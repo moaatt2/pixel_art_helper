@@ -37,19 +37,17 @@ class Accordion(Frame):
 
         self.update_idletasks()
         row = 0
-        width = max([c.winfo_reqwidth() for c in chords])
         
         for c in chords:
             i = PhotoImage() # blank image to force Label to use pixel size
             label = Label(self, text=c.title,
                           image=i,
                           compound='center',
-                          width=width,
                           bg=self.style['title_bg'],
                           fg=self.style['title_fg'],
                           bd=2, relief='groove')
             
-            label.grid(row=row, column=0)
+            label.grid(row=row, column=0, sticky='ew')
             c.grid(row=row+1, column=0, sticky='nsew')
             c.grid_remove()
             row += 2
