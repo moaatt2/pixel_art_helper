@@ -15,6 +15,7 @@ class Chord(Frame):
         Frame.__init__(self, parent, *args, **kw)
         self.title = title
 
+
 class Accordion(Frame):
     def __init__(self, parent, accordion_style=None):
         Frame.__init__(self, parent)
@@ -65,8 +66,9 @@ class Accordion(Frame):
             chord.grid()
         else:
             chord.grid_remove()
-        
-            
+
+
+# Accordian Example
 if __name__ == '__main__':
     from tkinter import Entry, Button, Text
 
