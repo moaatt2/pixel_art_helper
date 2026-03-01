@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import ttk
+from accordian import Accordion, Chord
 
 ################################
 ### Initalize Tkinter Window ###
@@ -39,17 +40,37 @@ paned = ttk.Panedwindow(window, orient=tkinter.HORIZONTAL)
 paned.pack(fill="both", expand=True)
 
 # Container for options on left
-sidebar = ttk.Frame(paned)
+sidebar = ttk.Frame(paned, borderwidth=1, relief="solid")
 paned.add(sidebar, weight=1)
 
 # Container for image preview on right
-preview = ttk.Frame(paned)
+preview = ttk.Frame(paned, borderwidth=1, relief="solid")
 paned.add(preview, weight=3)
 
 
 ###################
 ### Options Bar ###
 ###################
+
+# Initialze Accordian sidebar menu
+acc = Accordion(sidebar)
+
+# Section for Palette Options
+palette_options = Chord(acc, title='Palette Options', bg='white')
+tkinter.Label(palette_options, text='hello world', bg='white').pack()
+
+# Section for Image Options
+image_options = Chord(acc, title='Image Options', bg='white')
+tkinter.Label(image_options, text='hello world', bg='white').pack()
+
+# third chord
+pattern_options = Chord(acc, title='Pattern Options', bg='white')
+tkinter.Label(pattern_options, text='hello world', bg='white').pack()
+
+# append list of chords to Accordion instance
+acc.append_chords([palette_options, image_options, pattern_options])
+acc.pack(fill='both', expand=1)
+
 
 
 #######################
