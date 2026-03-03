@@ -57,19 +57,45 @@ acc = Accordion(sidebar)
 
 # Section for Palette Options
 palette_options = Chord(acc, title='Palette Options', bg='white')
-tkinter.Label(palette_options, text='hello world', bg='white').pack()
+# tkinter.Label(palette_options, text='hello world', bg='white').pack()
 
 # Section for Image Options
 image_options = Chord(acc, title='Image Options', bg='white')
 tkinter.Label(image_options, text='hello world', bg='white').pack()
 
-# third chord
+# Section for Pattern Options
 pattern_options = Chord(acc, title='Pattern Options', bg='white')
 tkinter.Label(pattern_options, text='hello world', bg='white').pack()
 
 # append list of chords to Accordion instance
 acc.append_chords([palette_options, image_options, pattern_options])
 acc.pack(fill='both', expand=1)
+
+
+#######################
+### Palette Options ###
+#######################
+
+# Initialze Accordian sidebar menu
+palette_acc = Accordion(palette_options)
+
+# Section for Palette Selection
+palette_selection = Chord(palette_acc, title='Palette Selection', bg='white')
+tkinter.Label(palette_selection, text='hello world', bg='white').pack()
+
+# Manual Color Matching
+manual_matches = Chord(palette_acc, title='Manual Color Matches', bg='white')
+tkinter.Label(manual_matches, text='hello world', bg='white').pack()
+
+# append list of chords to Accordion instance
+palette_acc.append_chords([palette_selection, manual_matches])
+palette_acc.pack(fill='both', expand=1)
+
+
+
+#####################
+### Image Options ###
+#####################
 
 
 
