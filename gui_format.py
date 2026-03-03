@@ -76,8 +76,15 @@ acc.pack(fill='both', expand=1)
 ### Palette Options ###
 #######################
 
+palette_option_wrapper = ttk.Frame(palette_options)
+palette_option_wrapper.pack(fill="x")
+
+palette_option_spacer = ttk.Frame(palette_option_wrapper, width=10)
+palette_option_spacer.pack(side="left", fill="y")
+
+
 # Initialze Accordian sidebar menu
-palette_acc = Accordion(palette_options)
+palette_acc = Accordion(palette_option_wrapper)
 
 # Section for Palette Selection
 palette_selection = Chord(palette_acc, title='Palette Selection', bg='white')
@@ -89,7 +96,7 @@ tkinter.Label(manual_matches, text='hello world', bg='white').pack()
 
 # append list of chords to Accordion instance
 palette_acc.append_chords([palette_selection, manual_matches])
-palette_acc.pack(fill='both', expand=1)
+palette_acc.pack(side='left', fill="both", expand=True)
 
 
 
