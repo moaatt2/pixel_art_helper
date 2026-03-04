@@ -57,11 +57,9 @@ acc = Accordion(sidebar)
 
 # Section for Palette Options
 palette_options = Chord(acc, title='Palette Options', bg='white')
-# tkinter.Label(palette_options, text='hello world', bg='white').pack()
 
 # Section for Image Options
 image_options = Chord(acc, title='Image Options', bg='white')
-tkinter.Label(image_options, text='hello world', bg='white').pack()
 
 # Section for Pattern Options
 pattern_options = Chord(acc, title='Pattern Options', bg='white')
@@ -76,9 +74,11 @@ acc.pack(fill='both', expand=1)
 ### Palette Options ###
 #######################
 
+# Create container for spacer and accordian menu
 palette_option_wrapper = ttk.Frame(palette_options)
 palette_option_wrapper.pack(fill="x")
 
+# Create spacer to increase clarity of heirarchy
 palette_option_spacer = ttk.Frame(palette_option_wrapper, width=10)
 palette_option_spacer.pack(side="left", fill="y")
 
@@ -99,11 +99,32 @@ palette_acc.append_chords([palette_selection, manual_matches])
 palette_acc.pack(side='left', fill="both", expand=True)
 
 
-
 #####################
 ### Image Options ###
 #####################
 
+# Create container for spacer and accordian menu
+image_option_wrapper = ttk.Frame(image_options)
+image_option_wrapper.pack(fill="x")
+
+# Create spacer to increase clarity of heirarchy
+image_option_spacer = ttk.Frame(image_option_wrapper, width=10)
+image_option_spacer.pack(side="left", fill="y")
+
+# Create accordian menu
+iamge_acc = Accordion(image_option_wrapper)
+
+# Section for Resizing Image
+resize_section = Chord(iamge_acc, title='Resize Image', bg='white')
+tkinter.Label(resize_section, text='hello world', bg='white').pack()
+
+# Section for handling rotation of the image
+rotate_section = Chord(iamge_acc, title='Rotate Image', bg='white')
+tkinter.Label(rotate_section, text='hello world', bg='white').pack()
+
+# Add sections to accordian menu and pack
+iamge_acc.append_chords([resize_section, rotate_section])
+iamge_acc.pack(side='left', fill="both", expand=True)
 
 
 #######################
