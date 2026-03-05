@@ -63,7 +63,6 @@ image_options = Chord(acc, title='Image Options', bg='white')
 
 # Section for Pattern Options
 pattern_options = Chord(acc, title='Pattern Options', bg='white')
-tkinter.Label(pattern_options, text='hello world', bg='white').pack()
 
 # append list of chords to Accordion instance
 acc.append_chords([palette_options, image_options, pattern_options])
@@ -125,6 +124,21 @@ tkinter.Label(rotate_section, text='hello world', bg='white').pack()
 # Add sections to accordian menu and pack
 iamge_acc.append_chords([resize_section, rotate_section])
 iamge_acc.pack(side='left', fill="both", expand=True)
+
+
+#######################
+### Pattern Options ###
+#######################
+
+# Create Variable
+pattern_option = tkinter.StringVar(pattern_options, "option1")
+
+# Add Radio Options
+tkinter.Radiobutton(pattern_options, text="Base image",              variable=pattern_option, value="base",    indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_options, text="Palette Applied",         variable=pattern_option, value="palette", indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_options, text="Chainmail - Half Strech", variable=pattern_option, value="half",    indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_options, text="Chainmail - Right Way",   variable=pattern_option, value="right",   indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_options, text="Chainmail - Wrong Way",   variable=pattern_option, value="wrong",   indicator=0).pack(fill="x")
 
 
 #######################
