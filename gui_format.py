@@ -130,15 +130,23 @@ iamge_acc.pack(side='left', fill="both", expand=True)
 ### Pattern Options ###
 #######################
 
+# Create container for spacer and accordian menu
+pattern_option_wrapper = ttk.Frame(pattern_options)
+pattern_option_wrapper.pack(fill="x")
+
+# Create spacer to increase clarity of heirarchy
+pattern_option_spacer = ttk.Frame(pattern_option_wrapper, width=10)
+pattern_option_spacer.pack(side="left", fill="y")
+
 # Create Variable
-pattern_option = tkinter.StringVar(pattern_options, "option1")
+pattern_option = tkinter.StringVar(pattern_option_wrapper, "base")
 
 # Add Radio Options
-tkinter.Radiobutton(pattern_options, text="Base image",              variable=pattern_option, value="base",    indicator=0).pack(fill="x")
-tkinter.Radiobutton(pattern_options, text="Palette Applied",         variable=pattern_option, value="palette", indicator=0).pack(fill="x")
-tkinter.Radiobutton(pattern_options, text="Chainmail - Half Strech", variable=pattern_option, value="half",    indicator=0).pack(fill="x")
-tkinter.Radiobutton(pattern_options, text="Chainmail - Right Way",   variable=pattern_option, value="right",   indicator=0).pack(fill="x")
-tkinter.Radiobutton(pattern_options, text="Chainmail - Wrong Way",   variable=pattern_option, value="wrong",   indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_option_wrapper, text="Base image",              variable=pattern_option, value="base",    indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_option_wrapper, text="Palette Applied",         variable=pattern_option, value="palette", indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_option_wrapper, text="Chainmail - Half Strech", variable=pattern_option, value="half",    indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_option_wrapper, text="Chainmail - Right Way",   variable=pattern_option, value="right",   indicator=0).pack(fill="x")
+tkinter.Radiobutton(pattern_option_wrapper, text="Chainmail - Wrong Way",   variable=pattern_option, value="wrong",   indicator=0).pack(fill="x")
 
 
 #######################
