@@ -1,6 +1,14 @@
 import tkinter
-from tkinter import ttk
+from tkinter import ttk, filedialog
+from PIL import Image, ImageTk
 from accordian import Accordion, Chord
+
+#################
+### Variables ###
+#################
+
+tk_image = None
+
 
 ################################
 ### Initalize Tkinter Window ###
@@ -10,6 +18,22 @@ from accordian import Accordion, Chord
 window = tkinter.Tk()
 window.title("Chainmail Inlay Helper")
 window.geometry("600x600")
+
+#################
+### Functions ###
+#################
+
+# Load Image Function
+def load_image() -> None:
+    global tk_image
+
+    image_path = filedialog.askopenfilename()
+
+    image = Image.open(image_path)
+
+    tk_image = ImageTk.PhotoImage(image)
+    
+    image_label.config(image=tk_image)
 
 
 ################
@@ -21,7 +45,7 @@ menu_bar = tkinter.Menu(window)
 
 # Add file menu
 file_menu = tkinter.Menu(menu_bar, tearoff=0)
-file_menu.add_command(label="Open", command=None)
+file_menu.add_command(label="Open", command=load_image)
 file_menu.add_command(label="Save", command=None)
 file_menu.add_separator()
 file_menu.add_command(label="Exit", command=window.quit)
@@ -147,6 +171,14 @@ tkinter.Radiobutton(pattern_option_wrapper, text="Palette Applied",         vari
 tkinter.Radiobutton(pattern_option_wrapper, text="Chainmail - Half Strech", variable=pattern_option, value="half",    indicator=0).pack(fill="x")
 tkinter.Radiobutton(pattern_option_wrapper, text="Chainmail - Right Way",   variable=pattern_option, value="right",   indicator=0).pack(fill="x")
 tkinter.Radiobutton(pattern_option_wrapper, text="Chainmail - Wrong Way",   variable=pattern_option, value="wrong",   indicator=0).pack(fill="x")
+
+#####################
+### Image Section ###
+#####################
+
+# Create Image section
+image_label = tkinter.Label(preview, image=tk_image)
+image_label.pack(fill="both", expand=True)
 
 
 #######################
