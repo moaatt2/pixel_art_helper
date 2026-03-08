@@ -1,13 +1,17 @@
 import tkinter
 from tkinter import ttk, filedialog
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageOps
 from accordian import Accordion, Chord
 
 #################
 ### Variables ###
 #################
 
-tk_image = None
+# Set global base image
+base_image = None
+
+# Set global preview image
+preview_image = None
 
 
 ################################
@@ -25,15 +29,35 @@ window.geometry("600x600")
 
 # Load Image Function
 def load_image() -> None:
-    global tk_image
+    global base_image
 
+    # Get Path of target image
     image_path = filedialog.askopenfilename()
 
+    # Load image as PIL and store in global variable
     image = Image.open(image_path)
+    base_image = image
 
-    tk_image = ImageTk.PhotoImage(image)
-    
-    image_label.config(image=tk_image)
+    # call resize function to display image
+    resize_preview()
+
+
+# Resize the preview to fit section
+def resize_preview() -> None:
+    global base_image, preview_image
+
+    pil_size = base_image.size
+    window_size = (preview.winfo_width(), preview.winfo_height())
+
+    resized_image = ImageOps.contain(base_image, window_size)
+
+    print(pil_size, window_size)
+
+    # Convert resized image to tkinter format
+    preview_image = ImageTk.PhotoImage(resized_image)
+
+    # Display Image
+    image_label.config(image=preview_image)
 
 
 ################
@@ -177,7 +201,7 @@ tkinter.Radiobutton(pattern_option_wrapper, text="Chainmail - Wrong Way",   vari
 #####################
 
 # Create Image section
-image_label = tkinter.Label(preview, image=tk_image)
+image_label = tkinter.Label(preview, Image=None)
 image_label.pack(fill="both", expand=True)
 
 
