@@ -46,12 +46,16 @@ def load_image() -> None:
 def resize_preview() -> None:
     global base_image, preview_image
 
+    # Exit the function if the base image has not been loaded yet
+    if base_image is None:
+        return
+
+    # Get size of the base image and the preview window
     pil_size = base_image.size
     window_size = (preview.winfo_width(), preview.winfo_height())
 
+    # Actually resize the image while keeping aspect ratio
     resized_image = ImageOps.contain(base_image, window_size)
-
-    print(pil_size, window_size)
 
     # Convert resized image to tkinter format
     preview_image = ImageTk.PhotoImage(resized_image)
@@ -203,6 +207,14 @@ tkinter.Radiobutton(pattern_option_wrapper, text="Chainmail - Wrong Way",   vari
 # Create Image section
 image_label = tkinter.Label(preview, Image=None)
 image_label.pack(fill="both", expand=True)
+
+
+######################
+### Event Bindings ###
+######################
+
+# Resize the image as the window is resized
+preview.bind("<Configure>", lambda event: resize_preview())
 
 
 #######################
