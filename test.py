@@ -40,89 +40,6 @@ def atan2_d(y, x):
     return degrees(atan2(y, x))
 
 
-#################
-### Functions ###
-#################
-
-
-# Write function to resize an image by duplicating each pixel according to specified width and height multipliers.
-def resize_image(input_file: str, width_mult: int, height_mult: int) -> str:
-    """
-    Resize an image by integer scale factors using pixel replication and save the result to a new file.
-    This function opens an image file with Pillow (PIL), creates a new RGBA image whose
-    dimensions are the original width multiplied by width_mult and the original height
-    multiplied by height_mult, and fills the new image by replicating each source pixel
-    into a width_mult x height_mult block (nearest-neighbor / pixel replication scaling).
-    The output filename is constructed from the input path and saved using the original
-    file extension.
-    Args:
-        input_file (str): Path to the input image file. The file is opened with PIL.
-        width_mult (int): Horizontal scaling factor. Must be a positive integer. Each
-            source pixel is duplicated width_mult times along the x axis.
-        height_mult (int): Vertical scaling factor. Must be a positive integer. Each
-            source pixel is duplicated height_mult times along the y axis.
-    Returns:
-        str: The path of the saved output file. The output name is formed by taking the
-        portion of input_file before the first '.' and appending "_{width_mult}x{height_mult}."
-        plus the original extension (for example, "sprite.png" -> "sprite_3x2.png").
-        Note: filenames containing multiple dots will use only the portion before the
-        first dot as the base name.
-    Raises:
-        FileNotFoundError: If the input file does not exist.
-        ValueError: If width_mult or height_mult are not positive integers (or result
-            in invalid image dimensions).
-        OSError: If the image cannot be opened or the output file cannot be written.
-    Example:
-        >>> resize_image("sprite.png", 3, 2)
-        'sprite_3x2.png'
-    """
-    with Image.open(input_file) as img:
-        width, height = img.size
-        new_img = Image.new("RGBA", (width * width_mult, height * height_mult))
-
-        for x, y in product(range(width), range(height)):
-            pixel = img.getpixel((x, y))
-            for dx, dy in product(range(width_mult), range(height_mult)):
-                new_img.putpixel((x * width_mult + dx, y * height_mult + dy), pixel)
-
-        # Construct output filename
-        input_filename  = input_file.split(".")[0]
-        input_extension = input_file.split(".")[-1]
-        output_file = f"{input_filename}_{width_mult}x{height_mult}.{input_extension}"
-
-        # Save modified image
-        new_img.save(output_file)
-
-        # Return output filename
-        return output_file
-
-
-# Helper function to find the closest color in the palette to a given input color.
-def closest_color_euclidean(input_color: tuple, palette: list) -> tuple:
-
-    # Get components of input color
-    r1, g1, b1 = input_color
-
-    # Set default values for loop
-    closest_color = None
-    min_distance = float('inf')
-
-    # Loop over all colors in palette
-    for color in palette:
-
-        # Get components of palette color
-        r2, g2, b2 = color
-        distance = (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
-
-        # Check if current color is the closest so far
-        if distance < min_distance:
-            min_distance = distance
-            closest_color = color
-
-    # Return the closest color found
-    return closest_color
-
-
 # Take channel value and apply gamma correction
 def gamma_correction(value: float) -> float:
     if value <= 0.04045:
@@ -174,6 +91,36 @@ def rgb_to_cielab(input_color: tuple) -> tuple:
 
     # Return LAB values
     return (l, a, b)
+
+
+#################
+### Functions ###
+#################
+
+# Helper function to find the closest color in the palette to a given input color.
+def closest_color_euclidean(input_color: tuple, palette: list) -> tuple:
+
+    # Get components of input color
+    r1, g1, b1 = input_color
+
+    # Set default values for loop
+    closest_color = None
+    min_distance = float('inf')
+
+    # Loop over all colors in palette
+    for color in palette:
+
+        # Get components of palette color
+        r2, g2, b2 = color
+        distance = (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
+
+        # Check if current color is the closest so far
+        if distance < min_distance:
+            min_distance = distance
+            closest_color = color
+
+    # Return the closest color found
+    return closest_color
 
 
 # Helper function to calculate delta e for 2 colors using cielab 76 formula
@@ -282,20 +229,45 @@ def closest_color_cie_00(color: tuple, palette: list) -> tuple:
     return closest
 
 
-# Write function to replace all occurrences of a specific color in an image with another color.
-def apply_palette(palette_file: str, image_file: str, color_selection_func: object, selection_func_color_space: str) -> str:
+# Return True if pixel is white (or close) false otherwise
+def ignore_white(pixel: tuple, white_level: int = 250) -> bool:
+    r, g, b = pixel[0], pixel[1], pixel[2]
 
-    # Load palette
-    with open(palette_file, 'r') as pf:
-        palette = json.load(pf)
+    if r > white_level and g > white_level and b > white_level:
+        return True
+    else:
+        return False
 
-    # Convert hex colors to RGB tuples
-    for name, hex_color in palette.items():
-        r = int(hex_color[0:2], 16)
-        g = int(hex_color[2:4], 16)
-        b = int(hex_color[4:6], 16)
-        palette[name] = (r, g, b)
+
+####################################
+### Image Manipulation Functions ###
+####################################
+
+# Rotate an image
+def rotate_image(image: Image.Image, angle: float, clockwise: bool = False) -> Image.Image:
+
+    # Adjust angle if clockwise is desired
+    angle = -angle if clockwise else angle
+
+    # Rotate image and expand incase it isnt large enough
+    return image.rotate(angle, expand=True)
+
+
+# Resize an image by integer scale factors using pixel duplication
+def resize_image(image: Image.Image, width_mult: int, height_mult: int) -> Image.Image:
+    width, height = image.size
+    new_img = Image.new("RGBA", (width * width_mult, height * height_mult))
+
+    for x, y in product(range(width), range(height)):
+        pixel = image.getpixel((x, y))
+        for dx, dy in product(range(width_mult), range(height_mult)):
+            new_img.putpixel((x * width_mult + dx, y * height_mult + dy), pixel)
     
+    return new_img
+
+
+# Apply a palette to an image - replaces colors with the closest color in the palette as determined by the color selection function
+def apply_palette(palette: dict, image: Image.Image, color_selection_func: object, selection_func_color_space: str) -> Image.Image:
     # Instantiate color mapping dict
     color_map = dict()
 
@@ -308,77 +280,55 @@ def apply_palette(palette_file: str, image_file: str, color_selection_func: obje
             palette_map[str(cielab)] = color
             palette_lab.append(cielab)
 
-    # Open image & create new output image
-    with Image.open(image_file) as img:
-        width, height = img.size
-        new_img = Image.new("RGBA", (width, height))
 
-        # Loop over all pixels in input image
-        for x, y in product(range(width), range(height)):
+    width, height = image.size
+    new_img = Image.new("RGBA", (width, height))
 
-            # get pixel in rgb color
-            pixel = img.getpixel((x, y))
+    # Loop over all pixels in input image
+    for x, y in product(range(width), range(height)):
 
-            # Find best color
-            if str(pixel) in color_map:
-                new_color = color_map[str(pixel)]
-            elif selection_func_color_space == "cielab":
-                pixel_lab = rgb_to_cielab(pixel)
-                best_lab = color_selection_func(pixel_lab, palette_lab)
-                new_color = palette_lab[str(best_lab)]
-                color_map[str(pixel)] = new_color
-            else:
-                new_color = color_selection_func(pixel, list(palette.values()))
-                color_map[str(pixel)] = new_color
+        # get pixel in rgb color
+        pixel = image.getpixel((x, y))
 
+        # Find best color
+        if str(pixel) in color_map:
+            new_color = color_map[str(pixel)]
+        elif selection_func_color_space == "cielab":
+            pixel_lab = rgb_to_cielab(pixel)
+            best_lab = color_selection_func(pixel_lab, palette_lab)
+            new_color = palette_lab[str(best_lab)]
+            color_map[str(pixel)] = new_color
+        else:
+            new_color = color_selection_func(pixel, list(palette.values()))
+            color_map[str(pixel)] = new_color
 
-            new_img.putpixel((x, y), new_color)
+        # Set color in new image
+        new_img.putpixel((x, y), new_color)
 
-        # Construct output filename
-        input_filename  = image_file.split(".")[0]
-        input_extension = image_file.split(".")[-1]
-        palette_name    = palette_file.split("/")[-1].split(".")[0]
-        output_file = f"{input_filename}_{palette_name}.{input_extension}"
-
-        # Save modified image
-        new_img.save(output_file)
-
-        # Return output filename
-        return output_file
+    # Return output filename
+    return new_img
 
 
-# Return True if pixel is white (or close) false otherwise
-def ignore_white(pixel: tuple) -> bool:
-    r, g, b = pixel[0], pixel[1], pixel[2]
-
-    if r > 250 and g > 250 and b > 250:
-        return True
-    else:
-        return False
-
-
-# Get average color of an image, ignoring pixels that match the ignore function. Return the average color as a hex string.
-def get_average_color(filename: str, ignore_function: object = None) -> Optional[str]:
+# Get average color of an image, ignoring pixels that match the ignore function.
+def get_average_color_f(image: Image.Image, ignore_function: object = None) -> Optional[str]:
 
     # Instantiate accumulators
     total_r, total_g, total_b = 0, 0, 0
     count = 0
 
-    # Open image and loop over all pixels
-    with Image.open(filename) as img:
-        width, height = img.size
-        for x, y in product(range(width), range(height)):
-            pixel = img.getpixel((x, y))
+    width, height = image.size
+    for x, y in product(range(width), range(height)):
+        pixel = image.getpixel((x, y))
 
-            # If pixel matches ignore function skip it
-            if ignore_function is not None and ignore_function(pixel):
-                continue
+        # If pixel matches ignore function skip it
+        if ignore_function is not None and ignore_function(pixel):
+            continue
 
-            # Add values to accumulators
-            total_r += pixel[0]
-            total_g += pixel[1]
-            total_b += pixel[2]
-            count += 1
+        # Add values to accumulators
+        total_r += pixel[0]
+        total_g += pixel[1]
+        total_b += pixel[2]
+        count += 1
 
 
     # Calculate Average color
@@ -393,7 +343,7 @@ def get_average_color(filename: str, ignore_function: object = None) -> Optional
 
 
 # Estimate physical size of resulting inlay project based on wire size
-def estimate_size(filename: str, gauge: int, gauge_system: str, internal_diameter: float, units: str) -> Tuple[float, float]:
+def estimate_size(image: Image.Image, gauge: int, gauge_system: str, internal_diameter: float, units: str) -> Tuple[float, float]:
 
     # Verify gauge system
     gauge_system = gauge_system.lower()
@@ -409,25 +359,36 @@ def estimate_size(filename: str, gauge: int, gauge_system: str, internal_diamete
     # Calculate Ring Width
     ring_diameter = 2*wire_diameter + internal_diameter
 
-    with Image.open(filename) as img:
-        width_px, height_px = img.size
+    width_px, height_px = image.size
 
-        height = ring_diameter * (1 + (height_px - 1)/2)
-        width  = ANGLE_FACTOR * (ring_diameter + (ring_diameter - wire_diameter) * (width_px - 1))
+    height = ring_diameter * (1 + (height_px - 1)/2)
+    width  = ANGLE_FACTOR * (ring_diameter + (ring_diameter - wire_diameter) * (width_px - 1))
 
-        height, width = round(height, 2), round(width, 2)
+    height, width = round(height, 2), round(width, 2)
 
-        return (width, height)
+    return (width, height)
 
 
-# Function to rotate an image
-def rotate_image(image: Image.Image, angle: float, clockwise: bool = False) -> Image.Image:
+###############################
+### File Operation Wrappers ###
+###############################
 
-    # Adjust angle if clockwise is desired
-    angle = -angle if clockwise else angle
+# Wrapper to resize an image from a file and save the result to a new file
+def resize_image_f(input_file: str, width_mult: int, height_mult: int) -> str:
 
-    # Rotate image and expand incase it isnt large enough
-    return image.rotate(angle, expand=True)
+    image = Image.open(input_file)
+    new_img = resize_image(image, width_mult, height_mult)
+
+    # Construct output filename
+    input_filename  = input_file.split(".")[0]
+    input_extension = input_file.split(".")[-1]
+    output_file = f"{input_filename}_{width_mult}x{height_mult}.{input_extension}"
+
+    # Save modified image
+    new_img.save(output_file)
+
+    # Return output filename
+    return output_file
 
 
 # Wrapper to rotate an image from a file and save the result to a new file
@@ -445,6 +406,50 @@ def rotate_image_f(filename: str, angle: float, clockwise: bool = False) -> str:
         rotated_img.save(output_file)
 
         return output_file
+
+
+# Wrapper for apply_palette that operates on files and saves the result to a new file
+def apply_palette_f(palette_file: str, image_file: str, color_selection_func: object, selection_func_color_space: str) -> str:
+
+    # Load palette
+    with open(palette_file, 'r') as pf:
+        palette = json.load(pf)
+
+    # Convert hex colors to RGB tuples
+    for name, hex_color in palette.items():
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+        palette[name] = (r, g, b)
+
+    # Open image and apply palette    
+    with Image.open(image_file) as source:
+        new_img = apply_palette(palette, source, color_selection_func, selection_func_color_space)
+
+        # Construct output filename
+        input_filename  = image_file.split(".")[0]
+        input_extension = image_file.split(".")[-1]
+        palette_name    = palette_file.split("/")[-1].split(".")[0]
+        output_file = f"{input_filename}_{palette_name}.{input_extension}"
+
+        # Save modified image
+        new_img.save(output_file)
+
+        # Return output filename
+        return output_file
+
+
+# Wrapper for get_average_color that operates on files
+def get_average_color_f(filename: str, ignore_function: object = None) -> Optional[str]:
+    with Image.open(filename) as img:
+        return get_average_color_f(img, ignore_function)
+
+
+# Wrapper for estimate_size that operates on files
+def estimate_size_f(filename: str, gauge: int, gauge_system: str, internal_diameter: float, units: str) -> Tuple[float, float]:
+    with Image.open(filename) as img:
+        return estimate_size(img, gauge, gauge_system, internal_diameter, units)
+
 
 
 #############
@@ -569,5 +574,5 @@ def rotate_image_f(filename: str, angle: float, clockwise: bool = False) -> str:
 # print(size)
 
 # Test Rotate Function
-rotate_image_f("test_images/finalists/metroid_c1_2x2.bmp", 90, True)
+# rotate_image_f("test_images/finalists/metroid_c1_2x2.bmp", 90, True)
 
