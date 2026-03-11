@@ -1,3 +1,5 @@
+import glob
+import json
 import tkinter
 from tkinter import ttk, filedialog
 from PIL import Image, ImageTk, ImageOps
@@ -12,6 +14,9 @@ base_image = None
 
 # Set global preview image
 preview_image = None
+
+# Set Global Palette list
+palettes = dict()
 
 
 ################################
@@ -64,6 +69,30 @@ def resize_preview() -> None:
     image_label.config(image=preview_image)
 
 
+# Load Palette Files
+def load_palettes() -> None:
+    global palettes
+    
+    # Itterate over palette files
+    for path in glob.glob("palettes/*.json"):
+        palette_name = path.split("/")[-1].split(".")[0]
+
+        # Load palette files
+        with open(path, "r") as f:
+            raw = json.load(f)
+            print(raw)
+        
+        # Create dict in palettes dict for current palette
+        palettes[palette_name] = dict()
+
+        # Convert hex color codes to RGB tuples and store in palette dict
+        for k, v in raw.items():
+            r = int(v[0:2], 16)
+            g = int(v[2:4], 16)
+            b = int(v[4:6], 16)
+            palettes[palette_name][k] = (r, g, b)
+
+
 ################
 ### Menu Bar ###
 ################
@@ -75,6 +104,8 @@ menu_bar = tkinter.Menu(window)
 file_menu = tkinter.Menu(menu_bar, tearoff=0)
 file_menu.add_command(label="Open", command=load_image)
 file_menu.add_command(label="Save", command=None)
+file_menu.add_separator()
+file_menu.add_command(label="Reload Palettes", command=load_palettes)
 file_menu.add_separator()
 file_menu.add_command(label="Exit", command=window.quit)
 menu_bar.add_cascade(label="File", menu=file_menu)
