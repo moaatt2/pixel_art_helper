@@ -75,12 +75,11 @@ def load_palettes() -> None:
     
     # Itterate over palette files
     for path in glob.glob("palettes/*.json"):
-        palette_name = path.split("/")[-1].split(".")[0]
+        palette_name = path.split("/")[-1].split("\\")[-1].split(".")[0]
 
         # Load palette files
         with open(path, "r") as f:
             raw = json.load(f)
-            print(raw)
         
         # Create dict in palettes dict for current palette
         palettes[palette_name] = dict()
@@ -91,6 +90,15 @@ def load_palettes() -> None:
             g = int(v[2:4], 16)
             b = int(v[4:6], 16)
             palettes[palette_name][k] = (r, g, b)
+
+    # If no palettes were found alert the user
+    if len(palettes) == 0:
+        tkinter.Label(palette_selection, text='You have no palettes', bg='white').pack()
+
+
+    # Add Sections to palette selection menu
+    for palette_name in palettes.keys():
+        tkinter.Checkbutton(palette_selection, text=palette_name, anchor="w", bg='white').pack(fill="x")
 
 
 ################
@@ -170,7 +178,6 @@ palette_acc = Accordion(palette_option_wrapper)
 
 # Section for Palette Selection
 palette_selection = Chord(palette_acc, title='Palette Selection', bg='white')
-tkinter.Label(palette_selection, text='hello world', bg='white').pack()
 
 # Manual Color Matching
 manual_matches = Chord(palette_acc, title='Manual Color Matches', bg='white')
@@ -246,6 +253,13 @@ image_label.pack(fill="both", expand=True)
 
 # Resize the image as the window is resized
 preview.bind("<Configure>", lambda event: resize_preview())
+
+
+#############################
+### Inital Load Functions ###
+#############################
+
+load_palettes()
 
 
 #######################
