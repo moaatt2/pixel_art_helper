@@ -99,6 +99,19 @@ def load_palettes() -> None:
     # Add Sections to palette selection menu
     for palette_name in palettes.keys():
         tkinter.Checkbutton(palette_selection, text=palette_name, anchor="w", bg='white').pack(fill="x")
+    
+    # Try Tree View
+    tree = ttk.Treeview(palette_selection, show="tree")
+    tree.pack(fill="both", expand=True)
+
+    # Add Palettes
+    for palette_name, palette in palettes.items():
+        parent = tree.insert("", "end", text=palette_name)
+
+        # Add Colors
+        for color_name, color in palette.items():
+            tree.insert(parent, "end", text=color_name)
+
 
 
 ################
