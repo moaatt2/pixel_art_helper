@@ -4,6 +4,7 @@ import tkinter
 from tkinter import ttk, filedialog
 from PIL import Image, ImageTk, ImageOps
 from accordian import Accordion, Chord
+from pprint import pprint
 
 #################
 ### Variables ###
@@ -82,14 +83,21 @@ def load_palettes() -> None:
             raw = json.load(f)
         
         # Create dict in palettes dict for current palette
-        palettes[palette_name] = dict()
+        palettes[palette_name] = {
+            "enabled": tkinter.BooleanVar(),
+            "colors": dict(),
+        }
 
         # Convert hex color codes to RGB tuples and store in palette dict
         for k, v in raw.items():
             r = int(v[0:2], 16)
             g = int(v[2:4], 16)
             b = int(v[4:6], 16)
-            palettes[palette_name][k] = (r, g, b)
+            palettes[palette_name]["colors"][k] = {
+                "rgb": (r, g, b),
+                "hexstring": v,
+                "enabled": tkinter.BooleanVar(),
+            }
 
     # If no palettes were found alert the user
     if len(palettes) == 0:
@@ -109,7 +117,7 @@ def load_palettes() -> None:
         parent = tree.insert("", "end", text=palette_name)
 
         # Add Colors
-        for color_name, color in palette.items():
+        for color_name, color in palette["colors"].items():
             tree.insert(parent, "end", text=color_name)
 
 
