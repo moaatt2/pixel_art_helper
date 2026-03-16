@@ -4,7 +4,7 @@ import tkinter
 from tkinter import ttk, filedialog
 from PIL import Image, ImageTk, ImageOps
 from accordian import Accordion, Chord
-from pprint import pprint
+# from pprint import pprint
 
 #################
 ### Variables ###
@@ -103,6 +103,8 @@ def load_palettes() -> None:
     if len(palettes) == 0:
         tkinter.Label(palette_selection, text='You have no palettes', bg='white').pack()
 
+    # # Print the palettes for debugging
+    # pprint(palettes)
 
     # Add Sections to palette selection menu
     for palette_name in palettes.keys():
@@ -119,6 +121,46 @@ def load_palettes() -> None:
         # Add Colors
         for color_name, color in palette["colors"].items():
             tree.insert(parent, "end", text=color_name)
+
+    ttk.Separator(palette_selection, orient="horizontal").pack(fill="x", pady=5)
+
+    # Sample Header
+
+    ## Sample Header Values
+    palette_name = list(palettes.keys())[0]
+    palette = palettes[palette_name]
+
+    ## Sample Header Container
+    sample_header = ttk.Frame(palette_selection)
+    sample_header.pack(fill="x")
+
+    ## Sample Header Button
+    sample_button = ttk.Label(sample_header, text="▶")
+    sample_button.pack(side="left")
+
+    ## Sample Header Checkbox
+    sample_checkbox = ttk.Checkbutton(sample_header, text=palette_name, variable=palette["enabled"])
+    sample_checkbox.pack(side="left")
+
+    ttk.Separator(palette_selection, orient="horizontal").pack(fill="x", pady=5)
+
+    # Sample Color Row
+
+    ## Sample Value
+    color_name = list(palette["colors"].keys())[0]
+    color = palette["colors"][color_name]
+
+    ## Sample Row Container
+    sample_color = ttk.Frame(palette_selection)
+    sample_color.pack(fill="x")
+
+    ## Sample Color Preview
+    canvas = tkinter.Canvas(sample_color, width=12, height=12, background="#" + color["hexstring"], highlightthickness=0)
+    canvas.pack(side="left", padx=2)
+
+    ## Sample Color Checkbox
+    sample_color_checkbox = ttk.Checkbutton(sample_color, text=color_name, variable=color["enabled"])
+    sample_color_checkbox.pack(side="left")
 
 
 
