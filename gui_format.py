@@ -142,25 +142,34 @@ def load_palettes() -> None:
     sample_checkbox = ttk.Checkbutton(sample_header, text=palette_name, variable=palette["enabled"])
     sample_checkbox.pack(side="left")
 
-    ttk.Separator(palette_selection, orient="horizontal").pack(fill="x", pady=5)
+    # Sample Color Subsection
 
-    # Sample Color Row
+    ## Container for all palettes colors
+    color_container = ttk.Frame(palette_selection)
+    color_container.pack(fill="x")
 
-    ## Sample Value
-    color_name = list(palette["colors"].keys())[0]
-    color = palette["colors"][color_name]
+    ## Create Spacer to increase clarity of heirarchy
+    ttk.Frame(color_container, width=14).pack(side="left", fill="y")
 
-    ## Sample Row Container
-    sample_color = ttk.Frame(palette_selection)
-    sample_color.pack(fill="x")
+    ## Container for Actual Color Rows
+    color_row_container = ttk.Frame(color_container)
+    color_row_container.pack(side="left", fill="x", expand=True)
 
-    ## Sample Color Preview
-    canvas = tkinter.Canvas(sample_color, width=12, height=12, background="#" + color["hexstring"], highlightthickness=0)
-    canvas.pack(side="left", padx=2)
+    ## Create Color Rows
+    for color_name in palette["colors"].keys():
+        color = palette["colors"][color_name]
 
-    ## Sample Color Checkbox
-    sample_color_checkbox = ttk.Checkbutton(sample_color, text=color_name, variable=color["enabled"])
-    sample_color_checkbox.pack(side="left")
+        # Container for each color row
+        color_row = ttk.Frame(color_row_container)
+        color_row.pack(fill="x")
+
+        # Color Preview
+        canvas = tkinter.Canvas(color_row, width=12, height=12, background="#" + color["hexstring"], highlightthickness=0)
+        canvas.pack(side="left", padx=2)
+
+        # Color Checkbox
+        sample_color_checkbox = ttk.Checkbutton(color_row, text=color_name, variable=color["enabled"], state="disabled")
+        sample_color_checkbox.pack(side="left")
 
 
 
