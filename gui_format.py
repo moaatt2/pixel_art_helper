@@ -70,6 +70,14 @@ def resize_preview() -> None:
     image_label.config(image=preview_image)
 
 
+def toggle_color_container(event, check, container) -> None:
+    if event.widget is not check:
+        if container.winfo_ismapped():
+            container.pack_forget()
+        else:
+            container.pack()
+
+
 # Load Palette Files
 def load_palettes() -> None:
     global palettes
@@ -152,6 +160,9 @@ def load_palettes() -> None:
         # Color Checkbox
         sample_color_checkbox = ttk.Checkbutton(color_row, text=color_name, variable=color["enabled"], state="disabled")
         sample_color_checkbox.pack(side="left")
+
+
+    sample_header.bind("<Button-1>", lambda event, check=sample_checkbox, container=color_container: toggle_color_container(event, check, container))
 
 
 
