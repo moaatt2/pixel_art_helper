@@ -162,7 +162,7 @@ def load_palettes() -> None:
         sample_color_checkbox.pack(side="left")
 
 
-    sample_header.bind("<Button-1>", lambda event, check=sample_checkbox, container=color_container: toggle_color_container(event, check, container))
+    sample_header.bind("<Button-1>", lambda event, check=sample_checkbox, container=color_row_container: toggle_color_container(event, check, container))
 
 
 
