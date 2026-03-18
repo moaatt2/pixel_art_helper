@@ -81,7 +81,7 @@ def toggle_color_container(event, check, container) -> None:
 # Load Palette Files
 def load_palettes() -> None:
     global palettes
-    
+
     # Itterate over palette files
     for path in glob.glob("palettes/*.json"):
         palette_name = path.split("/")[-1].split("\\")[-1].split(".")[0]
@@ -114,55 +114,51 @@ def load_palettes() -> None:
     # # Print the palettes for debugging
     # pprint(palettes)
 
-    # Sample Header
+    # Create Palette Sections
+    for palette_name in palettes.keys():
+        palette = palettes[palette_name]
 
-    ## Sample Header Values
-    palette_name = list(palettes.keys())[0]
-    palette = palettes[palette_name]
+        # Header Container
+        palette_label_container = ttk.Frame(palette_selection)
+        palette_label_container.pack(fill="x")
 
-    ## Sample Header Container
-    sample_header = ttk.Frame(palette_selection)
-    sample_header.pack(fill="x")
+        # Header Button
+        palette_status_arrow = ttk.Label(palette_label_container, text="▶")
+        palette_status_arrow.pack(side="left")
 
-    ## Sample Header Button
-    sample_button = ttk.Label(sample_header, text="▶")
-    sample_button.pack(side="left")
+        # Header Checkbox
+        palette_checkbox = ttk.Checkbutton(palette_label_container, text=palette_name, variable=palette["enabled"])
+        palette_checkbox.pack(side="left")
 
-    ## Sample Header Checkbox
-    sample_checkbox = ttk.Checkbutton(sample_header, text=palette_name, variable=palette["enabled"])
-    sample_checkbox.pack(side="left")
+        # Container for palette colors
+        color_container = ttk.Frame(palette_selection)
+        color_container.pack(fill="x")
 
-    # Sample Color Subsection
+        # Create Spacer to increase clarity of heirarchy
+        ttk.Frame(color_container, width=14).pack(side="left", fill="y")
 
-    ## Container for all palettes colors
-    color_container = ttk.Frame(palette_selection)
-    color_container.pack(fill="x")
+        # Container for Actual Color Rows
+        color_row_container = ttk.Frame(color_container)
+        color_row_container.pack(side="left", fill="x", expand=True)
 
-    ## Create Spacer to increase clarity of heirarchy
-    ttk.Frame(color_container, width=14).pack(side="left", fill="y")
+        # Create Color Rows
+        for color_name in palette["colors"].keys():
+            color = palette["colors"][color_name]
 
-    ## Container for Actual Color Rows
-    color_row_container = ttk.Frame(color_container)
-    color_row_container.pack(side="left", fill="x", expand=True)
+            # Container for each color row
+            color_row = ttk.Frame(color_row_container)
+            color_row.pack(fill="x")
 
-    ## Create Color Rows
-    for color_name in palette["colors"].keys():
-        color = palette["colors"][color_name]
+            # Color Preview
+            canvas = tkinter.Canvas(color_row, width=12, height=12, background="#" + color["hexstring"], highlightthickness=0)
+            canvas.pack(side="left", padx=2)
 
-        # Container for each color row
-        color_row = ttk.Frame(color_row_container)
-        color_row.pack(fill="x")
+            # Color Checkbox
+            color_checkbox = ttk.Checkbutton(color_row, text=color_name, variable=color["enabled"], state="disabled")
+            color_checkbox.pack(side="left")
 
-        # Color Preview
-        canvas = tkinter.Canvas(color_row, width=12, height=12, background="#" + color["hexstring"], highlightthickness=0)
-        canvas.pack(side="left", padx=2)
-
-        # Color Checkbox
-        sample_color_checkbox = ttk.Checkbutton(color_row, text=color_name, variable=color["enabled"], state="disabled")
-        sample_color_checkbox.pack(side="left")
-
-
-    sample_header.bind("<Button-1>", lambda event, check=sample_checkbox, container=color_row_container: toggle_color_container(event, check, container))
+        # Event binding to toggle color container when header is clicked, but not when the checkbox is clicked
+        palette_label_container.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_row_container: toggle_color_container(event, check, container))
 
 
 
