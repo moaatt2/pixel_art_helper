@@ -70,7 +70,10 @@ def resize_preview() -> None:
     image_label.config(image=preview_image)
 
 
+# Toggle the container when the header is clicked, but not when the checkbox is clicked
 def toggle_color_container(event, check, container) -> None:
+    # TODO: change the arrow when the container is toggled
+
     if event.widget is not check:
         if container.winfo_ismapped():
             container.pack_forget()
@@ -81,6 +84,13 @@ def toggle_color_container(event, check, container) -> None:
 # Load Palette Files
 def load_palettes() -> None:
     global palettes
+
+    # TODO: hide color section by default
+    # TODO: Make color/palettes on by default
+    # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
+    # TODO: Make color sections scrollable
+    # TODO: Trigger toggle when arrow is clicked, not just the header
+    # TODO: When section is toggled the the color options become centered instead of left aligned, fix this
 
     # Itterate over palette files
     for path in glob.glob("palettes/*.json"):
