@@ -71,14 +71,14 @@ def resize_preview() -> None:
 
 
 # Toggle the container when the header is clicked, but not when the checkbox is clicked
-def toggle_color_container(event, check, container) -> None:
-    # TODO: change the arrow when the container is toggled
-
+def toggle_color_container(event, check, container, arrow) -> None:
     if event.widget is not check:
         if container.winfo_ismapped():
             container.pack_forget()
+            arrow.config(text="▶")
         else:
             container.pack()
+            arrow.config(text="▼")
 
 
 # Load Palette Files
@@ -168,7 +168,7 @@ def load_palettes() -> None:
             color_checkbox.pack(side="left")
 
         # Event binding to toggle color container when header is clicked, but not when the checkbox is clicked
-        palette_label_container.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_row_container: toggle_color_container(event, check, container))
+        palette_label_container.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_row_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
 
 
 
