@@ -85,8 +85,6 @@ def toggle_color_container(event, check, container, arrow) -> None:
 def load_palettes() -> None:
     global palettes
 
-    # TODO: hide color section by default
-    # TODO: Make color/palettes on by default
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
     # TODO: Make color sections scrollable
     # TODO: Trigger toggle when arrow is clicked, not just the header
@@ -114,7 +112,7 @@ def load_palettes() -> None:
             palettes[palette_name]["colors"][k] = {
                 "rgb": (r, g, b),
                 "hexstring": v,
-                "enabled": tkinter.BooleanVar(),
+                "enabled": tkinter.BooleanVar(value=True),
             }
 
     # If no palettes were found alert the user
