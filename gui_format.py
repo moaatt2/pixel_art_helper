@@ -167,6 +167,9 @@ def load_palettes() -> None:
             color_checkbox = ttk.Checkbutton(color_row, text=color_name, variable=color["enabled"], state="disabled")
             color_checkbox.pack(side="left")
 
+        # Hide color container by default
+        color_row_container.pack_forget()
+
         # Event binding to toggle color container when header is clicked, but not when the checkbox is clicked
         palette_label_container.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_row_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
 
