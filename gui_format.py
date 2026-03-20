@@ -87,7 +87,6 @@ def load_palettes() -> None:
 
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
     # TODO: Make color sections scrollable
-    # TODO: Trigger toggle when arrow is clicked, not just the header
     # TODO: Use cleaner name for palettes, split by '_' and title case?
 
     # Itterate over palette files
@@ -170,7 +169,7 @@ def load_palettes() -> None:
 
         # Event binding to toggle color container when header is clicked, but not when the checkbox is clicked
         palette_label_container.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_row_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
-
+        palette_status_arrow.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_row_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
 
 
 ################
