@@ -77,7 +77,7 @@ def toggle_color_container(event, check, container, arrow) -> None:
             container.pack_forget()
             arrow.config(text="▶")
         else:
-            container.pack()
+            container.pack(side="left", fill="x", expand=True)
             arrow.config(text="▼")
 
 
@@ -88,7 +88,7 @@ def load_palettes() -> None:
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
     # TODO: Make color sections scrollable
     # TODO: Trigger toggle when arrow is clicked, not just the header
-    # TODO: When section is toggled the the color options become centered instead of left aligned, fix this
+    # TODO: Use cleaner name for palettes, split by '_' and title case?
 
     # Itterate over palette files
     for path in glob.glob("palettes/*.json"):
