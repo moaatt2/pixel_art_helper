@@ -87,7 +87,6 @@ def load_palettes() -> None:
 
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
     # TODO: Make color sections scrollable
-    # TODO: Use cleaner name for palettes, split by '_' and title case?
 
     # Itterate over palette files
     for path in glob.glob("palettes/*.json"):
@@ -125,6 +124,10 @@ def load_palettes() -> None:
     for palette_name in palettes.keys():
         palette = palettes[palette_name]
 
+        # Clean up the palette name for display | ring_lord_rings -> Ring Lord Rings
+        palette_name_clean = " ".join(palette_name.split("_"))
+        palette_name_clean = palette_name_clean.title()
+
         # Header Container
         palette_label_container = ttk.Frame(palette_selection)
         palette_label_container.pack(fill="x")
@@ -134,7 +137,7 @@ def load_palettes() -> None:
         palette_status_arrow.pack(side="left")
 
         # Header Checkbox
-        palette_checkbox = ttk.Checkbutton(palette_label_container, text=palette_name, variable=palette["enabled"])
+        palette_checkbox = ttk.Checkbutton(palette_label_container, text=palette_name_clean, variable=palette["enabled"])
         palette_checkbox.pack(side="left")
 
         # Container for palette colors
