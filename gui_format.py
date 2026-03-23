@@ -86,7 +86,10 @@ def load_palettes() -> None:
     global palettes
 
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
-    # TODO: Make color sections scrollable
+    # TODO: Expanding one palette section should collapse other palette sections
+    # TODO: Make palette scrollbar visible at normal windiow size
+    # TODO: Make color section scroll when clicking on color
+    # TODO: Try to remove the arrows on the scrollbar
 
     # Itterate over palette files
     for path in glob.glob("palettes/*.json"):
@@ -147,9 +150,17 @@ def load_palettes() -> None:
         # Create Spacer to increase clarity of heirarchy
         ttk.Frame(color_container, width=14).pack(side="left", fill="y")
 
-        # Container for Actual Color Rows
-        color_row_container = ttk.Frame(color_container)
-        color_row_container.pack(side="left", fill="x", expand=True)
+        # Create a container to have a canvas and scrollbar
+        color_canvas_container = ttk.Frame(color_container)
+        color_canvas_container.pack(side="left", fill="x", expand=True)
+
+        # Create Scrollable Canvas for color options
+        color_canvas = tkinter.Canvas(color_canvas_container, borderwidth=0, highlightthickness=0, height=100)
+        color_canvas.pack(side="left", fill="both")
+
+        # Container for Actual Color Rows and add to canvas
+        color_row_container = ttk.Frame(color_canvas)
+        canvas_window = color_canvas.create_window((0, 0), window=color_row_container, anchor="nw")
 
         # Create Color Rows
         for color_name in palette["colors"].keys():
@@ -167,12 +178,18 @@ def load_palettes() -> None:
             color_checkbox = ttk.Checkbutton(color_row, text=color_name, variable=color["enabled"], state="disabled")
             color_checkbox.pack(side="left")
 
+        # Set up scrollbar
+        vbar = tkinter.Scrollbar(color_canvas_container, orient="vertical", command=color_canvas.yview)
+        vbar.pack(side="right", fill="y")
+        color_canvas.config(yscrollcommand=vbar.set)
+
         # Hide color container by default
-        color_row_container.pack_forget()
+        color_canvas_container.pack_forget()
 
         # Event binding to toggle color container when header is clicked, but not when the checkbox is clicked
-        palette_label_container.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_row_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
-        palette_status_arrow.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_row_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
+        palette_label_container.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_canvas_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
+        palette_status_arrow.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_canvas_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
+        color_row_container.bind("<Configure>", lambda event, canvas=color_canvas: canvas.config(scrollregion=canvas.bbox("all")))
 
 
 ################
