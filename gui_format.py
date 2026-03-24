@@ -87,7 +87,6 @@ def load_palettes() -> None:
 
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
     # TODO: Expanding one palette section should collapse other palette sections
-    # TODO: Make palette scrollbar visible at normal windiow size
     # TODO: Make color section scroll when clicking on color
     # TODO: Try to remove the arrows on the scrollbar
 
@@ -156,7 +155,6 @@ def load_palettes() -> None:
 
         # Create Scrollable Canvas for color options
         color_canvas = tkinter.Canvas(color_canvas_container, borderwidth=0, highlightthickness=0, height=100)
-        color_canvas.pack(side="left", fill="both")
 
         # Container for Actual Color Rows and add to canvas
         color_row_container = ttk.Frame(color_canvas)
@@ -179,8 +177,9 @@ def load_palettes() -> None:
             color_checkbox.pack(side="left")
 
         # Set up scrollbar
-        vbar = tkinter.Scrollbar(color_canvas_container, orient="vertical", command=color_canvas.yview)
+        vbar = tkinter.Scrollbar(color_canvas_container, orient="vertical", command=color_canvas.yview, width=20)
         vbar.pack(side="right", fill="y")
+        color_canvas.pack(side="left", fill="both", expand=True)
         color_canvas.config(yscrollcommand=vbar.set)
 
         # Hide color container by default
