@@ -87,7 +87,6 @@ def load_palettes() -> None:
 
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
     # TODO: Expanding one palette section should collapse other palette sections
-    # TODO: Make color section scroll when clicking on color
     # TODO: Try to remove the arrows on the scrollbar
 
     # Itterate over palette files
@@ -189,6 +188,12 @@ def load_palettes() -> None:
         palette_label_container.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_canvas_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
         palette_status_arrow.bind("<Button-1>", lambda event, check=palette_checkbox, container=color_canvas_container, arrow=palette_status_arrow: toggle_color_container(event, check, container, arrow))
         color_row_container.bind("<Configure>", lambda event, canvas=color_canvas: canvas.config(scrollregion=canvas.bbox("all")))
+
+        # Allow scrolling with mouse over color section
+        def _on_mousewheel(event, canvas):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        color_canvas.bind("<Enter>", lambda e, c=color_canvas: c.bind_all("<MouseWheel>", lambda e: _on_mousewheel(e, c)))
+        color_canvas.bind("<Leave>", lambda e, c=color_canvas: c.unbind_all("<MouseWheel>"))
 
 
 ################
