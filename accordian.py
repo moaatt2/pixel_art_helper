@@ -20,6 +20,8 @@ class Accordion(Frame):
     def __init__(self, parent, accordion_style=None):
         Frame.__init__(self, parent)
 
+        self._images = []
+
         # if no style dict, assign default style
         if accordion_style:
             self.style = accordion_style
@@ -39,7 +41,8 @@ class Accordion(Frame):
         row = 0
         
         for c in chords:
-            i = PhotoImage() # blank image to force Label to use pixel size
+            i = PhotoImage(master=self) # blank image to force Label to use pixel size
+            self._images.append(i)
             label = Label(self, text=c.title,
                           image=i,
                           compound='center',
