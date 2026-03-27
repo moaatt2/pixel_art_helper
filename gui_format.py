@@ -29,6 +29,30 @@ window = tkinter.Tk()
 window.title("Chainmail Inlay Helper")
 window.geometry("600x600")
 
+
+#################
+### Set Style ###
+#################
+
+# Intitialize styles
+style = ttk.Style()
+
+# Set style for the scrollbar
+style.layout("Palette.Vertical.TScrollbar",
+    [
+        ("Vertical.Scrollbar.trough", {
+            "children": [
+                ("Vertical.Scrollbar.thumb", {
+                    "expand": "1",
+                    "sticky": "nswe"
+                })
+            ],
+            "sticky": "ns"
+        })
+    ]
+)
+
+
 #################
 ### Functions ###
 #################
@@ -87,7 +111,7 @@ def load_palettes() -> None:
 
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
     # TODO: Expanding one palette section should collapse other palette sections
-    # TODO: Try to remove the arrows on the scrollbar
+    # TODO: Remove the white line beside the scrollbar
 
     # Itterate over palette files
     for path in glob.glob("palettes/*.json"):
@@ -176,7 +200,7 @@ def load_palettes() -> None:
             color_checkbox.pack(side="left")
 
         # Set up scrollbar
-        vbar = tkinter.Scrollbar(color_canvas_container, orient="vertical", command=color_canvas.yview, width=20)
+        vbar = ttk.Scrollbar(color_canvas_container, orient="vertical", command=color_canvas.yview, style="Palette.Vertical.TScrollbar")
         vbar.pack(side="right", fill="y")
         color_canvas.pack(side="left", fill="both", expand=True)
         color_canvas.config(yscrollcommand=vbar.set)
