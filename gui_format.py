@@ -112,6 +112,7 @@ def load_palettes() -> None:
     # TODO: Only disable color checkboxes when the palette is disabled, not hide the whole section
     # TODO: Expanding one palette section should collapse other palette sections
     # TODO: Remove the white line beside the scrollbar
+    # TODO: Mousing over scrollbar breaks ability to scroll palette section with mouse not over scrollbar
 
     # Itterate over palette files
     for path in glob.glob("palettes/*.json"):
