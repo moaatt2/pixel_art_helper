@@ -1,15 +1,25 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+from random import randint
 
 # Setup class for main window
 class main_window(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # Set Window title
         self.setWindowTitle("Pixel Art Helper")
 
-        button = QPushButton("Click me")
+        # Set window size
+        self.setMinimumSize(600, 600)
 
-        self.setCentralWidget(button)
+        # Add button to window
+        self.button = QPushButton("Click for new random value: 0")
+        self.button.clicked.connect(self.button_pressed)
+
+        self.setCentralWidget(self.button)
+
+    def button_pressed(self):
+        self.button.setText(f"Click for new random value: {randint(0, 100)}")
 
 
 # Create application instance
