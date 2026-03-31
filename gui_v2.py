@@ -45,6 +45,30 @@ class main_window(QMainWindow):
         self.setCentralWidget(container)
 
 
+# Testing of overiding mouse event functions
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        self.label = QLabel()
+        self.setCentralWidget(self.label)
+
+    def mouseMovedEvent(self, event):
+        self.label.setText("Mouse Moved")
+
+    def mousePressEvent(self, event):
+        self.label.setText("Mouse Pressed")
+
+    def mouseReleaseEvent(self, event):
+        self.label.setText("Mouse Released")
+
+    def mouseDoubleClickEvent(self, event):
+        self.label.setText("Double Clicked")
+
+
 # Create application instance
 app = QApplication([])
 
