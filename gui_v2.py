@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget
 from random import randint
 
 # Setup class for main window
@@ -20,6 +20,29 @@ class main_window(QMainWindow):
 
     def button_pressed(self):
         self.button.setText(f"Click for new random value: {randint(0, 100)}")
+
+
+# Testing of directly wiring one widget to another
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        self.label = QLabel()
+
+        self.input = QLineEdit()
+        self.input.textChanged.connect(self.label.setText)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.input)
+        layout.addWidget(self.label)
+
+        container = QWidget()
+        container.setLayout(layout)
+
+        self.setCentralWidget(container)
 
 
 # Create application instance
