@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
 from random import randint
 
 # Setup class for main window
@@ -63,7 +64,14 @@ class main_window(QMainWindow):
         self.label.setText("Mouse Pressed")
 
     def mouseReleaseEvent(self, event):
-        self.label.setText("Mouse Released")
+        if event.button() == Qt.LeftButton:
+            self.label.setText("Left Button Released")
+        elif event.button() == Qt.RightButton:
+            self.label.setText("Right Button Released")
+        elif event.button() == Qt.MiddleButton:
+            self.label.setText("Middle Button Released")
+        else:
+            self.label.setText("Other Button Released")
 
     def mouseDoubleClickEvent(self, event):
         self.label.setText("Double Clicked")
