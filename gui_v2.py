@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget
+from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 from random import randint
 
@@ -76,6 +77,18 @@ class main_window(QMainWindow):
     def mouseDoubleClickEvent(self, event):
         self.label.setText("Double Clicked")
 
+
+# Test Displaying an image
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        self.label = QLabel()
+        self.label.setPixmap(QPixmap("test_images/source_images/exdeath.bmp"))
+        self.setCentralWidget(self.label)
 
 # Create application instance
 app = QApplication([])
