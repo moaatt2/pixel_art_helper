@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QColor, QPalette
 from PySide6.QtCore import Qt
 from random import randint
 
@@ -115,6 +115,28 @@ class main_window(QMainWindow):
 
         self.setCentralWidget(container)
 
+
+# Helper class to display a solid color window
+class Color(QWidget):
+    def __init__(self, color):
+        super().__init__()
+        self.setAutoFillBackground(True)
+
+        pallette = self.palette()
+        pallette.setColor(QPalette.Window, QColor(color))
+        self.setPalette(pallette)
+
+
+# Layout testing class
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        widget = Color("red")
+        self.setCentralWidget(widget)
 
 # Create application instance
 app = QApplication([])
