@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 from random import randint
@@ -89,6 +89,32 @@ class main_window(QMainWindow):
         self.label = QLabel()
         self.label.setPixmap(QPixmap("test_images/source_images/exdeath.bmp"))
         self.setCentralWidget(self.label)
+
+
+# Test Checkboxes
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        self.checkbox1 = QCheckBox("Option 1")
+        self.checkbox2 = QCheckBox("Option 2")
+        self.checkbox3 = QCheckBox("Option 3")
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.checkbox1)
+        layout.addWidget(self.checkbox2)
+        layout.addWidget(self.checkbox3)
+
+        self.checkbox1.setCheckState(Qt.CheckState.PartiallyChecked)
+
+        container = QWidget()
+        container.setLayout(layout)
+
+        self.setCentralWidget(container)
+
 
 # Create application instance
 app = QApplication([])
