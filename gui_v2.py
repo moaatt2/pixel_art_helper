@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout
 from PySide6.QtGui import QPixmap, QColor, QPalette
 from PySide6.QtCore import Qt
 from random import randint
@@ -137,6 +137,45 @@ class main_window(QMainWindow):
 
         widget = Color("red")
         self.setCentralWidget(widget)
+    
+
+# QVbox layout test
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        layout = QVBoxLayout()
+        layout.addWidget(Color("red"))
+        layout.addWidget(Color("green"))
+        layout.addWidget(Color("blue"))
+
+        container = QWidget()
+        container.setLayout(layout)
+
+        self.setCentralWidget(container)
+
+
+# QHbox layout test
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        layout = QHBoxLayout()
+        layout.addWidget(Color("red"))
+        layout.addWidget(Color("green"))
+        layout.addWidget(Color("blue"))
+
+        container = QWidget()
+        container.setLayout(layout)
+
+        self.setCentralWidget(container)
+
 
 # Create application instance
 app = QApplication([])
