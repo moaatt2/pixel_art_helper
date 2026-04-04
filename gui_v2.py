@@ -193,6 +193,42 @@ class main_window(QMainWindow):
         context.exec(event.globalPos())
 
 
+# Test Nested Layouts
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        c1 = QVBoxLayout()
+        c1.addWidget(Color("red"))
+        c1.addWidget(Color("green"))
+        c1.addWidget(Color("blue"))
+
+        c2 = QVBoxLayout()
+        c2.addWidget(Color("blue"))
+        c2.addWidget(Color("red"))
+        c2.addWidget(Color("green"))
+
+        c3 = QVBoxLayout()
+        c3.addWidget(Color("green"))
+        c3.addWidget(Color("blue"))
+        c3.addWidget(Color("red"))
+
+        
+        main_layout = QHBoxLayout()
+        main_layout.addLayout(c1)
+        main_layout.addLayout(c2)
+        main_layout.addLayout(c3)
+        main_layout.addWidget(Color("yellow"))
+
+        container = QWidget()
+        container.setLayout(main_layout)
+
+        self.setCentralWidget(container)
+
+
 # Create application instance
 app = QApplication([])
 
