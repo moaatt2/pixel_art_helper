@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout
-from PySide6.QtGui import QPixmap, QColor, QPalette
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu
+from PySide6.QtGui import QPixmap, QColor, QPalette, QAction
 from PySide6.QtCore import Qt
 from random import randint
 
@@ -175,6 +175,22 @@ class main_window(QMainWindow):
         container.setLayout(layout)
 
         self.setCentralWidget(container)
+
+
+# Test Context Menus
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+    
+    def contextMenuEvent(self, event):
+        context = QMenu(self)
+        context.addAction(QAction("Option 1", self))
+        context.addAction(QAction("Option 2", self))
+        context.addAction(QAction("Option 3", self))
+        context.exec(event.globalPos())
 
 
 # Create application instance
