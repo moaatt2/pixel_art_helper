@@ -319,6 +319,51 @@ class main_window(QMainWindow):
         self.setCentralWidget(widget)
 
 
+# Use Qstacked Widget to create a tabbed interface
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        # Create Stacked layout for color layers
+        color_layout = QStackedLayout()
+        color_layout.addWidget(Color("red"))
+        color_layout.addWidget(Color("green"))
+        color_layout.addWidget(Color("blue"))
+        color_layout.addWidget(Color("yellow"))
+
+
+        # Create Hbox layout for buttons to switch between color layers
+        button_layout = QHBoxLayout()
+        red_button = QPushButton("Red")
+        red_button.pressed.connect(lambda: color_layout.setCurrentIndex(0))
+        button_layout.addWidget(red_button)
+
+        green_button = QPushButton("Green")
+        green_button.pressed.connect(lambda: color_layout.setCurrentIndex(1))
+        button_layout.addWidget(green_button)
+
+        blue_button = QPushButton("Blue")
+        blue_button.pressed.connect(lambda: color_layout.setCurrentIndex(2))
+        button_layout.addWidget(blue_button)
+
+        yellow_button = QPushButton("Yellow")
+        yellow_button.pressed.connect(lambda: color_layout.setCurrentIndex(3))
+        button_layout.addWidget(yellow_button)
+
+
+        # Create toplevel Vbox to store buttons on top of colors
+        layout = QVBoxLayout()
+        layout.addLayout(button_layout)
+        layout.addLayout(color_layout)
+
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
+
+
 # Create application instance
 app = QApplication([])
 
