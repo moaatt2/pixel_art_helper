@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction
 from PySide6.QtCore import Qt
 from random import randint
@@ -267,6 +267,56 @@ class main_window(QMainWindow):
         container.setLayout(main_layout)
 
         self.setCentralWidget(container)
+
+
+# Test Grid Layout
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        # Intialize grid layout
+        layout = QGridLayout()
+
+        # # Grid layout removes unused rows/columns
+        # layout.addWidget(Color("red"), 3, 3)
+        # layout.addWidget(Color("green"), 0, 0)
+        # layout.addWidget(Color("blue"), 3, 0)
+        # layout.addWidget(Color("yellow"), 0, 3)
+
+        # Basic layout using all columns/rows
+        layout.addWidget(Color("red"), 3, 3)
+        layout.addWidget(Color("green"), 2, 1)
+        layout.addWidget(Color("blue"), 1, 2)
+        layout.addWidget(Color("yellow"), 0, 0)
+
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
+
+
+# Test QStacked Layout
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        layout = QStackedLayout()
+
+        layout.addWidget(Color("red"))
+        layout.addWidget(Color("green"))
+        layout.addWidget(Color("blue"))
+        layout.addWidget(Color("yellow"))
+
+        layout.setCurrentIndex(3)
+
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
 
 
 # Create application instance
