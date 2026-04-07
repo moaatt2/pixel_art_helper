@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget
-from PySide6.QtGui import QPixmap, QColor, QPalette, QAction
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar
+from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
+from PySide6.QtCore import Qt, QSize
 from random import randint
 
 # Setup class for main window
@@ -379,6 +379,28 @@ class main_window(QMainWindow):
             tabs.addTab(Color(c), c.capitalize())
 
         self.setCentralWidget(tabs)
+
+
+# Add a toolbar
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()  
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        toolbar = QToolBar("Example Toolbar")
+        toolbar.setMovable(False)
+        self.addToolBar(toolbar)
+
+        button_action = QAction("Test Button", self)
+        button_action.setStatusTip("This is a test button")
+        button_action.triggered.connect(lambda: self.toolbar_button_clicked("Test Button"))
+        toolbar.addAction(button_action)
+
+    def toolbar_button_clicked(self, s):
+        print("Toolbar button clicked", s)
+
 
 
 # Create application instance
