@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction
 from PySide6.QtCore import Qt
 from random import randint
@@ -362,6 +362,23 @@ class main_window(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
+
+
+# Use QTabWidget to create a tabbed interface
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        tabs = QTabWidget()
+        tabs.setTabPosition(QTabWidget.TabPosition.East)
+        tabs.setMovable(True)
+        for c in ["red", "green", "blue", "yellow"]:
+            tabs.addTab(Color(c), c.capitalize())
+
+        self.setCentralWidget(tabs)
 
 
 # Create application instance
