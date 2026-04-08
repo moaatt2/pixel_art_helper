@@ -396,10 +396,21 @@ class main_window(QMainWindow):
         button_action = QAction("Test Button", self)
         button_action.setStatusTip("This is a test button")
         button_action.triggered.connect(lambda: self.toolbar_button_clicked("Test Button"))
+        button_action.setCheckable(True)
         toolbar.addAction(button_action)
+
+        bug_report = QAction(QIcon("test_images/source_images/exdeath.bmp"), "Report a Bug", self)
+        bug_report.setStatusTip("Report a bug to the developer")
+        bug_report.triggered.connect(self.bug_report_clicked)
+        toolbar.addAction(bug_report)
+
+        self.setStatusBar(QStatusBar(self))
 
     def toolbar_button_clicked(self, s):
         print("Toolbar button clicked", s)
+    
+    def bug_report_clicked(self):
+        print("Bug Reported")
 
 
 
