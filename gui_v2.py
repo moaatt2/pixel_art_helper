@@ -417,11 +417,21 @@ class main_window(QMainWindow):
 
         self.setStatusBar(QStatusBar(self))
 
+        menu = self.menuBar()
+        file_menu = menu.addMenu("&File")
+        file_menu.addAction(button_action)
+
+        submenu = file_menu.addMenu("Submenu")
+        submenu.addAction(button_action)
+
+
     def toolbar_button_clicked(self, s):
         print("Toolbar button clicked", s)
     
     def bug_report_clicked(self):
         print("Bug Reported")
+
+
 
 
 
