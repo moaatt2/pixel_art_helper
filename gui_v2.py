@@ -399,10 +399,21 @@ class main_window(QMainWindow):
         button_action.setCheckable(True)
         toolbar.addAction(button_action)
 
+        toolbar.addSeparator()
+
         bug_report = QAction(QIcon("test_images/source_images/exdeath.bmp"), "Report a Bug", self)
         bug_report.setStatusTip("Report a bug to the developer")
         bug_report.triggered.connect(self.bug_report_clicked)
         toolbar.addAction(bug_report)
+
+        toolbar.addSeparator()
+
+        toolbar.addWidget(QLabel("Toolbar Label"))
+        toolbar.addWidget(QCheckBox())
+
+        toolbar.addSeparator()
+
+        toolbar.addWidget(QLineEdit("Toolbar Input"))
 
         self.setStatusBar(QStatusBar(self))
 
