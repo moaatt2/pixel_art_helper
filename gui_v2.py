@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
 from PySide6.QtCore import Qt, QSize
 from random import randint
@@ -433,7 +433,46 @@ class main_window(QMainWindow):
         print("Bug Reported")
 
 
+# Custom dialog class
+class CustomDialog(QDialog):
+    def __init__(self):
+        super().__init__()
 
+        self.setWindowTitle("Custom Dialog")
+
+        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+
+        self.button_box = QDialogButtonBox(buttons)
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("Something Important Happened"))
+        layout.addWidget(self.button_box)
+        self.setLayout(layout)
+
+
+# Test Dialog Boxes
+class main_window(QMainWindow):
+    def __init__(self):
+        super().__init__()  
+
+        # Set Window title
+        self.setWindowTitle("Pixel Art Helper")
+
+        button = QPushButton("Click me for a dialog")
+        button.clicked.connect(self.button_clicked)
+        self.setCentralWidget(button)
+
+
+    def button_clicked(self):
+        print("Button Clicked")
+
+        dialog = CustomDialog()
+        if dialog.exec():
+            print("Dialog Accepted")
+        else:
+            print("Dialog Rejected")
 
 
 # Create application instance
