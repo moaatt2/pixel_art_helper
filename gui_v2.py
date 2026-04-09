@@ -397,6 +397,7 @@ class main_window(QMainWindow):
         button_action.setStatusTip("This is a test button")
         button_action.triggered.connect(lambda: self.toolbar_button_clicked("Test Button"))
         button_action.setCheckable(True)
+        button_action.setShortcut(QKeySequence("Ctrl+T"))
         toolbar.addAction(button_action)
 
         toolbar.addSeparator()
