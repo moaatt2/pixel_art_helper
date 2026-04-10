@@ -454,8 +454,8 @@ class CustomDialog(QDialog):
 
 # Dialog for accepting or rejecting something with title/message set when called
 class AcceptRejectDialog(QDialog):
-    def __init__(self, title, message):
-        super().__init__()
+    def __init__(self, title, message, parent=None):
+        super().__init__(parent)
 
         self.setWindowTitle(title)
 
@@ -489,7 +489,7 @@ class main_window(QMainWindow):
         print("Button Clicked")
 
         # dialog = CustomDialog()
-        dialog = AcceptRejectDialog("Important Question", "Do you want to proceed?")
+        dialog = AcceptRejectDialog("Important Question", "Do you want to proceed?", self)
         if dialog.exec():
             print("Dialog Accepted")
         else:
