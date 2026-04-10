@@ -452,6 +452,25 @@ class CustomDialog(QDialog):
         self.setLayout(layout)
 
 
+# Dialog for accepting or rejecting something with title/message set when called
+class AcceptRejectDialog(QDialog):
+    def __init__(self, title, message):
+        super().__init__()
+
+        self.setWindowTitle(title)
+
+        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+
+        self.button_box = QDialogButtonBox(buttons)
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(message))
+        layout.addWidget(self.button_box)
+        self.setLayout(layout)
+
+
 # Test Dialog Boxes
 class main_window(QMainWindow):
     def __init__(self):
@@ -462,13 +481,15 @@ class main_window(QMainWindow):
 
         button = QPushButton("Click me for a dialog")
         button.clicked.connect(self.button_clicked)
+        button.setShortcut(QKeySequence("Ctrl+Shift+T"))
         self.setCentralWidget(button)
 
 
     def button_clicked(self):
         print("Button Clicked")
 
-        dialog = CustomDialog()
+        # dialog = CustomDialog()
+        dialog = AcceptRejectDialog("Important Question", "Do you want to proceed?")
         if dialog.exec():
             print("Dialog Accepted")
         else:
