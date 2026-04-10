@@ -499,6 +499,8 @@ class main_window(QMainWindow):
         dialog = QMessageBox(self)
         dialog.setWindowTitle("Message Box")
         dialog.setText("This is a message box")
+        dialog.setIcon(QMessageBox.Question)
+        dialog.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
 
         button = dialog.exec()
         if button == QMessageBox.Ok:
