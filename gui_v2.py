@@ -495,18 +495,27 @@ class main_window(QMainWindow):
     #     else:
     #         print("Dialog Rejected")
 
-    def button_clicked(self):
-        dialog = QMessageBox(self)
-        dialog.setWindowTitle("Message Box")
-        dialog.setText("This is a message box")
-        dialog.setIcon(QMessageBox.Question)
-        dialog.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    # def button_clicked(self):
+    #     dialog = QMessageBox(self)
+    #     dialog.setWindowTitle("Message Box")
+    #     dialog.setText("This is a message box")
+    #     dialog.setIcon(QMessageBox.Question)
+    #     dialog.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
 
-        button = dialog.exec()
-        if button == QMessageBox.Ok:
-            print("Alright")
+    #     button = dialog.exec()
+    #     if button == QMessageBox.Ok:
+    #         print("Alright")
+    #     else:
+    #         print("Oh")
+
+    def button_clicked(self):
+        button = QMessageBox.question(self, "Question", "Do you want to proceed?")
+        if button == QMessageBox.Yes:
+            print("Yes")
+        elif button == QMessageBox.No:
+            print("No")
         else:
-            print("Oh")
+            print("Cancel")
 
 
 # Create application instance
