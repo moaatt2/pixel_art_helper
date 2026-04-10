@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
 from PySide6.QtCore import Qt, QSize
 from random import randint
@@ -485,15 +485,26 @@ class main_window(QMainWindow):
         self.setCentralWidget(button)
 
 
-    def button_clicked(self):
-        print("Button Clicked")
+    # def button_clicked(self):
+    #     print("Button Clicked")
 
-        # dialog = CustomDialog()
-        dialog = AcceptRejectDialog("Important Question", "Do you want to proceed?", self)
-        if dialog.exec():
-            print("Dialog Accepted")
+    #     # dialog = CustomDialog()
+    #     dialog = AcceptRejectDialog("Important Question", "Do you want to proceed?", self)
+    #     if dialog.exec():
+    #         print("Dialog Accepted")
+    #     else:
+    #         print("Dialog Rejected")
+
+    def button_clicked(self):
+        dialog = QMessageBox(self)
+        dialog.setWindowTitle("Message Box")
+        dialog.setText("This is a message box")
+
+        button = dialog.exec()
+        if button == QMessageBox.Ok:
+            print("Alright")
         else:
-            print("Dialog Rejected")
+            print("Oh")
 
 
 # Create application instance
