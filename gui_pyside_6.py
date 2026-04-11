@@ -109,8 +109,8 @@ class main_window(QMainWindow):
             print(f"Selected file: {file_name}")
 
             # Load the selected image into the image container
-            pixmap = QPixmap(file_name)
-            self.image_container.setPixmap(pixmap)
+            self.image = QPixmap(file_name)
+            self.image_container.setPixmap(self.image.scaled(self.image_container.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
 
     # Placeholder for save file functionality
