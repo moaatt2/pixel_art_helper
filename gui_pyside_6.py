@@ -89,9 +89,9 @@ class main_window(QMainWindow):
 
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
-    
-    
-    # Placeholder for open file functionality
+
+
+    # On open button, create file dialog, load selected image, display image in container
     def open(self):
         print("Open File")
 
