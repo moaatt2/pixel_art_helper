@@ -2,6 +2,18 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QL
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
 from PySide6.QtCore import Qt, QSize
 
+
+# Helper class to display a solid color window
+class Color(QWidget):
+    def __init__(self, color):
+        super().__init__()
+        self.setAutoFillBackground(True)
+
+        pallette = self.palette()
+        pallette.setColor(QPalette.Window, QColor(color))
+        self.setPalette(pallette)
+
+
 # Main Window Class
 class main_window(QMainWindow):
     def __init__(self):
@@ -53,6 +65,27 @@ class main_window(QMainWindow):
         reload_action.setStatusTip("Reload the color palettes")
         file_menu.addAction(reload_action)
 
+
+        # Create Side Menu
+        self.side_menu = QWidget(self)
+
+        # Initialize Image Container
+        self.image_container = QLabel("Press Ctrl+O to open an image", self)
+        self.image_container.setAlignment(Qt.AlignCenter)
+
+        # Create Main Layout
+        main_layout = QHBoxLayout()
+
+        # Add side menu and make it take 1/4 of the space
+        main_layout.addWidget(self.side_menu, 1)
+
+        # Add image container and make it take 3/4 of the space
+        main_layout.addWidget(self.image_container, 3)
+
+
+        # Add Widget with layout to window
+        self.setCentralWidget(QWidget(self))
+        self.centralWidget().setLayout(main_layout)
 
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
