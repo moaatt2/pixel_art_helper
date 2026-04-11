@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox, QFileDialog
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
 from PySide6.QtCore import Qt, QSize
 
@@ -94,6 +94,23 @@ class main_window(QMainWindow):
     # Placeholder for open file functionality
     def open(self):
         print("Open File")
+
+        # Create File Dialog
+        file_dialog = QFileDialog(self)
+
+        # File Dialog Settings
+        file_dialog.setViewMode(QFileDialog.List)
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+        file_dialog.setNameFilter("Images (*.png *.jpg *.bmp)")
+ 
+        # Execute File Dialog and get selected file
+        if file_dialog.exec():
+            file_name = file_dialog.selectedFiles()[0]
+            print(f"Selected file: {file_name}")
+
+            # Load the selected image into the image container
+            pixmap = QPixmap(file_name)
+            self.image_container.setPixmap(pixmap)
 
 
     # Placeholder for save file functionality
