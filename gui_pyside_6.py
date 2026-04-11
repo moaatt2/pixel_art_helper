@@ -14,6 +14,38 @@ class Color(QWidget):
         self.setPalette(pallette)
 
 
+# Helper accordian widget
+class Accordian(QWidget):
+    def __init__(self, title):
+        super().__init__()
+
+        # Create color section
+        self.content_section = QWidget()
+        self.content_section.setVisible(False)
+
+        # Add button
+        button = QPushButton(title)
+        button.clicked.connect(lambda: self.toggle_section(self.content_section))
+
+        # Create layout and add content
+        layout = QVBoxLayout()
+        layout.addWidget(button)
+        layout.addWidget(self.content_section)
+
+        # Apply layout to self
+        self.setLayout(layout)
+
+
+    def toggle_section(self, section:QWidget):
+        section.setVisible(not section.isVisible())
+
+
+    def set_content(self, content:QWidget):
+        layout = QVBoxLayout()
+        layout.addWidget(content)
+        self.content_section.setLayout(layout)
+
+
 # Main Window Class
 class main_window(QMainWindow):
     def __init__(self):
@@ -67,19 +99,19 @@ class main_window(QMainWindow):
         #################
 
         menu_layout = QVBoxLayout()
+        menu_layout.setAlignment(Qt.AlignTop)
 
-        # Create color section
-        color_section = Color("red")
+        palette_accordion = Accordian("Palettes")
+        menu_layout.addWidget(palette_accordion)
+        palette_accordion.set_content(QLabel("Palette content goes here"))
 
-        # Add button
-        button = QPushButton("Palette Options")
-        button.clicked.connect(lambda: self.toggle_section(color_section))
+        palette_accordion = Accordian("Image Options")
+        menu_layout.addWidget(palette_accordion)
+        palette_accordion.set_content(QLabel("Image options go here"))
 
-        # Add stuff to menu layout
-        menu_layout.addWidget(button)
-        menu_layout.addWidget(color_section)
-
-
+        palette_accordion = Accordian("Pattern Options")
+        menu_layout.addWidget(palette_accordion)
+        palette_accordion.set_content(QLabel("Pattern options go here"))
 
 
         # Create Side Menu
@@ -135,10 +167,6 @@ class main_window(QMainWindow):
             self.image_path = file_name
             self.image_container.setPixmap(self.image.scaled(self.image_container.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
-
-    def toggle_section(self, section:QWidget):
-        print("Toggle Section")
-        section.setVisible(not section.isVisible())
 
     # Placeholder for save file functionality
     def save(self):
