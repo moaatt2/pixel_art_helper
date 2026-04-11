@@ -110,6 +110,7 @@ class main_window(QMainWindow):
 
             # Load the selected image into the image container
             self.image = QPixmap(file_name)
+            self.image_path = file_name
             self.image_container.setPixmap(self.image.scaled(self.image_container.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
 
@@ -126,6 +127,13 @@ class main_window(QMainWindow):
     # Placeholder for reload palettes functionality
     def load_palettes(self):
         print("Reload Palettes")
+    
+
+    # Custom Resize Event to rescale image when window is resized
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, "image"):
+            self.image_container.setPixmap(self.image.scaled(self.image_container.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
 
 # Start Application
