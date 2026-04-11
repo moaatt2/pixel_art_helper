@@ -17,13 +17,9 @@ class Color(QWidget):
 # Main Window Class
 class main_window(QMainWindow):
     def __init__(self):
-        super().__init__()  
-
-        # Set Window title
-        self.setWindowTitle("Pixel Art Helper")
-
-        # Set Window Size
-        self.setMinimumSize(600, 600)
+        super().__init__()                      # Initialize super class
+        self.setWindowTitle("Pixel Art Helper") # Set Window title
+        self.setMinimumSize(600, 600)           # Set Window Size
 
 
         ################
@@ -66,22 +62,48 @@ class main_window(QMainWindow):
         file_menu.addAction(reload_action)
 
 
+        #################
+        ### Side Menu ###
+        #################
+
+        menu_layout = QVBoxLayout()
+
+        # Create color section
+        color_section = Color("red")
+
+        # Add button
+        button = QPushButton("Palette Options")
+        button.clicked.connect(lambda: self.toggle_section(color_section))
+
+        # Add stuff to menu layout
+        menu_layout.addWidget(button)
+        menu_layout.addWidget(color_section)
+
+
+
+
         # Create Side Menu
         self.side_menu = QWidget(self)
+        self.side_menu.setLayout(menu_layout)
 
-        # Initialize Image Container
+
+
+
+        #############################
+        ### Setup Image Container ###
+        #############################
+
         self.image_container = QLabel("Press Ctrl+O to open an image", self)
         self.image_container.setAlignment(Qt.AlignCenter)
 
-        # Create Main Layout
-        main_layout = QHBoxLayout()
 
-        # Add side menu and make it take 1/4 of the space
-        main_layout.addWidget(self.side_menu, 1)
+        ##########################
+        ### Create Main Layout ###
+        ##########################
 
-        # Add image container and make it take 3/4 of the space
-        main_layout.addWidget(self.image_container, 3)
-
+        main_layout = QHBoxLayout()                    # Initialize Layout
+        main_layout.addWidget(self.side_menu, 1)       # Add side menu and make it take 1/4 of the space
+        main_layout.addWidget(self.image_container, 3) # Add image container and make it take 3/4 of the space
 
         # Add Widget with layout to window
         self.setCentralWidget(QWidget(self))
@@ -113,6 +135,10 @@ class main_window(QMainWindow):
             self.image_path = file_name
             self.image_container.setPixmap(self.image.scaled(self.image_container.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
+
+    def toggle_section(self, section:QWidget):
+        print("Toggle Section")
+        section.setVisible(not section.isVisible())
 
     # Placeholder for save file functionality
     def save(self):
