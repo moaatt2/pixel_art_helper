@@ -3,7 +3,7 @@ import json
 from PIL import Image
 from pprint import pprint
 
-from test import resize_image
+from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage
@@ -261,14 +261,17 @@ class main_window(QMainWindow):
         # Euclidian Distance
         ed = QPushButton("Use Euclidean Distance")
         palette_application_layout.addWidget(ed)
+        ed.clicked.connect(lambda: self.apply_palette("Euclidean"))
 
         # CIE LAB ΔE 1976
         de_76 = QPushButton("Use ΔE 1976")
         palette_application_layout.addWidget(de_76)
+        de_76.clicked.connect(lambda: self.apply_palette("delta_e_76"))
 
         # CIE LAB ΔE 2000
         de_00 = QPushButton("Use ΔE 2000")
         palette_application_layout.addWidget(de_00)
+        de_00.clicked.connect(lambda: self.apply_palette("delta_e_00"))
 
         # Add Buttons to accordian
         palette_application_accordian.set_content(palette_application)
@@ -578,6 +581,40 @@ class main_window(QMainWindow):
             self.image_preview = pil_to_pixmap(self.image)
 
             # Ensure the screen updates
+            self.update_image()
+
+
+    # Apply palette to image
+    def apply_palette(self, function: str) -> None:
+        print(f"Apply palette called with function: {function}")
+
+        if self.image is not None:
+
+            # Get Palette
+            palette = dict()
+            for palette_name in self.palettes.keys():
+                if self.palettes[palette_name]["enabled"]:
+                   for color in self.palettes[palette_name]["colors"].keys():
+                       if self.palettes[palette_name]["colors"][color]["enabled"]:
+                           palette[f"{palette_name}_{color}"] = self.palettes[palette_name]["colors"][color]["rgb"]
+            
+            # Warn user if palette is empty
+            if len(palette) < 1:
+                QMessageBox.critical(self, "Empty Palette", "Your palette doesn't have any colors, please select at least one to continue.")
+                return None
+
+            # Apply palette
+            if function == "Euclidean":
+                self.image = apply_palette(palette, self.image, closest_color_euclidean, "rgb")
+            elif function == "delta_e_76":
+                self.image = apply_palette(palette, self.image, closest_color_cie_76, "cielab")
+            elif function == "delta_e_00":
+                self.image = apply_palette(palette, self.image, closest_color_cie_00, "cielab")
+
+            # Update Preview
+            self.image_preview = pil_to_pixmap(self.image)
+
+            # Ensure screen updates
             self.update_image()
 
 
