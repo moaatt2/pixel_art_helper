@@ -35,6 +35,8 @@ class Accordian(QWidget):
 
         # Set a fixed layout to add widgets to the content section
         self.content_layout = QVBoxLayout(self.content_section)
+        self.content_layout.setContentsMargins(0,0,0,0)
+        self.content_layout.setSpacing(0)
 
         # Add button
         button = QPushButton(title)
@@ -45,6 +47,7 @@ class Accordian(QWidget):
         layout.addWidget(button)
         layout.addWidget(self.content_section)
         layout.setContentsMargins(0,0,0,0)
+        layout.setSpacing(0)
 
         # Apply layout to self
         self.setLayout(layout)
@@ -166,7 +169,7 @@ class main_window(QMainWindow):
         # Create widget for image options
         image_options = QWidget()
         image_options_layout = QVBoxLayout(image_options)
-        image_options_layout.setContentsMargins(0,0,0,0)
+        image_options_layout.setContentsMargins(20,0,0,0)
         image_options_layout.setSpacing(0)
 
         # Resize
@@ -306,7 +309,7 @@ class main_window(QMainWindow):
         # Create container for all palette options sections
         palette_options = QWidget()
         palette_options_layout = QVBoxLayout(palette_options)
-        palette_options_layout.setContentsMargins(0,0,0,0)
+        palette_options_layout.setContentsMargins(20,0,0,0)
         palette_options_layout.setSpacing(0)
 
         # Create Palette Widget for each palette
