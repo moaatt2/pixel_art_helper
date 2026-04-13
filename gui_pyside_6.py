@@ -2,7 +2,7 @@ import glob
 import json
 from pprint import pprint
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence
 from PySide6.QtCore import Qt, QSize
 
@@ -175,7 +175,6 @@ class main_window(QMainWindow):
         # Resize
         resize_accordian = Accordian("Resize Image")
         image_options_layout.addWidget(resize_accordian)
-        resize_accordian.set_content(QLabel("Resize options go here"))
 
         # Rotate
         rotate_accordian = Accordian("Rotate Image")
@@ -185,7 +184,6 @@ class main_window(QMainWindow):
         # Apply Palette
         palette_application_accordian = Accordian("Apply Palette to Image")
         image_options_layout.addWidget(palette_application_accordian)
-        palette_application_accordian.set_content(QLabel("Palette Application options go here"))
 
         # Set Image accordian content
         image_accordion.set_content(image_options)
@@ -195,7 +193,39 @@ class main_window(QMainWindow):
         ### Resize Section ###
         ######################
 
-        # TODO
+        # Create Resize Section Widget
+        resize_section = QWidget()
+        resize_section_layout = QVBoxLayout(resize_section)
+        resize_section_layout.setContentsMargins(20,0,0,0)
+        resize_section_layout.setSpacing(0)
+
+        # Height Multiplier
+        height_mult = QWidget()
+        height_mult_layout = QHBoxLayout(height_mult)
+        height_mult_layout.setContentsMargins(0,0,0,0)
+        height_mult_layout.addWidget(QLabel("Height Multiplier:"))
+        height_mult_val = QSpinBox()
+        height_mult_val.setMinimum(1)
+        height_mult_layout.addWidget(height_mult_val)
+        resize_section_layout.addWidget(height_mult)
+
+        # Width Multiplier
+        width_mult = QWidget()
+        width_mult_layout = QHBoxLayout(width_mult)
+        width_mult_layout.setContentsMargins(0,0,0,0)
+        width_mult_layout.addWidget(QLabel("Width Multiplier: "))
+        width_mult_val = QSpinBox()
+        width_mult_val.setMinimum(1)
+        width_mult_layout.addWidget(width_mult_val)
+        resize_section_layout.addWidget(width_mult)
+
+        # Apply Button
+        apply = QPushButton("Apply")
+        apply.clicked.connect(lambda checked, h=height_mult_val.value(), w=width_mult_val.value(): self.resize_image(h, w))
+        resize_section_layout.addWidget(apply)
+
+        # Add resize section to accordian
+        resize_accordian.set_content(resize_section)
 
 
         ######################
@@ -520,6 +550,11 @@ class main_window(QMainWindow):
                         Qt.SmoothTransformation
                     )
                 )
+
+
+    # Function to resize the image
+    def resize_image(self, height_mult, width_mult):
+        pass
 
 
 # Start Application
