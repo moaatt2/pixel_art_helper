@@ -68,7 +68,7 @@ class main_window(QMainWindow):
     def __init__(self):
         super().__init__()                      # Initialize super class
         self.setWindowTitle("Pixel Art Helper") # Set Window title
-        self.setMinimumSize(600, 600)           # Set Window Size
+        self.setMinimumSize(900, 600)           # Set Window Size
 
         # Intialize instance variables
         self.palettes = dict()
@@ -290,8 +290,8 @@ class main_window(QMainWindow):
 
         color_section = QWidget()
         color_section_layout = QVBoxLayout(color_section)
-        color_section_layout.setContentsMargins(30,0,0,0)
-        color_section_layout.setSpacing(2)
+        color_section_layout.setContentsMargins(3,3,0,0) # 30
+        color_section_layout.setSpacing(3)
 
 
         # Itterate over colors
@@ -324,11 +324,18 @@ class main_window(QMainWindow):
         color_scroll.setWidget(color_section)
 
         # Scroll area settings
-        color_scroll.setFixedHeight(110)
+        color_scroll.setFixedHeight(120)
         color_scroll.setWidgetResizable(True)
         color_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         color_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         color_scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        # Set Horizontal offset of scroll area and header
+        scroll_container = QWidget()
+        scroll_layout = QVBoxLayout(scroll_container)
+        scroll_layout.setContentsMargins(30,0,0,0)
+        scroll_layout.setSpacing(0)
+        scroll_layout.addWidget(color_scroll)
 
         ##########################
         ### Join Header & Body ###
@@ -340,7 +347,7 @@ class main_window(QMainWindow):
         palette_layout.setSpacing(0)
 
         palette_layout.addWidget(header)
-        palette_layout.addWidget(color_scroll)
+        palette_layout.addWidget(scroll_container)
 
         self.palette_accordion.set_content(palette_widget)
 
@@ -358,6 +365,7 @@ class main_window(QMainWindow):
     def exit(self):
         # TODO: Check for unsaved work and ask if user is sure
         QApplication.instance().quit()
+
 
     # Resize image preview based on available space
     def update_image(self):
