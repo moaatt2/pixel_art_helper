@@ -451,6 +451,13 @@ def estimate_size_f(filename: str, gauge: int, gauge_system: str, internal_diame
         return estimate_size(img, gauge, gauge_system, internal_diameter, units)
 
 
+################
+### Use case ###
+################
+
+# apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite.bmp", closest_color_euclidean, "rgb")
+# apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite_2x2.bmp", closest_color_euclidean, "rgb")
+
 
 #############
 ### Tests ###
