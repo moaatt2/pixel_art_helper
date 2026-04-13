@@ -191,6 +191,9 @@ class main_window(QMainWindow):
         # Set splitter as central widget
         self.setCentralWidget(splitter)
 
+        # Instantiate Data
+        self.load_palettes()
+
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
 
