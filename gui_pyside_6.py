@@ -106,6 +106,13 @@ class main_window(QMainWindow):
         reload_action.setStatusTip("Reload the color palettes")
         file_menu.addAction(reload_action)
 
+        # Add Exit action
+        file_menu.addSeparator()
+        exit_action = QAction("&Exit", self)
+        exit_action.triggered.connect(self.exit)
+        exit_action.setShortcut(QKeySequence("Ctrl+W"))
+        exit_action.setStatusTip("Exit the application")
+        file_menu.addAction(exit_action)
 
         #################
         ### Side Menu ###
@@ -249,6 +256,11 @@ class main_window(QMainWindow):
         super().resizeEvent(event)
         self.update_image()
 
+
+    # Function to safely quit the application
+    def exit(self):
+        # TODO: Check for unsaved work and ask if user is sure
+        QApplication.instance().quit()
 
     # Resize image preview based on available space
     def update_image(self):
