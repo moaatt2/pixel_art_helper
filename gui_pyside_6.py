@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QSplitter, QFrame
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
 from PySide6.QtCore import Qt, QSize
 
@@ -115,31 +115,45 @@ class main_window(QMainWindow):
 
 
         # Create Side Menu
-        self.side_menu = QWidget(self)
+        self.side_menu = QFrame()
         self.side_menu.setLayout(menu_layout)
-
-
+        self.side_menu.setLineWidth(2)
+        self.side_menu.setFrameShape(QFrame.Box)
 
 
         #############################
         ### Setup Image Container ###
         #############################
 
-        self.image_container = QLabel("Press Ctrl+O to open an image", self)
-        self.image_container.setAlignment(Qt.AlignCenter)
+        # Create Frame for image
+        self.image_frame = QFrame()
+        self.image_frame.setLineWidth(2)
+        self.image_frame.setFrameShape(QFrame.Box)
+
+        # Create Layout for image
+        image_layout = QVBoxLayout(self.image_frame)
+        image_layout.setAlignment(Qt.AlignCenter)
+
+        # Create label for image
+        self.image_container = QLabel("Press Ctrl+O to open an image", self.image_frame)
+        image_layout.addWidget(self.image_container)
 
 
         ##########################
         ### Create Main Layout ###
         ##########################
 
-        main_layout = QHBoxLayout()                    # Initialize Layout
-        main_layout.addWidget(self.side_menu, 1)       # Add side menu and make it take 1/4 of the space
-        main_layout.addWidget(self.image_container, 3) # Add image container and make it take 3/4 of the space
+        # Create Splitter
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(self.side_menu)
+        splitter.addWidget(self.image_frame)
 
-        # Add Widget with layout to window
-        self.setCentralWidget(QWidget(self))
-        self.centralWidget().setLayout(main_layout)
+        # Set splitter stretch factors to maintain 1:3 ratio
+        splitter.setStretchFactor(0,1)
+        splitter.setStretchFactor(1,3)
+
+        # Set splitter as central widget
+        self.setCentralWidget(splitter)
 
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
@@ -165,7 +179,7 @@ class main_window(QMainWindow):
             # Load the selected image into the image container
             self.image = QPixmap(file_name)
             self.image_path = file_name
-            self.image_container.setPixmap(self.image.scaled(self.image_container.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.image_container.setPixmap(self.image.scaled(self.image_frame.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
 
     # Placeholder for save file functionality
@@ -187,7 +201,7 @@ class main_window(QMainWindow):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         if hasattr(self, "image"):
-            self.image_container.setPixmap(self.image.scaled(self.image_container.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.image_container.setPixmap(self.image.scaled(self.image_frame.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
 
 # Start Application
