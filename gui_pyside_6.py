@@ -1,10 +1,21 @@
 import glob
 import json
+from PIL import Image
 from pprint import pprint
 
+from test import resize_image
+
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox
-from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence
+from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage
 from PySide6.QtCore import Qt, QSize
+
+
+# Helper function for converting a pil image to a pixmap
+def pil_to_pixmap(image: Image.Image) -> QPixmap:
+    image = image.convert("RGB")
+    data = image.tobytes("raw", "RGB")
+    qi = QImage(data, image.size[0], image.size[1], image.size[0]*3, QImage.Format.Format_RGB888)
+    return QPixmap.fromImage(qi)
 
 
 # Helper class to display a solid color window
@@ -75,6 +86,8 @@ class main_window(QMainWindow):
 
         # Intialize instance variables
         self.palettes = dict()
+        self.image = None
+        self.image_preview = None
 
 
         ################
@@ -221,7 +234,7 @@ class main_window(QMainWindow):
 
         # Apply Button
         apply = QPushButton("Apply")
-        apply.clicked.connect(lambda checked, h=height_mult_val.value(), w=width_mult_val.value(): self.resize_image(h, w))
+        apply.clicked.connect(lambda checked, h=height_mult_val, w=width_mult_val: self.resize_image(h.value(), w.value()))
         resize_section_layout.addWidget(apply)
 
         # Add resize section to accordian
@@ -246,15 +259,15 @@ class main_window(QMainWindow):
         palette_application_layout.setSpacing(0)
 
         # Euclidian Distance
-        ed = QPushButton("Apply Palette Using Euclidean Distance")
+        ed = QPushButton("Use Euclidean Distance")
         palette_application_layout.addWidget(ed)
 
         # CIE LAB ΔE 1976
-        de_76 = QPushButton("Apply Palette Using ΔE 1976")
+        de_76 = QPushButton("Use ΔE 1976")
         palette_application_layout.addWidget(de_76)
 
         # CIE LAB ΔE 2000
-        de_00 = QPushButton("Apply Palette Using ΔE 2000")
+        de_00 = QPushButton("Use ΔE 2000")
         palette_application_layout.addWidget(de_00)
 
         # Add Buttons to accordian
@@ -327,7 +340,8 @@ class main_window(QMainWindow):
             print(f"Selected file: {file_name}")
 
             # Load the selected image into the image container
-            self.image = QPixmap(file_name)
+            self.image = Image.open(file_name)
+            self.image_preview = QPixmap(file_name)
             self.image_path = file_name
             self.update_image()
 
@@ -539,12 +553,12 @@ class main_window(QMainWindow):
 
     # Resize image preview based on available space
     def update_image(self):
-        if hasattr(self, "image"):
+        if self.image_preview is not None:
             size = self.image_container.size()
 
             if size.width() > 0 and size.height() > 0:
                 self.image_container.setPixmap(
-                    self.image.scaled(
+                    self.image_preview.scaled(
                         size,
                         Qt.KeepAspectRatio,
                         Qt.SmoothTransformation
@@ -554,7 +568,17 @@ class main_window(QMainWindow):
 
     # Function to resize the image
     def resize_image(self, height_mult, width_mult):
-        pass
+        print(f"Resize Called:\n\tHeight Multipler: {height_mult}\n\tWidth Multiplier: {width_mult}")
+
+        # Update internal image
+        if self.image is not None:
+            self.image = resize_image(self.image, width_mult, height_mult)
+
+            # Update the preview image
+            self.image_preview = pil_to_pixmap(self.image)
+
+            # Ensure the screen updates
+            self.update_image()
 
 
 # Start Application
