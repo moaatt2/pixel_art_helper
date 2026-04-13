@@ -62,7 +62,6 @@ class Accordian(QWidget):
         self.content_layout.addWidget(content)
 
 
-
 # Main Window Class
 class main_window(QMainWindow):
     def __init__(self):
@@ -270,23 +269,6 @@ class main_window(QMainWindow):
         name_clean = " ".join(palette_name.split("_")).title()
 
 
-        ##############
-        ### Header ###
-        ##############
-
-        header =  QWidget()
-        header_layout = QHBoxLayout(header)
-        header_layout.setContentsMargins(0,0,0,0)
-        header_layout.setSpacing(0)
-
-        arrow = QPushButton("▶")
-        arrow.setFixedWidth(30)
-        checkbox = QCheckBox(name_clean)
-        # checkbox.setChecked(self.palettes[palette_name]["enabled"])
-        header_layout.addWidget(arrow)
-        header_layout.addWidget(checkbox)
-
-
         ############
         ### Body ###
         ############
@@ -340,6 +322,32 @@ class main_window(QMainWindow):
         scroll_layout.setSpacing(0)
         scroll_layout.addWidget(color_scroll)
 
+        # Set default visibility to false
+        scroll_container.setVisible(False)
+
+
+        ##############
+        ### Header ###
+        ##############
+
+        # Create header widget and its layout
+        header =  QWidget()
+        header_layout = QHBoxLayout(header)
+        header_layout.setContentsMargins(0,0,0,0)
+        header_layout.setSpacing(0)
+
+        # Setup color section collapse/expand button
+        arrow = QPushButton("▸")
+        arrow.setFixedWidth(30)
+        arrow.clicked.connect(lambda: self.palette_button_clicked(arrow, scroll_container))
+
+        # Setup Checkbox
+        checkbox = QCheckBox(name_clean)
+        # checkbox.setChecked(self.palettes[palette_name]["enabled"])
+        header_layout.addWidget(arrow)
+        header_layout.addWidget(checkbox)
+
+
         ##########################
         ### Join Header & Body ###
         ##########################
@@ -354,8 +362,19 @@ class main_window(QMainWindow):
 
         self.palette_accordion.set_content(palette_widget)
 
-        
 
+    # Show/hide Given container and change button text when it is clicked
+    def palette_button_clicked(self, button, container):
+        print("Palette Visibility Toggle Button Clicked")
+
+        # Change button text
+        if button.text() == "▸":
+            button.setText("▾")
+        else:
+            button.setText("▸")
+        
+        # Change color section visibility
+        container.setVisible(not container.isVisible())
 
 
     # Custom Resize Event to rescale image when window is resized
