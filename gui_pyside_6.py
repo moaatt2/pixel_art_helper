@@ -234,7 +234,7 @@ class main_window(QMainWindow):
     def load_palettes(self):
         print("Reload Palettes")
     
-        # Itterate over palette files
+        # Load data model
         for path in glob.glob("palettes/*.json"):
             palette_name = path.split("/")[-1].split("\\")[-1].split(".")[0]
 
@@ -264,6 +264,7 @@ class main_window(QMainWindow):
         if len(self.palettes) == 0:
             QMessageBox.warning(self, "No Palettes Found", "No palette files were found in the palettes directory. Please add some .json palette files and try again.")
 
+
         # Select Test palette
         palette_name = list(self.palettes.keys())[0]
         name_clean = " ".join(palette_name.split("_")).title()
@@ -273,11 +274,14 @@ class main_window(QMainWindow):
         ### Body ###
         ############
 
+        # Create color section widget & Layout
         color_section = QWidget()
         color_section_layout = QVBoxLayout(color_section)
         color_section_layout.setContentsMargins(3,3,0,0) # 30
         color_section_layout.setSpacing(3)
 
+        # Create list of checkboxes affected by parent
+        color_checkboxes = list()
 
         # Itterate over colors
         for color_name in self.palettes[palette_name]["colors"].keys():
@@ -298,11 +302,13 @@ class main_window(QMainWindow):
 
             # Create Color Checkbox
             checkbox = QCheckBox(color_name_clean)
+            checkbox.setChecked(True)
             checkbox.setDisabled(True)
             color_layout.addWidget(checkbox)
 
             # Add to Color Section
             color_section_layout.addWidget(color_row)
+            color_checkboxes.append(checkbox)
         
         # Create Scroll area widget
         color_scroll = QScrollArea()
@@ -343,7 +349,7 @@ class main_window(QMainWindow):
 
         # Setup Checkbox
         checkbox = QCheckBox(name_clean)
-        # checkbox.setChecked(self.palettes[palette_name]["enabled"])
+        checkbox.toggled.connect(lambda: self.toggle_palette_checkbox(checkbox, palette_name, color_checkboxes))
         header_layout.addWidget(arrow)
         header_layout.addWidget(checkbox)
 
@@ -375,6 +381,16 @@ class main_window(QMainWindow):
         
         # Change color section visibility
         container.setVisible(not container.isVisible())
+
+
+    # Toggle checkbox
+    def toggle_palette_checkbox(self, checkbox: QCheckBox, palette_name: str, children: list[QCheckBox]) -> None:
+        # Update palettes dict
+        self.palettes[palette_name]["enabled"] = checkbox.isChecked()
+
+        # Enable/Disable Children
+        for child in children:
+            child.setDisabled(not checkbox.isChecked())
 
 
     # Custom Resize Event to rescale image when window is resized
