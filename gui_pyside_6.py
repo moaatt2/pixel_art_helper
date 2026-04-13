@@ -32,9 +32,12 @@ class Accordian(QWidget):
         self.content_section = QWidget()
         self.content_section.setVisible(False)
 
+        # Set a fixed layout to add widgets to the content section
+        self.content_layout = QVBoxLayout(self.content_section)
+
         # Add button
         button = QPushButton(title)
-        button.clicked.connect(lambda: self.toggle_section(self.content_section))
+        button.clicked.connect(self.toggle_section)
 
         # Create layout and add content
         layout = QVBoxLayout()
@@ -46,14 +49,18 @@ class Accordian(QWidget):
         self.setLayout(layout)
 
 
-    def toggle_section(self, section:QWidget):
-        section.setVisible(not section.isVisible())
+    def toggle_section(self):
+        self.content_section.setVisible(not self.content_section.isVisible())
 
 
     def set_content(self, content:QWidget):
-        layout = QVBoxLayout()
-        layout.addWidget(content)
-        self.content_section.setLayout(layout)
+        while self.content_layout.count() > 0:
+            child = self.content_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+            
+        self.content_layout.addWidget(content)
+
 
 
 # Main Window Class
@@ -123,17 +130,17 @@ class main_window(QMainWindow):
         menu_layout.setContentsMargins(0,0,0,0)
         menu_layout.setSpacing(0)
 
-        palette_accordion = Accordian("Palettes")
-        menu_layout.addWidget(palette_accordion)
-        palette_accordion.set_content(QLabel("Palette content goes here"))
+        self.palette_accordion = Accordian("Palettes")
+        menu_layout.addWidget(self.palette_accordion)
+        self.palette_accordion.set_content(QLabel("Palette content goes here"))
 
-        palette_accordion = Accordian("Image Options")
-        menu_layout.addWidget(palette_accordion)
-        palette_accordion.set_content(QLabel("Image options go here"))
+        self.image_accordion = Accordian("Image Options")
+        menu_layout.addWidget(self.image_accordion)
+        self.image_accordion.set_content(QLabel("Image options go here"))
 
-        palette_accordion = Accordian("Pattern Options")
-        menu_layout.addWidget(palette_accordion)
-        palette_accordion.set_content(QLabel("Pattern options go here"))
+        self.pattern_accordion = Accordian("Pattern Options")
+        menu_layout.addWidget(self.pattern_accordion)
+        self.pattern_accordion.set_content(QLabel("Pattern options go here"))
 
 
         # Create Side Menu
@@ -249,7 +256,7 @@ class main_window(QMainWindow):
                     "hexstring": v,
                     "enabled": False,
                 }
-    
+
 
     # Custom Resize Event to rescale image when window is resized
     def resizeEvent(self, event):
