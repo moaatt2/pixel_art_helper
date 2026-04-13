@@ -190,6 +190,47 @@ class main_window(QMainWindow):
         # Set Image accordian content
         image_accordion.set_content(image_options)
 
+
+        ######################
+        ### Resize Section ###
+        ######################
+
+        # TODO
+
+
+        ######################
+        ### Rotate Section ###
+        ######################
+
+        # TODO
+
+
+        ###################################
+        ### Palette Application Section ###
+        ###################################
+
+        # Create Appliation widget
+        palette_application = QWidget()
+        palette_application_layout = QVBoxLayout(palette_application)
+        palette_application_layout.setContentsMargins(20,0,0,0)
+        palette_application_layout.setSpacing(0)
+
+        # Euclidian Distance
+        ed = QPushButton("Apply Palette Using Euclidean Distance")
+        palette_application_layout.addWidget(ed)
+
+        # CIE LAB ΔE 1976
+        de_76 = QPushButton("Apply Palette Using ΔE 1976")
+        palette_application_layout.addWidget(de_76)
+
+        # CIE LAB ΔE 2000
+        de_00 = QPushButton("Apply Palette Using ΔE 2000")
+        palette_application_layout.addWidget(de_00)
+
+        # Add Buttons to accordian
+        palette_application_accordian.set_content(palette_application)
+
+
         #############################
         ### Setup Image Container ###
         #############################
