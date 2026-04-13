@@ -304,6 +304,7 @@ class main_window(QMainWindow):
             checkbox = QCheckBox(color_name_clean)
             checkbox.setChecked(True)
             checkbox.setDisabled(True)
+            checkbox.toggled.connect(lambda: self.toggle_color_checkbox(checkbox, palette_name, color_name))
             color_layout.addWidget(checkbox)
 
             # Add to Color Section
@@ -383,7 +384,7 @@ class main_window(QMainWindow):
         container.setVisible(not container.isVisible())
 
 
-    # Toggle checkbox
+    # Toggle Palette checkbox
     def toggle_palette_checkbox(self, checkbox: QCheckBox, palette_name: str, children: list[QCheckBox]) -> None:
         # Update palettes dict
         self.palettes[palette_name]["enabled"] = checkbox.isChecked()
@@ -391,6 +392,11 @@ class main_window(QMainWindow):
         # Enable/Disable Children
         for child in children:
             child.setDisabled(not checkbox.isChecked())
+
+
+    # Toggle Color Checkbox
+    def toggle_color_checkbox(self, checkbox: QCheckBox, palette_name: str, color_name: str) -> None:
+        self.palettes[palette_name]["colors"][color_name]["enabled"] = checkbox.isChecked()
 
 
     # Custom Resize Event to rescale image when window is resized
