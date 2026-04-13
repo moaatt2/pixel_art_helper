@@ -1,8 +1,8 @@
 import glob
 import json
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QSplitter, QFrame, QSizePolicy
-from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame
+from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence
 from PySide6.QtCore import Qt, QSize
 
 
