@@ -254,8 +254,31 @@ class main_window(QMainWindow):
                 self.palettes[palette_name]["colors"][k] = {
                     "rgb": (r, g, b),
                     "hexstring": v,
-                    "enabled": False,
+                    "enabled": True,
                 }
+        
+        
+        # Alert User if no palettes were found
+        if len(self.palettes) == 0:
+            QMessageBox.warning(self, "No Palettes Found", "No palette files were found in the palettes directory. Please add some .json palette files and try again.")
+
+        # Select Test palette
+        palette_name = list(self.palettes.keys())[0]
+        name_clean = " ".join(palette_name.split("_")).title()
+
+        header =  QWidget()
+        header_layout = QHBoxLayout(header)
+        header_layout.setContentsMargins(0,0,0,0)
+        header_layout.setSpacing(0)
+
+        arrow = QPushButton("▶")
+        arrow.setFixedWidth(30)
+        checkbox = QCheckBox(name_clean)
+        header_layout.addWidget(arrow)
+        header_layout.addWidget(checkbox)
+
+        self.palette_accordion.set_content(header)
+
 
 
     # Custom Resize Event to rescale image when window is resized
