@@ -1,5 +1,6 @@
 import glob
 import json
+from pprint import pprint
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence
@@ -119,6 +120,16 @@ class main_window(QMainWindow):
         exit_action.setShortcut(QKeySequence("Ctrl+W"))
         exit_action.setStatusTip("Exit the application")
         file_menu.addAction(exit_action)
+
+        # Add Exit action
+        # TODO: Remove from production
+        file_menu.addSeparator()
+        show_state = QAction("&Print Palette State", self)
+        show_state.triggered.connect(self.print_palette_state)
+        show_state.setShortcut(QKeySequence("Ctrl+P"))
+        show_state.setStatusTip("Show the internal palette state")
+        file_menu.addAction(show_state)
+
 
         #################
         ### Side Menu ###
@@ -411,6 +422,12 @@ class main_window(QMainWindow):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.update_image()
+
+
+    # TODO: Remove from production
+    # Testing Function to print palette state
+    def print_palette_state(self):
+        pprint(self.palettes)
 
 
     # Function to safely quit the application
