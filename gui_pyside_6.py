@@ -31,6 +31,7 @@ class Accordian(QWidget):
         layout = QVBoxLayout()
         layout.addWidget(button)
         layout.addWidget(self.content_section)
+        layout.setContentsMargins(0,0,0,0)
 
         # Apply layout to self
         self.setLayout(layout)
@@ -100,6 +101,8 @@ class main_window(QMainWindow):
 
         menu_layout = QVBoxLayout()
         menu_layout.setAlignment(Qt.AlignTop)
+        menu_layout.setContentsMargins(0,0,0,0)
+        menu_layout.setSpacing(0)
 
         palette_accordion = Accordian("Palettes")
         menu_layout.addWidget(palette_accordion)
