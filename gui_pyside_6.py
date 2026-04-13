@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QSplitter, QFrame
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QSplitter, QFrame, QSizePolicy
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
 from PySide6.QtCore import Qt, QSize
 
@@ -12,6 +12,12 @@ class Color(QWidget):
         pallette = self.palette()
         pallette.setColor(QPalette.Window, QColor(color))
         self.setPalette(pallette)
+
+
+# Custom Label class overwriting min size hint so the splitter can make the image smaller
+class ImageLabel(QLabel):
+    def minimumSizeHint(self):
+        return QSize(0,0)
 
 
 # Helper accordian widget
@@ -135,11 +141,11 @@ class main_window(QMainWindow):
 
         # Create Layout for image
         image_layout = QVBoxLayout(self.image_frame)
-        image_layout.setAlignment(Qt.AlignCenter)
         image_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        self.image_container = QLabel("Press Ctrl+O to open an image", self.image_frame)
+        self.image_container = ImageLabel("Press Ctrl+O to open an image", self.image_frame)
+        self.image_container.setAlignment(Qt.AlignCenter)
         image_layout.addWidget(self.image_container)
 
 
@@ -155,6 +161,9 @@ class main_window(QMainWindow):
         # Set splitter stretch factors to maintain 1:3 ratio
         splitter.setStretchFactor(0,1)
         splitter.setStretchFactor(1,3)
+
+        # When the splitter moves update the image size
+        splitter.splitterMoved.connect(self.update_image)
 
         # Set splitter as central widget
         self.setCentralWidget(splitter)
@@ -183,7 +192,7 @@ class main_window(QMainWindow):
             # Load the selected image into the image container
             self.image = QPixmap(file_name)
             self.image_path = file_name
-            self.image_container.setPixmap(self.image.scaled(self.image_frame.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.update_image()
 
 
     # Placeholder for save file functionality
@@ -204,8 +213,22 @@ class main_window(QMainWindow):
     # Custom Resize Event to rescale image when window is resized
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        self.update_image()
+
+
+    # Resize image preview based on available space
+    def update_image(self):
         if hasattr(self, "image"):
-            self.image_container.setPixmap(self.image.scaled(self.image_frame.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            size = self.image_container.size()
+
+            if size.width() > 0 and size.height() > 0:
+                self.image_container.setPixmap(
+                    self.image.scaled(
+                        size,
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation
+                    )
+                )
 
 
 # Start Application
