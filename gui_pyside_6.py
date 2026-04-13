@@ -1,3 +1,6 @@
+import glob
+import json
+
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QMenu, QGridLayout, QStackedLayout, QTabWidget, QStatusBar, QToolBar, QDialog, QDialogButtonBox, QMessageBox, QFileDialog, QSplitter, QFrame, QSizePolicy
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QIcon, QKeySequence
 from PySide6.QtCore import Qt, QSize
@@ -60,6 +63,9 @@ class main_window(QMainWindow):
         self.setWindowTitle("Pixel Art Helper") # Set Window title
         self.setMinimumSize(600, 600)           # Set Window Size
 
+        # Intialize instance variables
+        self.palettes = dict()
+
 
         ################
         ### Menu Bar ###
@@ -94,7 +100,7 @@ class main_window(QMainWindow):
         file_menu.addSeparator()
 
         # Create reload button
-        reload_action = QAction("&Load Palettes", self)
+        reload_action = QAction("&Reload Palettes", self)
         reload_action.triggered.connect(self.load_palettes)
         reload_action.setShortcut(QKeySequence("Ctrl+R"))
         reload_action.setStatusTip("Reload the color palettes")
@@ -211,6 +217,31 @@ class main_window(QMainWindow):
     # Placeholder for reload palettes functionality
     def load_palettes(self):
         print("Reload Palettes")
+    
+        # Itterate over palette files
+        for path in glob.glob("palettes/*.json"):
+            palette_name = path.split("/")[-1].split("\\")[-1].split(".")[0]
+
+            # Load palette files
+            with open(path, "r") as f:
+                raw = json.load(f)
+            
+            # Create dict in palettes dict for current palette
+            self.palettes[palette_name] = {
+                "enabled": False,
+                "colors": dict(),
+            }
+
+            # Convert hex color codes to RGB tuples and store in palette dict
+            for k, v in raw.items():
+                r = int(v[0:2], 16)
+                g = int(v[2:4], 16)
+                b = int(v[4:6], 16)
+                self.palettes[palette_name]["colors"][k] = {
+                    "rgb": (r, g, b),
+                    "hexstring": v,
+                    "enabled": False,
+                }
     
 
     # Custom Resize Event to rescale image when window is resized
