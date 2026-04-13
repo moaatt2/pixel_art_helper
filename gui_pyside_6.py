@@ -266,6 +266,11 @@ class main_window(QMainWindow):
         palette_name = list(self.palettes.keys())[0]
         name_clean = " ".join(palette_name.split("_")).title()
 
+
+        ##############
+        ### Header ###
+        ##############
+
         header =  QWidget()
         header_layout = QHBoxLayout(header)
         header_layout.setContentsMargins(0,0,0,0)
@@ -274,10 +279,53 @@ class main_window(QMainWindow):
         arrow = QPushButton("▶")
         arrow.setFixedWidth(30)
         checkbox = QCheckBox(name_clean)
+        # checkbox.setChecked(self.palettes[palette_name]["enabled"])
         header_layout.addWidget(arrow)
         header_layout.addWidget(checkbox)
 
-        self.palette_accordion.set_content(header)
+
+        ############
+        ### Body ###
+        ############
+
+        # Get Sample color
+        color_name = list(self.palettes[palette_name]["colors"].keys())[0]
+        color_name_clean = " ".join(color_name.split("_")).title()
+        color_rgb = self.palettes[palette_name]["colors"][color_name]["rgb"]
+        color_hex = self.palettes[palette_name]["colors"][color_name]["hexstring"]
+
+        # Create color row with layout
+        color_row = QWidget()
+        color_layout = QHBoxLayout(color_row)
+        color_layout.setContentsMargins(0,0,0,0)
+        color_layout.setSpacing(0)
+
+        swatch = QWidget()
+        swatch.setFixedSize(25,25)
+        print(color_hex)
+        swatch.setStyleSheet(f"background-color: #{color_hex}; border: none; border-radius: 3px;")
+        color_layout.addWidget(swatch)
+
+        checkbox = QCheckBox(color_name_clean)
+        checkbox.setDisabled(True)
+        color_layout.addWidget(checkbox)
+
+
+        ##########################
+        ### Join Header & Body ###
+        ##########################
+
+        palette_widget = QWidget()
+        palette_layout = QVBoxLayout(palette_widget)
+        palette_layout.setContentsMargins(0,0,0,0)
+        palette_layout.setSpacing(0)
+
+        palette_layout.addWidget(header)
+        palette_layout.addWidget(color_row)
+
+        self.palette_accordion.set_content(palette_widget)
+
+        
 
 
 
