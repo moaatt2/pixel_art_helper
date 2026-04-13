@@ -1,7 +1,7 @@
 import glob
 import json
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence
 from PySide6.QtCore import Qt, QSize
 
@@ -318,7 +318,17 @@ class main_window(QMainWindow):
 
             # Add to Color Section
             color_section_layout.addWidget(color_row)
+        
+        # Create Scroll area widget
+        color_scroll = QScrollArea()
+        color_scroll.setWidget(color_section)
 
+        # Scroll area settings
+        color_scroll.setFixedHeight(110)
+        color_scroll.setWidgetResizable(True)
+        color_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        color_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        color_scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         ##########################
         ### Join Header & Body ###
@@ -330,7 +340,7 @@ class main_window(QMainWindow):
         palette_layout.setSpacing(0)
 
         palette_layout.addWidget(header)
-        palette_layout.addWidget(color_section)
+        palette_layout.addWidget(color_scroll)
 
         self.palette_accordion.set_content(palette_widget)
 
