@@ -133,6 +133,7 @@ class main_window(QMainWindow):
         # Create Layout for image
         image_layout = QVBoxLayout(self.image_frame)
         image_layout.setAlignment(Qt.AlignCenter)
+        image_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
         self.image_container = QLabel("Press Ctrl+O to open an image", self.image_frame)
