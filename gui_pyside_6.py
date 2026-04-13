@@ -158,6 +158,9 @@ class main_window(QMainWindow):
         splitter.addWidget(self.side_menu)
         splitter.addWidget(self.image_frame)
 
+        # Set an inital 1:3 ratio
+        splitter.setSizes([200,600])
+
         # Set splitter stretch factors to maintain 1:3 ratio
         splitter.setStretchFactor(0,1)
         splitter.setStretchFactor(1,3)
