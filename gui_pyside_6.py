@@ -140,18 +140,17 @@ class main_window(QMainWindow):
         menu_layout.setContentsMargins(0,0,0,0)
         menu_layout.setSpacing(0)
 
-        self.palette_accordion = Accordian("Palettes")
+        self.palette_accordion = Accordian("Palette Selection")
         menu_layout.addWidget(self.palette_accordion)
         self.palette_accordion.set_content(QLabel("Palette content goes here"))
 
-        self.image_accordion = Accordian("Image Options")
-        menu_layout.addWidget(self.image_accordion)
-        self.image_accordion.set_content(QLabel("Image options go here"))
+        image_accordion = Accordian("Image Options")
+        menu_layout.addWidget(image_accordion)
+        # image_accordion.set_content(QLabel("Image options go here"))
 
         self.pattern_accordion = Accordian("Pattern Options")
         menu_layout.addWidget(self.pattern_accordion)
         self.pattern_accordion.set_content(QLabel("Pattern options go here"))
-
 
         # Create Side Menu
         self.side_menu = QFrame()
@@ -159,6 +158,34 @@ class main_window(QMainWindow):
         self.side_menu.setLineWidth(2)
         self.side_menu.setFrameShape(QFrame.Box)
 
+
+        #####################
+        ### Image Options ###
+        #####################
+
+        # Create widget for image options
+        image_options = QWidget()
+        image_options_layout = QVBoxLayout(image_options)
+        image_options_layout.setContentsMargins(0,0,0,0)
+        image_options_layout.setSpacing(0)
+
+        # Resize
+        resize_accordian = Accordian("Resize Image")
+        image_options_layout.addWidget(resize_accordian)
+        resize_accordian.set_content(QLabel("Resize options go here"))
+
+        # Rotate
+        rotate_accordian = Accordian("Rotate Image")
+        image_options_layout.addWidget(rotate_accordian)
+        rotate_accordian.set_content(QLabel("Rotate options go here"))
+
+        # Apply Palette
+        palette_application_accordian = Accordian("Apply Palette to Image")
+        image_options_layout.addWidget(palette_application_accordian)
+        palette_application_accordian.set_content(QLabel("Palette Application options go here"))
+
+        # Set Image accordian content
+        image_accordion.set_content(image_options)
 
         #############################
         ### Setup Image Container ###
