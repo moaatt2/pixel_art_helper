@@ -265,109 +265,117 @@ class main_window(QMainWindow):
             QMessageBox.warning(self, "No Palettes Found", "No palette files were found in the palettes directory. Please add some .json palette files and try again.")
 
 
-        # Select Test palette
-        palette_name = list(self.palettes.keys())[0]
-        name_clean = " ".join(palette_name.split("_")).title()
+        # Create container for all palette options sections
+        palette_options = QWidget()
+        palette_options_layout = QVBoxLayout(palette_options)
+        palette_options_layout.setContentsMargins(0,0,0,0)
+        palette_options_layout.setSpacing(0)
+
+        # Create Palette Widget for each palette
+        for palette_name in self.palettes.keys():
+            name_clean = " ".join(palette_name.split("_")).title()
 
 
-        ############
-        ### Body ###
-        ############
+            ############
+            ### Body ###
+            ############
 
-        # Create color section widget & Layout
-        color_section = QWidget()
-        color_section_layout = QVBoxLayout(color_section)
-        color_section_layout.setContentsMargins(3,3,0,0) # 30
-        color_section_layout.setSpacing(3)
+            # Create color section widget & Layout
+            color_section = QWidget()
+            color_section_layout = QVBoxLayout(color_section)
+            color_section_layout.setContentsMargins(3,3,0,0) # 30
+            color_section_layout.setSpacing(3)
 
-        # Create list of checkboxes affected by parent
-        color_checkboxes = list()
+            # Create list of checkboxes affected by parent
+            color_checkboxes = list()
 
-        # Itterate over colors
-        for color_name in self.palettes[palette_name]["colors"].keys():
-            color_name_clean = " ".join(color_name.split("_")).title()
-            color_hex = self.palettes[palette_name]["colors"][color_name]["hexstring"]
+            # Itterate over colors
+            for color_name in self.palettes[palette_name]["colors"].keys():
+                color_name_clean = " ".join(color_name.split("_")).title()
+                color_hex = self.palettes[palette_name]["colors"][color_name]["hexstring"]
 
-            # Instantiate Color Row
-            color_row = QWidget()
-            color_layout = QHBoxLayout(color_row)
-            color_layout.setContentsMargins(0,0,0,0)
-            color_layout.setSpacing(0)
+                # Instantiate Color Row
+                color_row = QWidget()
+                color_layout = QHBoxLayout(color_row)
+                color_layout.setContentsMargins(0,0,0,0)
+                color_layout.setSpacing(0)
 
-            # Create Color Swatch
-            swatch = QWidget()
-            swatch.setFixedSize(25,25)
-            swatch.setStyleSheet(f"background-color: #{color_hex}; border: none; border-radius: 3px;")
-            color_layout.addWidget(swatch)
+                # Create Color Swatch
+                swatch = QWidget()
+                swatch.setFixedSize(25,25)
+                swatch.setStyleSheet(f"background-color: #{color_hex}; border: none; border-radius: 3px;")
+                color_layout.addWidget(swatch)
 
-            # Create Color Checkbox
-            checkbox = QCheckBox(color_name_clean)
-            checkbox.setChecked(True)
-            checkbox.setDisabled(True)
-            checkbox.toggled.connect(lambda: self.toggle_color_checkbox(checkbox, palette_name, color_name))
-            color_layout.addWidget(checkbox)
+                # Create Color Checkbox
+                checkbox = QCheckBox(color_name_clean)
+                checkbox.setChecked(True)
+                checkbox.setDisabled(True)
+                checkbox.toggled.connect(lambda checked, c=checkbox, p=palette_name, cn=color_name: self.toggle_color_checkbox(c, p, cn))
+                color_layout.addWidget(checkbox)
 
-            # Add to Color Section
-            color_section_layout.addWidget(color_row)
-            color_checkboxes.append(checkbox)
-        
-        # Create Scroll area widget
-        color_scroll = QScrollArea()
-        color_scroll.setWidget(color_section)
+                # Add to Color Section
+                color_section_layout.addWidget(color_row)
+                color_checkboxes.append(checkbox)
+            
+            # Create Scroll area widget
+            color_scroll = QScrollArea()
+            color_scroll.setWidget(color_section)
 
-        # Scroll area settings
-        color_scroll.setFixedHeight(120)
-        color_scroll.setWidgetResizable(True)
-        color_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        color_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        color_scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+            # Scroll area settings
+            color_scroll.setFixedHeight(120)
+            color_scroll.setWidgetResizable(True)
+            color_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+            color_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            color_scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-        # Set Horizontal offset of scroll area and header
-        scroll_container = QWidget()
-        scroll_layout = QVBoxLayout(scroll_container)
-        scroll_layout.setContentsMargins(30,0,0,0)
-        scroll_layout.setSpacing(0)
-        scroll_layout.addWidget(color_scroll)
+            # Set Horizontal offset of scroll area and header
+            scroll_container = QWidget()
+            scroll_layout = QVBoxLayout(scroll_container)
+            scroll_layout.setContentsMargins(30,0,0,0)
+            scroll_layout.setSpacing(0)
+            scroll_layout.addWidget(color_scroll)
 
-        # Set default visibility to false
-        scroll_container.setVisible(False)
-
-
-        ##############
-        ### Header ###
-        ##############
-
-        # Create header widget and its layout
-        header =  QWidget()
-        header_layout = QHBoxLayout(header)
-        header_layout.setContentsMargins(0,0,0,0)
-        header_layout.setSpacing(0)
-
-        # Setup color section collapse/expand button
-        arrow = QPushButton("▸")
-        arrow.setFixedWidth(30)
-        arrow.clicked.connect(lambda: self.palette_button_clicked(arrow, scroll_container))
-
-        # Setup Checkbox
-        checkbox = QCheckBox(name_clean)
-        checkbox.toggled.connect(lambda: self.toggle_palette_checkbox(checkbox, palette_name, color_checkboxes))
-        header_layout.addWidget(arrow)
-        header_layout.addWidget(checkbox)
+            # Set default visibility to false
+            scroll_container.setVisible(False)
 
 
-        ##########################
-        ### Join Header & Body ###
-        ##########################
+            ##############
+            ### Header ###
+            ##############
 
-        palette_widget = QWidget()
-        palette_layout = QVBoxLayout(palette_widget)
-        palette_layout.setContentsMargins(0,0,0,0)
-        palette_layout.setSpacing(0)
+            # Create header widget and its layout
+            header =  QWidget()
+            header_layout = QHBoxLayout(header)
+            header_layout.setContentsMargins(0,0,0,0)
+            header_layout.setSpacing(0)
 
-        palette_layout.addWidget(header)
-        palette_layout.addWidget(scroll_container)
+            # Setup color section collapse/expand button
+            arrow = QPushButton("▸")
+            arrow.setFixedWidth(30)
+            arrow.clicked.connect(lambda checked, a=arrow, s=scroll_container: self.palette_button_clicked(a, s))
 
-        self.palette_accordion.set_content(palette_widget)
+            # Setup Checkbox
+            checkbox = QCheckBox(name_clean)
+            checkbox.toggled.connect(lambda checked, c=checkbox, p=palette_name, cc=color_checkboxes: self.toggle_palette_checkbox(c, p, cc))
+            header_layout.addWidget(arrow)
+            header_layout.addWidget(checkbox)
+
+
+            ##########################
+            ### Join Header & Body ###
+            ##########################
+
+            palette_widget = QWidget()
+            palette_layout = QVBoxLayout(palette_widget)
+            palette_layout.setContentsMargins(0,0,0,0)
+            palette_layout.setSpacing(0)
+
+            palette_layout.addWidget(header)
+            palette_layout.addWidget(scroll_container)
+
+            palette_options_layout.addWidget(palette_widget)
+
+        self.palette_accordion.set_content(palette_options)
 
 
     # Show/hide Given container and change button text when it is clicked
