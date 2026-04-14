@@ -344,6 +344,7 @@ class main_window(QMainWindow):
 
             # Load the selected image into the image container
             self.image = Image.open(file_name)
+            self.image = self.image.convert("RGB")
             self.image_preview = QPixmap(file_name)
             self.image_path = file_name
             self.update_image()
@@ -355,8 +356,26 @@ class main_window(QMainWindow):
 
 
     # Placeholder for save as functionality
-    def save_as(self):
+    def save_as(self) -> None:
         print("Save As File")
+
+        if self.image is None:
+            return
+
+        # Create File Dialog
+        file_dialog = QFileDialog(self)
+
+        # File Dialog Settings
+        file_dialog.setViewMode(QFileDialog.List)
+        file_dialog.setFileMode(QFileDialog.FileMode.AnyFile)
+        file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        file_dialog.setNameFilter("BMP (*.bmp *.dib)")
+ 
+        # Execute File Dialog and get selected file
+        if file_dialog.exec():
+            file_name = file_dialog.selectedFiles()[0]
+            print(f"Selected file: {file_name}")
+            self.image.save(file_name)
 
 
     # Placeholder for reload palettes functionality
