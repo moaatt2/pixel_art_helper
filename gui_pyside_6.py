@@ -3,7 +3,7 @@ import json
 from PIL import Image
 from pprint import pprint
 
-from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00
+from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage
@@ -145,6 +145,17 @@ class main_window(QMainWindow):
         show_state.setShortcut(QKeySequence("Ctrl+P"))
         show_state.setStatusTip("Show the internal palette state")
         file_menu.addAction(show_state)
+
+
+        # Create Extras menu
+        extra_menu = menu.addMenu("&Extras")
+
+        # Add Estimate Size
+        estimate_size = QAction("Estimate &Size", self)
+        estimate_size.triggered.connect(self.run_estimate_size)
+        estimate_size.setShortcut("Ctrl+E+S")
+        estimate_size.setStatusTip("Estimate Physical Size of completed inlay")
+        extra_menu.addAction(estimate_size)
 
 
         #################
@@ -635,6 +646,23 @@ class main_window(QMainWindow):
 
             # Ensure screen updates
             self.update_image()
+
+
+    # Estimate size of completed inlay
+    def run_estimate_size(self) -> None:
+
+        # Exit early if there is no image
+        if self.image is None:
+            return
+
+        # Estimate size
+        size = estimate_size(self.image, 16, "SWG", 0.25, "inches")
+
+        # Draft the message
+        message = f'If made with 16 SWG rings with an ID of 0.25" with one pixel per ring the expected size is {size[0]}" x {size[1]}"'
+
+        # The the user the message
+        QMessageBox.information(self, "Size Estimate", message)
 
 
 # Start Application
