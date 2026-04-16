@@ -3,6 +3,7 @@ import json
 from PIL import Image
 from pprint import pprint
 
+from calculate_cost import rings_by_color, convert_to_palette, calculate_cost
 from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox
@@ -156,6 +157,13 @@ class main_window(QMainWindow):
         estimate_size.setShortcut("Ctrl+E+S")
         estimate_size.setStatusTip("Estimate Physical Size of completed inlay")
         extra_menu.addAction(estimate_size)
+
+        # Add Estimate Cost
+        estimate_cost = QAction("Estimate &Cost", self)
+        estimate_cost.triggered.connect(self.run_estimate_cost)
+        estimate_cost.setShortcut("Ctrl+E+C")
+        estimate_cost.setStatusTip("Estimate cost of inlay materials")
+        extra_menu.addAction(estimate_cost)
 
 
         #################
@@ -663,6 +671,64 @@ class main_window(QMainWindow):
 
         # The the user the message
         QMessageBox.information(self, "Size Estimate", message)
+
+
+    # Estimate cost of completed inlay
+    def run_estimate_cost(self) -> None:
+
+        # Exit early if no image exists
+        if self.image is None:
+            return
+
+        # Create palette
+        palette = dict()
+        for palette_name in self.palettes.keys():
+            if not self.palettes[palette_name]["enabled"]:
+                continue
+            for color in self.palettes[palette_name]["colors"].keys():
+                if not self.palettes[palette_name]["colors"][color]["enabled"]:
+                    continue
+                palette[f"{palette_name}_{color}"] = self.palettes[palette_name]["colors"][color]["hexstring"]
+
+        # Warn user if palette is empty
+        if len(palette) < 1:
+            QMessageBox.critical(self, "Empty Palette", "Your palette doesn't have any colors, please select at least one to continue.")
+            return None
+        
+        # Get a count of pixels by color
+        color_count = rings_by_color(self.image)
+
+        # Convert to palette counts
+        rings_by_palette = convert_to_palette(color_count, palette)
+
+        # Get total cost and breakdown
+        cost, breakdown = calculate_cost(rings_by_palette)
+
+        # Intialize accumulators
+        t_bags = 0
+        t_rings = 0
+
+        # Generate message
+        message = f"The estimated total cost for the project is: ${cost:.2f}\nSpent on the following resources:\n\n"
+        for key, v in breakdown.items():
+            clean_name = key.replace("_", " ").title()
+            message += f"\t* {clean_name}:\n"
+            message += f"\t\t* Rings: {v["rings"]}\n"
+            message += f"\t\t* Bags:  {v["bags"]}\n"
+            message += f"\t\t* Extra Rings: {v["bags"]*300 - v["rings"]}\n"
+
+            t_rings += v["rings"]
+            t_bags  += v["bags"]
+
+        # Add total
+        message += f"\t* Total:\n"
+        message += f"\t\t* Rings: {t_rings}\n"
+        message += f"\t\t* Bags:  {t_bags}\n"
+        message += f"\t\t* Extra Rings: {t_bags*300 - t_rings}\n"
+
+        # Show user message
+        QMessageBox.information(self, "Cost Estimate", message)
+        print(message)
 
 
 # Start Application
