@@ -372,10 +372,14 @@ def estimate_size(image: Image.Image, gauge: int, gauge_system: str, internal_di
 # Create inlay preview from image
 def convert_to_inlay(image: Image.Image) -> Image.Image:
 
+    alpha = (0,0,0,0)
+
     new_img = Image.new('RGBA', (200, 200))
     draw = ImageDraw.Draw(new_img)
-    co_ords = (20,20,180,180)
-    draw.ellipse(co_ords, fill="blue", outline="black")
+    draw.ellipse((20,20,180,180), fill="black", outline="black") # External Black Outline
+    draw.ellipse((22,22,178,178), fill="blue",  outline="blue")  # Ring Fill
+    draw.ellipse((40,40,160,160), fill="black", outline="black") # Internal Black Outline
+    draw.ellipse((42,42,158,158), fill=alpha,   outline=alpha)   # Remove internal
     return new_img
 
     # width, height = image.size
