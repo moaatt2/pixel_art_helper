@@ -256,7 +256,7 @@ def rotate_image(image: Image.Image, angle: float, clockwise: bool = False) -> I
 # Resize an image by integer scale factors using pixel duplication
 def resize_image(image: Image.Image, width_mult: int, height_mult: int) -> Image.Image:
     width, height = image.size
-    new_img = Image.new("RGBA", (width * width_mult, height * height_mult))
+    new_img = Image.new("RGB", (width * width_mult, height * height_mult))
 
     for x, y in product(range(width), range(height)):
         pixel = image.getpixel((x, y))
@@ -275,14 +275,14 @@ def apply_palette(palette: dict, image: Image.Image, color_selection_func: objec
     palette_map = dict()
     palette_lab = list()
     if selection_func_color_space == "cielab":
-        for color in palette.items():
+        for color in palette.values():
             cielab = rgb_to_cielab(color)
             palette_map[str(cielab)] = color
             palette_lab.append(cielab)
 
 
     width, height = image.size
-    new_img = Image.new("RGBA", (width, height))
+    new_img = Image.new("RGB", (width, height))
 
     # Loop over all pixels in input image
     for x, y in product(range(width), range(height)):
@@ -296,7 +296,7 @@ def apply_palette(palette: dict, image: Image.Image, color_selection_func: objec
         elif selection_func_color_space == "cielab":
             pixel_lab = rgb_to_cielab(pixel)
             best_lab = color_selection_func(pixel_lab, palette_lab)
-            new_color = palette_lab[str(best_lab)]
+            new_color = palette_map[str(best_lab)]
             color_map[str(pixel)] = new_color
         else:
             new_color = color_selection_func(pixel, list(palette.values()))
