@@ -376,10 +376,8 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
     new_img = Image.new('RGBA', (200, 200))
     draw = ImageDraw.Draw(new_img)
-    draw.ellipse((20,20,180,180), fill="black", outline="black") # External Black Outline
-    draw.ellipse((22,22,178,178), fill="blue",  outline="blue")  # Ring Fill
-    draw.ellipse((40,40,160,160), fill="black", outline="black") # Internal Black Outline
-    draw.ellipse((42,42,158,158), fill=alpha,   outline=alpha)   # Remove internal
+    draw.ellipse((20,20,180,180), fill="blue",  outline="black", width=3) # External Black Outline
+    draw.ellipse((40,40,160,160), fill=alpha,   outline="black", width=3)   # Remove internal
     return new_img
 
     # width, height = image.size
