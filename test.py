@@ -388,7 +388,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
         x1, y1 = x*100,  y*100
         x2, y2 = x1+100, y1+100
-        draw.ellipse((x1,y1,x2,y2), fill="blue",  outline="black", width=3) # Main color
+        draw.ellipse((x1,y1,x2,y2), fill=pixel,  outline="black", width=3) # Main color
 
         x1, y1, x2, y2 = x1+15, y1+15, x2-15, y2-15
         draw.ellipse((x1,y1,x2,y2), fill=alpha,   outline="black", width=3)   # Remove internal
