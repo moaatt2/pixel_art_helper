@@ -374,21 +374,28 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
     alpha = (0,0,0,0)
 
-    new_img = Image.new('RGBA', (200, 200))
-    draw = ImageDraw.Draw(new_img)
-    draw.ellipse((20,20,180,180), fill="blue",  outline="black", width=3) # External Black Outline
-    draw.ellipse((40,40,160,160), fill=alpha,   outline="black", width=3)   # Remove internal
-    return new_img
-
-    # width, height = image.size
-    # new_img = Image.new("RGB", (width * width_mult, height * height_mult))
-
-    # for x, y in product(range(width), range(height)):
-    #     pixel = image.getpixel((x, y))
-    #     for dx, dy in product(range(width_mult), range(height_mult)):
-    #         new_img.putpixel((x * width_mult + dx, y * height_mult + dy), pixel)
-    
+    # new_img = Image.new('RGBA', (200, 200))
+    # draw.ellipse((0,0,100,100), fill="blue",  outline="black", width=3) # External Black Outline
+    # draw.ellipse((15,15,85,85), fill=alpha,   outline="black", width=3)   # Remove internal
     # return new_img
+
+    width, height = image.size
+    new_img = Image.new("RGBA", (width * 100, height * 100))
+    draw = ImageDraw.Draw(new_img)
+
+    for x, y in product(range(width), range(height)):
+        pixel = image.getpixel((x, y))
+
+        x1, y1 = x*100,  y*100
+        x2, y2 = x1+100, y1+100
+        draw.ellipse((x1,y1,x2,y2), fill="blue",  outline="black", width=3) # Main color
+
+        x1, y1, x2, y2 = x1+15, y1+15, x2-15, y2-15
+        draw.ellipse((x1,y1,x2,y2), fill=alpha,   outline="black", width=3)   # Remove internal
+
+
+
+    return new_img
 
 
 ###############################
