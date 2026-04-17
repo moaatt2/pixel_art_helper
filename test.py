@@ -2,7 +2,7 @@ import os
 import glob
 import json
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from typing import Optional, Tuple
 from itertools import product
 from math import sqrt, atan2, degrees, sin, cos, exp, radians
@@ -369,6 +369,26 @@ def estimate_size(image: Image.Image, gauge: int, gauge_system: str, internal_di
     return (width, height)
 
 
+# Create inlay preview from image
+def convert_to_inlay(image: Image.Image) -> Image.Image:
+
+    new_img = Image.new('RGBA', (200, 200))
+    draw = ImageDraw.Draw(new_img)
+    co_ords = (20,20,180,180)
+    draw.ellipse(co_ords, fill="blue", outline="black")
+    return new_img
+
+    # width, height = image.size
+    # new_img = Image.new("RGB", (width * width_mult, height * height_mult))
+
+    # for x, y in product(range(width), range(height)):
+    #     pixel = image.getpixel((x, y))
+    #     for dx, dy in product(range(width_mult), range(height_mult)):
+    #         new_img.putpixel((x * width_mult + dx, y * height_mult + dy), pixel)
+    
+    # return new_img
+
+
 ###############################
 ### File Operation Wrappers ###
 ###############################
@@ -451,6 +471,25 @@ def estimate_size_f(filename: str, gauge: int, gauge_system: str, internal_diame
         return estimate_size(img, gauge, gauge_system, internal_diameter, units)
 
 
+# Wrapper for convert to inlay that operates on files
+def convert_to_inlay_f(filename: str) -> str:
+
+    # Open image and convert to inlay
+    with Image.open(filename) as source:
+        new_img = convert_to_inlay(source)
+
+        # Construct output filename
+        input_filename  = filename.split(".")[0]
+        input_extension = filename.split(".")[-1]
+        output_file = f"{input_filename}_inlay.{input_extension}"
+
+        # Save modified image
+        new_img.save(output_file)
+
+        # Return output filename
+        return output_file
+
+
 ################
 ### Use case ###
 ################
@@ -462,6 +501,9 @@ def estimate_size_f(filename: str, gauge: int, gauge_system: str, internal_diame
 #############
 ### Tests ###
 #############
+
+# Test Conversion to inlay
+convert_to_inlay_f("test_images/img_to_ring_testing/test_input.png")
 
 # # Test the resize_image function
 # input_file = "test_images/pixel_art_pheonix_base.bmp"
