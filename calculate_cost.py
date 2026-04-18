@@ -1,7 +1,7 @@
 import json
 import math
 from PIL import Image
-from typing import Tuple
+from typing import Tuple, Union
 
 ################
 ### Settings ###
@@ -9,8 +9,8 @@ from typing import Tuple
 
 # Cost settings
 rings_per_bag       = 300
-cost_per_bag_matte  = 7.58
-cost_per_bag_bright = 9.12
+cost_per_bag_matte  = 7.65
+cost_per_bag_bright = 9.22
 
 # Palette Choice
 palette_file = "palettes/ring_lord_palette_derived.json"
@@ -29,20 +29,30 @@ with open(palette_file, "r") as f:
 #################
 
 # Returns a count of pixels by color in the image
-def rings_by_color(file: str) -> dict:
+def rings_by_color(file: Union[str, Image.Image]) -> dict:
 
     # Define output dictionary
     out = dict()
 
-    # Iterate through pixels and count colors
-    with Image.open(file) as img:
-        for pixel in img.get_flattened_data():
+    if type(file) == str:
+        # Iterate through pixels and count colors
+        with Image.open(file) as img:
+            for pixel in img.get_flattened_data():
+                color = f"{pixel[0]:02X}{pixel[1]:02X}{pixel[2]:02X}"
+                if color in out:
+                    out[color] += 1
+                else:
+                    out[color] = 1
+
+    # Handle direct image input
+    elif type(file) == Image.Image:
+        for pixel in file.get_flattened_data():
             color = f"{pixel[0]:02X}{pixel[1]:02X}{pixel[2]:02X}"
             if color in out:
                 out[color] += 1
             else:
                 out[color] = 1
-    
+
     return out
 
 
@@ -154,12 +164,12 @@ def generate_markdown(filename: str, cost: float, breakdown: dict) -> str:
 # print(calculate_cost(rings_by_palette))
 # print()
 
-# Test generate markdown
-filename = "test_images/winner/metroid_c1_2x2_ring_lord_palette_derived_in_stock.bmp"
-color_count = rings_by_color(filename)
-rings_by_palette = convert_to_palette(color_count, palette)
-cost, breakdown = calculate_cost(rings_by_palette)
-print(generate_markdown(filename, cost, breakdown))
-print()
+# # Test generate markdown
+# filename = "test_images/winner/metroid_c1_2x2_ring_lord_palette_derived_in_stock.bmp"
+# color_count = rings_by_color(filename)
+# rings_by_palette = convert_to_palette(color_count, palette)
+# cost, breakdown = calculate_cost(rings_by_palette)
+# print(generate_markdown(filename, cost, breakdown))
+# print()
 
 
