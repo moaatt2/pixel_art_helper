@@ -372,29 +372,29 @@ def estimate_size(image: Image.Image, gauge: int, gauge_system: str, internal_di
 # Create inlay preview from image
 def convert_to_inlay(image: Image.Image) -> Image.Image:
 
+    # Basic background fill
     alpha = (0,0,0,0)
 
-    # new_img = Image.new('RGBA', (200, 200))
-    # draw.ellipse((0,0,100,100), fill="blue",  outline="black", width=3) # External Black Outline
-    # draw.ellipse((15,15,85,85), fill=alpha,   outline="black", width=3)   # Remove internal
-    # return new_img
-
+    # Create new image
     width, height = image.size
     new_img = Image.new("RGBA", (width * 100, height * 100))
     draw = ImageDraw.Draw(new_img)
 
+    # Draw a circle for each pixel
     for x, y in product(range(width), range(height)):
         pixel = image.getpixel((x, y))
 
+        # Draw full circle
         x1, y1 = x*100,  y*100
         x2, y2 = x1+100, y1+100
-        draw.ellipse((x1,y1,x2,y2), fill=pixel,  outline="black", width=3) # Main color
+        draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=3)
 
+        # Remove inside of circle
         x1, y1, x2, y2 = x1+15, y1+15, x2-15, y2-15
-        draw.ellipse((x1,y1,x2,y2), fill=alpha,   outline="black", width=3)   # Remove internal
+        draw.ellipse((x1,y1,x2,y2), fill=alpha, outline="black", width=3)
 
 
-
+    # Return inlay image
     return new_img
 
 
@@ -499,138 +499,141 @@ def convert_to_inlay_f(filename: str) -> str:
         return output_file
 
 
-################
-### Use case ###
-################
+# Only run tests when this file is called
+if __name__ == "__main__":
 
-# apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite.bmp", closest_color_euclidean, "rgb")
-# apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite_2x2.bmp", closest_color_euclidean, "rgb")
+    ################
+    ### Use case ###
+    ################
 
-
-#############
-### Tests ###
-#############
-
-# Test Conversion to inlay
-convert_to_inlay_f("test_images/img_to_ring_testing/test_input.png")
-
-# # Test the resize_image function
-# input_file = "test_images/pixel_art_pheonix_base.bmp"
-# resize_image(input_file, 2, 2)
-
-# # Test the apply_palette function
-# palette_file = "palettes/ring_lord_rings.json"
-# image_file = "test_images/pixel_art_pheonix_base.bmp"
-# apply_palette(palette_file, image_file, closest_color_euclidean)
-
-# ## RGB TO CIELAB tests
-# print("RGB TO CIELAB Black (0, 0, 0)")
-# print("Expected: (0, 0, 0)")
-# print(f"Result:   {rgb_to_cielab((0, 0, 0))}")
-# print()
-
-# print("RGB TO CIELAB Grey (127, 127, 127)")
-# print("Expected: (53.5850, 0, 0)")
-# print(f"Result:   {rgb_to_cielab((128, 128, 128))}")
-# print()
-
-# print("RGB TO CIELAB White (255, 255, 255)")
-# print("Expected: (100, 0, 0)")
-# print(f"Result:   {rgb_to_cielab((255, 255, 255))}")
-# print()
-
-# print("RGB TO CIELAB Red (255, 0, 0)")
-# print("Expected: (53.2408, 80.0925, 67.2032)")
-# print(f"Result:   {rgb_to_cielab((255, 0, 0))}")
-# print()
-
-# print("RGB TO CIELAB Green (0, 255, 0)")
-# print("Expected: (87.7347, -86.1827, 83.1793)")
-# print(f"Result:   {rgb_to_cielab((0, 255, 0))}")
-# print()
-
-# print("RGB TO CIELAB Blue (0, 0, 255)")
-# print("Expected: (32.2970, 79.1875, -107.8602)")
-# print(f"Result:   {rgb_to_cielab((0, 0, 255))}")
-# print()
+    # apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite.bmp", closest_color_euclidean, "rgb")
+    # apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite_2x2.bmp", closest_color_euclidean, "rgb")
 
 
-# ## CIELAB 2000 Delta E tests
-# print("Identical Colors")
-# color_1, color_2 = (50, 2.6772, -79.7751), (50, 2.6772, -79.7751)
-# ee, de = 0, cielab_00(color_1, color_2)
-# print(f"Color 1: {color_1}")
-# print(f"Color 2: {color_2}")
-# print(f"Actual Result:   {de:.4f}")
-# print(f"Expected Result: {ee:.4f}")
-# print(f"Difference:      {abs(ee-de):.4f}")
-# print()
+    #############
+    ### Tests ###
+    #############
 
-# print("Small Hue Shift")
-# color_1, color_2 = (50, 2.6772, -79.7751), (50, 0.0000, -82.7485)
-# ee, de = 2.0425, cielab_00(color_1, color_2)
-# print(f"Color 1: {color_1}")
-# print(f"Color 2: {color_2}")
-# print(f"Actual Result:   {de:.4f}")
-# print(f"Expected Result: {ee:.4f}")
-# print(f"Difference:      {abs(ee-de):.4f}")
-# print()
+    # Test Conversion to inlay
+    convert_to_inlay_f("test_images/img_to_ring_testing/test_input.png")
 
-# print("Medium Hue Shift")
-# color_1, color_2 = (50, 2.8361, -74.0200), (50, 0.0000, -82.7485)
-# ee, de = 3.4412, cielab_00(color_1, color_2)
-# print(f"Color 1: {color_1}")
-# print(f"Color 2: {color_2}")
-# print(f"Actual Result:   {de:.4f}")
-# print(f"Expected Result: {ee:.4f}")
-# print(f"Difference:      {abs(ee-de):.4f}")
-# print()
+    # # Test the resize_image function
+    # input_file = "test_images/pixel_art_pheonix_base.bmp"
+    # resize_image(input_file, 2, 2)
 
-# print("Large Hue Shift")
-# color_1, color_2 = (50, -1.3802, -84.2814), (50, 0.0000, -82.7485)
-# ee, de = 1, cielab_00(color_1, color_2)
-# print(f"Color 1: {color_1}")
-# print(f"Color 2: {color_2}")
-# print(f"Actual Result:   {de:.4f}")
-# print(f"Expected Result: {ee:.4f}")
-# print(f"Difference:      {abs(ee-de):.4f}")
-# print()
+    # # Test the apply_palette function
+    # palette_file = "palettes/ring_lord_rings.json"
+    # image_file = "test_images/pixel_art_pheonix_base.bmp"
+    # apply_palette(palette_file, image_file, closest_color_euclidean)
 
-# print("Symmetry Test")
-# color_1, color_2 = (50, 0.0000, -82.7485), (50, -1.3802, -84.2814)
-# ee, de = cielab_00(color_2, color_1), cielab_00(color_1, color_2)
-# print(f"Color 1: {color_1}")
-# print(f"Color 2: {color_2}")
-# print(f"Actual Result:   {de:.4f}")
-# print(f"Expected Result: {ee:.4f}")
-# print(f"Difference:      {abs(ee-de):.4f}")
-# print()
+    # ## RGB TO CIELAB tests
+    # print("RGB TO CIELAB Black (0, 0, 0)")
+    # print("Expected: (0, 0, 0)")
+    # print(f"Result:   {rgb_to_cielab((0, 0, 0))}")
+    # print()
 
-# print("Low Chroma Test")
-# color_1, color_2 = (50, 0, 0), (50, -1, -2)
-# ee, de = 2.3669, cielab_00(color_1, color_2)
-# print(f"Color 1: {color_1}")
-# print(f"Color 2: {color_2}")
-# print(f"Actual Result:   {de:.4f}")
-# print(f"Expected Result: {ee:.4f}")
-# print(f"Difference:      {abs(ee-de):.4f}")
-# print()
+    # print("RGB TO CIELAB Grey (127, 127, 127)")
+    # print("Expected: (53.5850, 0, 0)")
+    # print(f"Result:   {rgb_to_cielab((128, 128, 128))}")
+    # print()
 
-# print("Large Lighness Difference")
-# color_1, color_2 = (90, -2.0831, 1.4410), (59, -0.4250, -1.4530)
-# ee, de = 23.0539, cielab_00(color_1, color_2)
-# print(f"Color 1: {color_1}")
-# print(f"Color 2: {color_2}")
-# print(f"Actual Result:   {de:.4f}")
-# print(f"Expected Result: {ee:.4f}")
-# print(f"Difference:      {abs(ee-de):.4f}")
-# print()
+    # print("RGB TO CIELAB White (255, 255, 255)")
+    # print("Expected: (100, 0, 0)")
+    # print(f"Result:   {rgb_to_cielab((255, 255, 255))}")
+    # print()
+
+    # print("RGB TO CIELAB Red (255, 0, 0)")
+    # print("Expected: (53.2408, 80.0925, 67.2032)")
+    # print(f"Result:   {rgb_to_cielab((255, 0, 0))}")
+    # print()
+
+    # print("RGB TO CIELAB Green (0, 255, 0)")
+    # print("Expected: (87.7347, -86.1827, 83.1793)")
+    # print(f"Result:   {rgb_to_cielab((0, 255, 0))}")
+    # print()
+
+    # print("RGB TO CIELAB Blue (0, 0, 255)")
+    # print("Expected: (32.2970, 79.1875, -107.8602)")
+    # print(f"Result:   {rgb_to_cielab((0, 0, 255))}")
+    # print()
 
 
-# Test Size Estimation Function
-# size = estimate_size("test_images/finalists/metroid_c1_2x2.bmp", 16, "SWG", 1/4, "inches")
-# print(size)
+    # ## CIELAB 2000 Delta E tests
+    # print("Identical Colors")
+    # color_1, color_2 = (50, 2.6772, -79.7751), (50, 2.6772, -79.7751)
+    # ee, de = 0, cielab_00(color_1, color_2)
+    # print(f"Color 1: {color_1}")
+    # print(f"Color 2: {color_2}")
+    # print(f"Actual Result:   {de:.4f}")
+    # print(f"Expected Result: {ee:.4f}")
+    # print(f"Difference:      {abs(ee-de):.4f}")
+    # print()
 
-# Test Rotate Function
-# rotate_image_f("test_images/finalists/metroid_c1_2x2.bmp", 90, True)
+    # print("Small Hue Shift")
+    # color_1, color_2 = (50, 2.6772, -79.7751), (50, 0.0000, -82.7485)
+    # ee, de = 2.0425, cielab_00(color_1, color_2)
+    # print(f"Color 1: {color_1}")
+    # print(f"Color 2: {color_2}")
+    # print(f"Actual Result:   {de:.4f}")
+    # print(f"Expected Result: {ee:.4f}")
+    # print(f"Difference:      {abs(ee-de):.4f}")
+    # print()
+
+    # print("Medium Hue Shift")
+    # color_1, color_2 = (50, 2.8361, -74.0200), (50, 0.0000, -82.7485)
+    # ee, de = 3.4412, cielab_00(color_1, color_2)
+    # print(f"Color 1: {color_1}")
+    # print(f"Color 2: {color_2}")
+    # print(f"Actual Result:   {de:.4f}")
+    # print(f"Expected Result: {ee:.4f}")
+    # print(f"Difference:      {abs(ee-de):.4f}")
+    # print()
+
+    # print("Large Hue Shift")
+    # color_1, color_2 = (50, -1.3802, -84.2814), (50, 0.0000, -82.7485)
+    # ee, de = 1, cielab_00(color_1, color_2)
+    # print(f"Color 1: {color_1}")
+    # print(f"Color 2: {color_2}")
+    # print(f"Actual Result:   {de:.4f}")
+    # print(f"Expected Result: {ee:.4f}")
+    # print(f"Difference:      {abs(ee-de):.4f}")
+    # print()
+
+    # print("Symmetry Test")
+    # color_1, color_2 = (50, 0.0000, -82.7485), (50, -1.3802, -84.2814)
+    # ee, de = cielab_00(color_2, color_1), cielab_00(color_1, color_2)
+    # print(f"Color 1: {color_1}")
+    # print(f"Color 2: {color_2}")
+    # print(f"Actual Result:   {de:.4f}")
+    # print(f"Expected Result: {ee:.4f}")
+    # print(f"Difference:      {abs(ee-de):.4f}")
+    # print()
+
+    # print("Low Chroma Test")
+    # color_1, color_2 = (50, 0, 0), (50, -1, -2)
+    # ee, de = 2.3669, cielab_00(color_1, color_2)
+    # print(f"Color 1: {color_1}")
+    # print(f"Color 2: {color_2}")
+    # print(f"Actual Result:   {de:.4f}")
+    # print(f"Expected Result: {ee:.4f}")
+    # print(f"Difference:      {abs(ee-de):.4f}")
+    # print()
+
+    # print("Large Lighness Difference")
+    # color_1, color_2 = (90, -2.0831, 1.4410), (59, -0.4250, -1.4530)
+    # ee, de = 23.0539, cielab_00(color_1, color_2)
+    # print(f"Color 1: {color_1}")
+    # print(f"Color 2: {color_2}")
+    # print(f"Actual Result:   {de:.4f}")
+    # print(f"Expected Result: {ee:.4f}")
+    # print(f"Difference:      {abs(ee-de):.4f}")
+    # print()
+
+
+    # Test Size Estimation Function
+    # size = estimate_size("test_images/finalists/metroid_c1_2x2.bmp", 16, "SWG", 1/4, "inches")
+    # print(size)
+
+    # Test Rotate Function
+    # rotate_image_f("test_images/finalists/metroid_c1_2x2.bmp", 90, True)
 
