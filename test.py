@@ -381,28 +381,29 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     draw = ImageDraw.Draw(new_img)
 
     # Draw a circle for each pixel
-    for x, y in product(range(width), range(height)):
-        pixel = image.getpixel((x, y))
+    for y in range(height):
+        for x in range(width) if y%2 == 0 else range(width-1,-1,-1):
+            pixel = image.getpixel((x, y))
 
-        # Full circle co-ordinates
-        x1, y1 = x*30,  y*50
-        x2, y2 = x1+40, y1+50
+            # Full circle co-ordinates
+            x1, y1 = x*30,  y*50
+            x2, y2 = x1+40, y1+50
 
-        # Hollow center co-ordinates
-        x3, y3, x4, y4 = x1+8, y1+8, x2-8, y2-8
+            # Hollow center co-ordinates
+            x3, y3, x4, y4 = x1+8, y1+8, x2-8, y2-8
 
-        # Horizontal offset for alternating rows
-        if y%2 == 1:
-            x1 += 20
-            x2 += 20
-            x3 += 20
-            x4 += 20
+            # Horizontal offset for alternating rows
+            if y%2 == 1:
+                x1 += 20
+                x2 += 20
+                x3 += 20
+                x4 += 20
 
-        # Draw full circle
-        draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
+            # Draw full circle
+            draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
 
-        # Remove inside of circle
-        draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
+            # Remove inside of circle
+            draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
 
 
     # Return inlay image
