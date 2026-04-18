@@ -377,7 +377,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
     # Create new image
     width, height = image.size
-    new_img = Image.new("RGBA", (width * 100, height * 100))
+    new_img = Image.new("RGBA", (width * 50, height * 50))
     draw = ImageDraw.Draw(new_img)
 
     # Draw a circle for each pixel
@@ -385,13 +385,13 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         pixel = image.getpixel((x, y))
 
         # Draw full circle
-        x1, y1 = x*100,  y*100
-        x2, y2 = x1+100, y1+100
-        draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=3)
+        x1, y1 = x*50,  y*50
+        x2, y2 = x1+50, y1+50
+        draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
 
         # Remove inside of circle
-        x1, y1, x2, y2 = x1+15, y1+15, x2-15, y2-15
-        draw.ellipse((x1,y1,x2,y2), fill=alpha, outline="black", width=3)
+        x1, y1, x2, y2 = x1+8, y1+8, x2-8, y2-8
+        draw.ellipse((x1,y1,x2,y2), fill=alpha, outline="black", width=1)
 
 
     # Return inlay image
