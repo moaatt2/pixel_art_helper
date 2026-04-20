@@ -573,12 +573,32 @@ if __name__ == "__main__":
     # apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite.bmp", closest_color_euclidean, "rgb")
     # apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite_2x2.bmp", closest_color_euclidean, "rgb")
 
+
+    ################################
+    ### Inlay Conversion Testing ###
+    ################################
+
+    from datetime import datetime as dt
+
+    # Original function
+    start = dt.now()
+    convert_to_inlay_f("test_images/img_to_ring_testing/test_input.png")
+    end = dt.now()
+    print(f"\tTest Input: {(end-start).total_seconds():.2f} seconds")
+
+    start = dt.now()
+    convert_to_inlay_f("test_images/TADC/caine.bmp")
+    end = dt.now()
+    print(f"\tCaine: {(end-start).total_seconds():.2f} seconds")
+
+    start = dt.now()
+    convert_to_inlay_f("test_images/exdeath_2x2.bmp")
+    end = dt.now()
+    print(f"\tExdeath 2x2: {(end-start).total_seconds():.2f} seconds")
+
     #############
     ### Tests ###
     #############
-
-    # Test conversion to inlay
-    convert_to_inlay_f("test_images/img_to_ring_testing/test_input.png")
 
     # # Test the resize_image function
     # input_file = "test_images/pixel_art_pheonix_base.bmp"
