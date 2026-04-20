@@ -377,34 +377,86 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
     # Create new image
     width, height = image.size
-    new_img = Image.new("RGBA", (width * 30+10+21, height * 26+25))
-    draw = ImageDraw.Draw(new_img)
+    new_img = Image.new("RGBA", (width * 30+10+19, height * 26+25))
 
-    # Draw a circle for each pixel
-    for y in range(height):
-        for x in range(width) if y%2 == 0 else range(width-1,-1,-1):
-            pixel = image.getpixel((x, y))
+    # Handle even layers
+    for x, y in product(range(width), range(height)):
+        if y%2 == 1:
+            continue
 
-            # Full circle co-ordinates
-            x1, y1 = x*30,  y*26
-            x2, y2 = x1+40, y1+50
+        # Create new layer for ring
+        new_layer = Image.new("RGBA", new_img.size)
+        new_draw  = ImageDraw.Draw(new_layer)
 
-            # Hollow center co-ordinates
-            x3, y3, x4, y4 = x1+8, y1+8, x2-8, y2-8
+        # Get target color
+        pixel = image.getpixel((x, y))
 
-            # Horizontal offset for alternating rows
-            if y%2 == 1:
-                x1 += 20
-                x2 += 20
-                x3 += 20
-                x4 += 20
+        # Full circle co-ordinates
+        x1, y1 = x*31,  y*26
+        x2, y2 = x1+40, y1+50
 
-            # Draw full circle
-            draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
+        # Hollow center co-ordinates
+        x3, y3, x4, y4 = x1+8, y1+8, x2-8, y2-8
 
-            # Remove inside of circle
-            draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
+        # Draw filled ellipse
+        new_draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
 
+        # Remove center to form ring
+        new_draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
+
+        # Add ring to image
+        new_img = Image.alpha_composite(new_layer, new_img)
+
+
+    # Handle odd layers
+    for x, y in product(range(width), range(height)):
+        if y%2 == 0:
+            continue
+
+        # Create new layers
+        top_layer = Image.new("RGBA", new_img.size)
+        bot_layer = Image.new("RGBA", new_img.size)
+
+        # Create draw objects
+        top_draw = ImageDraw.Draw(top_layer)
+        bot_draw = ImageDraw.Draw(bot_layer)
+
+        # Get target color
+        pixel = image.getpixel((x, y))
+
+        # Full circle co-ordinates
+        x1, y1 = x*31+16, y*26
+        x2, y2 = x1+40,   y1+50
+
+        # Hollow center co-ordinates
+        x3, y3, x4, y4 = x1+8, y1+8, x2-8, y2-8
+
+        # Co-ordinates to mask left side
+        lx1, lx2= x1, x1+12
+
+        # Co-ordinates to mask right side
+        rx1, rx2 = lx2+1, x2
+
+        # Draw full circle
+        top_draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
+        bot_draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
+
+        # Remove inside of circle
+        top_draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
+        bot_draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
+
+        # Mask top/bottom layers
+        top_draw.rectangle((lx1,y1,lx2,y2), fill=alpha, outline=None)
+        bot_draw.rectangle((rx1,y1,rx2,y2), fill=alpha, outline=None)
+
+        # Composite layers
+        new_img = Image.alpha_composite(top_layer, new_img)
+        new_img = Image.alpha_composite(new_img, bot_layer)
+
+    # Replace alpha with grey and convert to RGB
+    grey_layer = Image.new("RGBA", new_img.size, (127,127,127,255))
+    new_img = Image.alpha_composite(grey_layer, new_img)
+    new_img = new_img.convert("RGB")
 
     # Return inlay image
     return new_img
@@ -521,12 +573,11 @@ if __name__ == "__main__":
     # apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite.bmp", closest_color_euclidean, "rgb")
     # apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite_2x2.bmp", closest_color_euclidean, "rgb")
 
-
     #############
     ### Tests ###
     #############
 
-    # Test Conversion to inlay
+    # Test conversion to inlay
     convert_to_inlay_f("test_images/img_to_ring_testing/test_input.png")
 
     # # Test the resize_image function
