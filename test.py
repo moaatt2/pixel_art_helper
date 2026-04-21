@@ -239,6 +239,87 @@ def ignore_white(pixel: tuple, white_level: int = 250) -> bool:
         return False
 
 
+# Helper function to draw a ring
+def ring_helper(img_main: Image.Image, img_buffer: Image.Image, ring_fill: Tuple[int], thickness: int, main_co_ords: Tuple[int], layer: str, buffer_co_ords: Optional[Tuple[int]] = None) -> None:
+    """A helper function to assist with drawing rings in a PIL image.
+
+    Args:
+        img_main (Image.Image):                          The main image you want to draw the ring in
+        img_buffer (Image.Image):                        A buffer image to draw the full ring in
+        ring_fill (Tuple[int]):                          The color to fill the ring with
+        thickness (int):                                 How thick the ring should be
+        main_co_ords (Tuple[int]):                       Where in the main image you want to start drawing
+        layer (str):                                     Should the function draw on top of or below other pixels in the main image
+        buffer_co_ords (Optional[Tuple[int]], optional): A tuple in the form x1, y1, dx, dy defining a subset of the buffer layer to copy to the main image.
+    """
+
+    ###########################
+    ### Draw Helper Ellipse ###
+    ###########################
+
+    # Define an alpha color
+    alpha = (0,0,0,0)
+
+    w, h = img_buffer.size
+
+    # Determine ring size from buffer size
+    x1, y1 = 0, 0
+    x2, y2 = w-1, h-1
+
+    # Use thickness to determine size of inner ring
+    x3, y3, x4, y4 = x1+thickness, y1+thickness, x2-thickness, y2-thickness
+
+    # Create draw object for buffer
+    draw = ImageDraw.Draw(img_buffer)
+
+    # Reset buffer image
+    draw.rectangle((x1, y1, x2, y2), alpha)
+
+    # Draw outer circle
+    draw.ellipse((x1,y1,x2,y2), fill=ring_fill, outline="black", width=1)
+
+    # Remove interior
+    draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
+
+
+    ########################
+    ### Copy/Paste Logic ###
+    ########################
+
+    # How much is being copied from the buffer
+    cut_delta_x = buffer_co_ords[2] if buffer_co_ords else w
+    cut_delta_y = buffer_co_ords[3] if buffer_co_ords else h
+
+    # Where to start cutting from
+    cut_start_x = buffer_co_ords[0] if buffer_co_ords else 0
+    cut_start_y = buffer_co_ords[1] if buffer_co_ords else 0
+
+    # Where to start pasting
+    pst_start_x = main_co_ords[0]
+    pst_start_y = main_co_ords[1]
+
+    # Itterate over pixel pairs
+    for x in range(cut_delta_x):
+        for y in range(cut_delta_y):
+
+            # Determine target locations
+            loc_buff = (cut_start_x + x, cut_start_y + y)
+            loc_main = (pst_start_x + x, pst_start_y + y)
+
+            # Get Pixel values
+            pixel_buff = img_buffer.getpixel(loc_buff)
+            # print(loc_main)
+            pixel_main = img_main.getpixel(loc_main)
+
+            # If buffer is color and layer is top put pixel in image
+            if layer == "top" and pixel_buff[3] != 0:
+                img_main.putpixel(loc_main, pixel_buff)
+
+            # If layer is bottom and main is alpha put buffer color
+            elif layer == "bottom" and pixel_main[3] == 0 and pixel_buff[3] != 0:
+                img_main.putpixel(loc_main, pixel_buff)
+
+
 ####################################
 ### Image Manipulation Functions ###
 ####################################
