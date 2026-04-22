@@ -458,35 +458,23 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
     # Create new image
     width, height = image.size
-    new_img = Image.new("RGBA", (width * 30+10+19, height * 26+25))
+    new_img = Image.new("RGBA", ((width-1) * 30+40+16, (height-1) * 26+50))
+    buf_img = Image.new("RGBA",(40, 50))
 
     # Handle even layers
     for x, y in product(range(width), range(height)):
         if y%2 == 1:
             continue
 
-        # Create new layer for ring
-        new_layer = Image.new("RGBA", new_img.size)
-        new_draw  = ImageDraw.Draw(new_layer)
-
         # Get target color
         pixel = image.getpixel((x, y))
 
         # Full circle co-ordinates
-        x1, y1 = x*31,  y*26
-        x2, y2 = x1+40, y1+50
+        x1, y1 = x*30,  y*26
+        x2, y2 = x1+39, y1+49
 
-        # Hollow center co-ordinates
-        x3, y3, x4, y4 = x1+8, y1+8, x2-8, y2-8
-
-        # Draw filled ellipse
-        new_draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
-
-        # Remove center to form ring
-        new_draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
-
-        # Add ring to image
-        new_img = Image.alpha_composite(new_layer, new_img)
+        # Use helper function to draw ring
+        ring_helper(new_img, buf_img, pixel, 8, (x1, y1), "bottom")
 
 
     # Handle odd layers
@@ -494,45 +482,18 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         if y%2 == 0:
             continue
 
-        # Create new layers
-        top_layer = Image.new("RGBA", new_img.size)
-        bot_layer = Image.new("RGBA", new_img.size)
-
-        # Create draw objects
-        top_draw = ImageDraw.Draw(top_layer)
-        bot_draw = ImageDraw.Draw(bot_layer)
-
         # Get target color
         pixel = image.getpixel((x, y))
 
         # Full circle co-ordinates
-        x1, y1 = x*31+16, y*26
-        x2, y2 = x1+40,   y1+50
+        x1, y1 = x*30+16, y*26
+        x2, y2 = x1+39,   y1+49
 
-        # Hollow center co-ordinates
-        x3, y3, x4, y4 = x1+8, y1+8, x2-8, y2-8
+        # Draw left on top
+        ring_helper(new_img, buf_img, pixel, 8, (x1, y1), "top", (0, 0, 13, 50))
 
-        # Co-ordinates to mask left side
-        lx1, lx2= x1, x1+12
-
-        # Co-ordinates to mask right side
-        rx1, rx2 = lx2+1, x2
-
-        # Draw full circle
-        top_draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
-        bot_draw.ellipse((x1,y1,x2,y2), fill=pixel, outline="black", width=1)
-
-        # Remove inside of circle
-        top_draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
-        bot_draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
-
-        # Mask top/bottom layers
-        top_draw.rectangle((lx1,y1,lx2,y2), fill=alpha, outline=None)
-        bot_draw.rectangle((rx1,y1,rx2,y2), fill=alpha, outline=None)
-
-        # Composite layers
-        new_img = Image.alpha_composite(top_layer, new_img)
-        new_img = Image.alpha_composite(new_img, bot_layer)
+        # Draw right on bottom
+        ring_helper(new_img, buf_img, pixel, 8, (x1+13, y1), "bottom", (13, 0, 27, 50))
 
     # Replace alpha with grey and convert to RGB
     grey_layer = Image.new("RGBA", new_img.size, (127,127,127,255))
