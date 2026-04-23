@@ -240,51 +240,20 @@ def ignore_white(pixel: tuple, white_level: int = 250) -> bool:
 
 
 # Helper function to draw a ring
-def ring_helper(img_main: Image.Image, img_buffer: Image.Image, ring_fill: Tuple[int], thickness: int, main_co_ords: Tuple[int], layer: str, buffer_co_ords: Optional[Tuple[int]] = None) -> None:
+def ring_helper(img_main: Image.Image, img_buffer: Image.Image, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer: str, buffer_co_ords: Optional[Tuple[int]] = None) -> None:
     """A helper function to assist with drawing rings in a PIL image.
 
     Args:
         img_main (Image.Image):                          The main image you want to draw the ring in
         img_buffer (Image.Image):                        A buffer image to draw the full ring in
         ring_fill (Tuple[int]):                          The color to fill the ring with
-        thickness (int):                                 How thick the ring should be
         main_co_ords (Tuple[int]):                       Where in the main image you want to start drawing
         layer (str):                                     Should the function draw on top of or below other pixels in the main image
         buffer_co_ords (Optional[Tuple[int]], optional): A tuple in the form x1, y1, dx, dy defining a subset of the buffer layer to copy to the main image.
     """
 
-    ###########################
-    ### Draw Helper Ellipse ###
-    ###########################
-
-    # Define an alpha color
-    alpha = (0,0,0,0)
-
+    # Get buffer dimmensions
     w, h = img_buffer.size
-
-    # Determine ring size from buffer size
-    x1, y1 = 0, 0
-    x2, y2 = w-1, h-1
-
-    # Use thickness to determine size of inner ring
-    x3, y3, x4, y4 = x1+thickness, y1+thickness, x2-thickness, y2-thickness
-
-    # Create draw object for buffer
-    draw = ImageDraw.Draw(img_buffer)
-
-    # Reset buffer image
-    draw.rectangle((x1, y1, x2, y2), alpha)
-
-    # Draw outer circle
-    draw.ellipse((x1,y1,x2,y2), fill=ring_fill, outline="black", width=1)
-
-    # Remove interior
-    draw.ellipse((x3,y3,x4,y4), fill=alpha, outline="black", width=1)
-
-
-    ########################
-    ### Copy/Paste Logic ###
-    ########################
 
     # How much is being copied from the buffer
     cut_delta_x = buffer_co_ords[2] if buffer_co_ords else w
@@ -308,16 +277,17 @@ def ring_helper(img_main: Image.Image, img_buffer: Image.Image, ring_fill: Tuple
 
             # Get Pixel values
             pixel_buff = img_buffer.getpixel(loc_buff)
-            # print(loc_main)
             pixel_main = img_main.getpixel(loc_main)
 
             # If buffer is color and layer is top put pixel in image
             if layer == "top" and pixel_buff[3] != 0:
-                img_main.putpixel(loc_main, pixel_buff)
+                color = ring_fill if pixel_buff[0] > 0 else (0,0,0,255)
+                img_main.putpixel(loc_main, color)
 
             # If layer is bottom and main is alpha put buffer color
             elif layer == "bottom" and pixel_main[3] == 0 and pixel_buff[3] != 0:
-                img_main.putpixel(loc_main, pixel_buff)
+                color = ring_fill if pixel_buff[0] > 0 else (0,0,0,255)
+                img_main.putpixel(loc_main, color)
 
 
 ####################################
@@ -453,13 +423,50 @@ def estimate_size(image: Image.Image, gauge: int, gauge_system: str, internal_di
 # Create inlay preview from image
 def convert_to_inlay(image: Image.Image) -> Image.Image:
 
+    ################
+    ### Settings ###
+    ################
+
+    rw = 40 # Ring width
+    rh = 50 # Ring height
+    tk = 8  # Ring thickness
+
     # Basic background fill
     alpha = (0,0,0,0)
+
+
+    ########################
+    ### Create New Image ###
+    ########################
 
     # Create new image
     width, height = image.size
     new_img = Image.new("RGBA", ((width-1) * 30+40+16, (height-1) * 26+50))
-    buf_img = Image.new("RGBA",(40, 50))
+
+
+    ############################
+    ### Create Ring Template ###
+    ############################
+
+    # Create template image
+    buf_img = Image.new("RGBA",(rw, rh))
+
+    # Determine ring size from buffer size
+    x1, y1 = 0, 0
+    x2, y2 = rw-1, rh-1
+
+    # Use thickness to determine size of inner ring
+    x3, y3, x4, y4 = x1+tk, y1+tk, x2-tk, y2-tk
+
+    # Draw sample ring in image buffer
+    draw = ImageDraw.Draw(buf_img)
+    draw.ellipse((0,0,x2,y2),   fill="white", outline="black", width=1)
+    draw.ellipse((x3,y3,x4,y4), fill=alpha,   outline="black", width=1)
+
+
+    ##################
+    ### Draw Image ###
+    ##################
 
     # Handle even layers
     for x, y in product(range(width), range(height)):
@@ -474,7 +481,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         x2, y2 = x1+39, y1+49
 
         # Use helper function to draw ring
-        ring_helper(new_img, buf_img, pixel, 8, (x1, y1), "bottom")
+        ring_helper(new_img, buf_img, pixel, (x1, y1), "bottom")
 
 
     # Handle odd layers
@@ -490,10 +497,10 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         x2, y2 = x1+39,   y1+49
 
         # Draw left on top
-        ring_helper(new_img, buf_img, pixel, 8, (x1, y1), "top", (0, 0, 13, 50))
+        ring_helper(new_img, buf_img, pixel, (x1, y1), "top", (0, 0, 13, 50))
 
         # Draw right on bottom
-        ring_helper(new_img, buf_img, pixel, 8, (x1+13, y1), "bottom", (13, 0, 27, 50))
+        ring_helper(new_img, buf_img, pixel, (x1+13, y1), "bottom", (13, 0, 27, 50))
 
     # Replace alpha with grey and convert to RGB
     grey_layer = Image.new("RGBA", new_img.size, (127,127,127,255))
