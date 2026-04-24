@@ -15,6 +15,66 @@ from math import sqrt, atan2, degrees, sin, cos, exp, radians
 ANGLE_FACTOR = 0.866
 
 
+######################
+### Inlay Settings ###
+######################
+
+# Ring Settings
+RING_WIDTH     = 40
+RING_HEIGHT    = 50
+RING_THICKNESS = 8
+RING_OUTLINE   = 1
+
+# Inlay structure settings
+INLAY_DELTA_V  = 26
+INLAY_DELTA_H  = 30
+INLAY_OFFSET_H = 16
+
+
+########################
+### Create Ring Sets ###
+########################
+
+# Create template image
+buf_img = Image.new("RGBA",(RING_WIDTH, RING_HEIGHT))
+
+# Determine ring size from buffer size
+x1, y1 = 0, 0
+x2, y2 = RING_WIDTH-1, RING_HEIGHT-1
+
+# Use thickness to determine size of inner ring
+x3, y3, x4, y4 = x1+RING_THICKNESS, y1+RING_THICKNESS, x2-RING_THICKNESS, y2-RING_THICKNESS
+
+# Draw sample ring in image buffer
+draw = ImageDraw.Draw(buf_img)
+draw.ellipse((0,0,x2,y2),   fill="white",   outline="black", width=1)
+draw.ellipse((x3,y3,x4,y4), fill=(1,1,1,0), outline="black", width=1)
+
+# Containers for addresses of black/white pixel 
+pixels_b = set()
+pixels_c = set()
+
+# Fill out sets of black/color pixels
+for x in range(RING_WIDTH):
+    for y in range(RING_HEIGHT):
+        pixel = buf_img.getpixel((x,y))
+
+        # Ignore alpha
+        if pixel[3] == 0:
+            continue
+
+        # White pixels
+        elif pixel[0] == 255:
+            pixels_c.add((x,y))
+
+        # Black pixels
+        else:
+            pixels_b.add((x,y))
+
+# Delte uneeded buffer image
+del buf_img
+
+
 #################
 ### Load Data ###
 #################
@@ -240,54 +300,66 @@ def ignore_white(pixel: tuple, white_level: int = 250) -> bool:
 
 
 # Helper function to draw a ring
-def ring_helper(img_main: Image.Image, img_buffer: Image.Image, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer: str, buffer_co_ords: Optional[Tuple[int]] = None) -> None:
+def ring_helper(img_main: Image.Image, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer: str, buffer_co_ords: Optional[Tuple[int]] = None) -> None:
     """A helper function to assist with drawing rings in a PIL image.
 
     Args:
         img_main (Image.Image):                          The main image you want to draw the ring in
-        img_buffer (Image.Image):                        A buffer image to draw the full ring in
         ring_fill (Tuple[int]):                          The color to fill the ring with
         main_co_ords (Tuple[int]):                       Where in the main image you want to start drawing
         layer (str):                                     Should the function draw on top of or below other pixels in the main image
         buffer_co_ords (Optional[Tuple[int]], optional): A tuple in the form x1, y1, dx, dy defining a subset of the buffer layer to copy to the main image.
     """
 
-    # Get buffer dimmensions
-    w, h = img_buffer.size
+    global pixels_b, pixels_c
 
-    # How much is being copied from the buffer
-    cut_delta_x = buffer_co_ords[2] if buffer_co_ords else w
-    cut_delta_y = buffer_co_ords[3] if buffer_co_ords else h
+    # Default to full list of pixels
+    pixels_bf = pixels_b
+    pixels_cf = pixels_c
 
-    # Where to start cutting from
-    cut_start_x = buffer_co_ords[0] if buffer_co_ords else 0
-    cut_start_y = buffer_co_ords[1] if buffer_co_ords else 0
+    # Modify filtered pixel list of buffer co-ords are presented
+    if buffer_co_ords:
+        # Determine boundaries
+        x_min = buffer_co_ords[0]
+        x_max = x_min + buffer_co_ords[2]
+        y_min = buffer_co_ords[1]
+        y_max = y_min + buffer_co_ords[3]
 
-    # Where to start pasting
-    pst_start_x = main_co_ords[0]
-    pst_start_y = main_co_ords[1]
+        # Apply boundaries to sets
+        pixels_bf = set(filter(lambda xy: xy[0] >= x_min and xy[0] < x_max and xy[1] >= y_min and xy[1] < y_max, pixels_b))
+        pixels_cf = set(filter(lambda xy: xy[0] >= x_min and xy[0] < x_max and xy[1] >= y_min and xy[1] < y_max, pixels_c))
 
-    # Itterate over pixel pairs
-    for x in range(cut_delta_x):
-        for y in range(cut_delta_y):
+    # Itterate over black pixels
+    for x,y in pixels_bf:
 
-            # Determine target locations
-            loc_buff = (cut_start_x + x, cut_start_y + y)
-            loc_main = (pst_start_x + x, pst_start_y + y)
+        # Get corresponding main image location
+        loc_main = (x+main_co_ords[0], y+main_co_ords[1])
 
-            # Get Pixel values
-            pixel_buff = img_buffer.getpixel(loc_buff)
-            pixel_main = img_main.getpixel(loc_main)
+        # If top layer overwite pixel in image
+        if layer == "top":
+            img_main.putpixel(loc_main, (0,0,0,255))
+            continue
 
-            # If buffer is color and layer is top put pixel in image
-            if layer == "top" and pixel_buff[3] != 0:
-                color = ring_fill if pixel_buff[0] > 0 else (0,0,0,255)
-                img_main.putpixel(loc_main, color)
+        # If bottom layer check if main image is alpha
+        pixel_main = img_main.getpixel(loc_main)
+        if pixel_main[3] == 0:
+            img_main.putpixel(loc_main, (0,0,0,255))
 
-            # If layer is bottom and main is alpha put buffer color
-            elif layer == "bottom" and pixel_main[3] == 0 and pixel_buff[3] != 0:
-                color = ring_fill if pixel_buff[0] > 0 else (0,0,0,255)
-                img_main.putpixel(loc_main, color)
+    # Itterate over color pixels
+    for x,y in pixels_cf:
+
+        # Get corresponding main image location
+        loc_main = (x+main_co_ords[0], y+main_co_ords[1])
+
+        # If top layer overwite pixel in image
+        if layer == "top":
+            img_main.putpixel(loc_main, ring_fill)
+            continue
+
+        # If bottom layer check if main image is alpha
+        pixel_main = img_main.getpixel(loc_main)
+        if pixel_main[3] == 0:
+            img_main.putpixel(loc_main, ring_fill)
 
 
 ####################################
@@ -444,26 +516,6 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     new_img = Image.new("RGBA", ((width-1) * 30+40+16, (height-1) * 26+50))
 
 
-    ############################
-    ### Create Ring Template ###
-    ############################
-
-    # Create template image
-    buf_img = Image.new("RGBA",(rw, rh))
-
-    # Determine ring size from buffer size
-    x1, y1 = 0, 0
-    x2, y2 = rw-1, rh-1
-
-    # Use thickness to determine size of inner ring
-    x3, y3, x4, y4 = x1+tk, y1+tk, x2-tk, y2-tk
-
-    # Draw sample ring in image buffer
-    draw = ImageDraw.Draw(buf_img)
-    draw.ellipse((0,0,x2,y2),   fill="white", outline="black", width=1)
-    draw.ellipse((x3,y3,x4,y4), fill=alpha,   outline="black", width=1)
-
-
     ##################
     ### Draw Image ###
     ##################
@@ -478,10 +530,9 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
         # Full circle co-ordinates
         x1, y1 = x*30,  y*26
-        x2, y2 = x1+39, y1+49
 
         # Use helper function to draw ring
-        ring_helper(new_img, buf_img, pixel, (x1, y1), "bottom")
+        ring_helper(new_img, pixel, (x1, y1), "bottom")
 
 
     # Handle odd layers
@@ -494,13 +545,12 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
         # Full circle co-ordinates
         x1, y1 = x*30+16, y*26
-        x2, y2 = x1+39,   y1+49
 
         # Draw left on top
-        ring_helper(new_img, buf_img, pixel, (x1, y1), "top", (0, 0, 13, 50))
+        ring_helper(new_img, pixel, (x1, y1), "top", (0, 0, 13, 50))
 
         # Draw right on bottom
-        ring_helper(new_img, buf_img, pixel, (x1+13, y1), "bottom", (13, 0, 27, 50))
+        ring_helper(new_img, pixel, (x1, y1), "bottom", (13, 0, 27, 50))
 
     # Replace alpha with grey and convert to RGB
     grey_layer = Image.new("RGBA", new_img.size, (127,127,127,255))
