@@ -30,6 +30,9 @@ INLAY_DELTA_V  = 26
 INLAY_DELTA_H  = 30
 INLAY_OFFSET_H = 16
 
+# Horizontal ring split for alternating rows
+LEFT_HALF_DX = 13
+
 
 ########################
 ### Create Ring Sets ###
@@ -51,8 +54,8 @@ draw.ellipse((0,0,x2,y2),   fill="white",   outline="black", width=1)
 draw.ellipse((x3,y3,x4,y4), fill=(1,1,1,0), outline="black", width=1)
 
 # Containers for addresses of black/white pixel 
-pixels_b = set()
-pixels_c = set()
+pixels_b = list()
+pixels_c = list()
 
 # Fill out sets of black/color pixels
 for x in range(RING_WIDTH):
@@ -65,14 +68,22 @@ for x in range(RING_WIDTH):
 
         # White pixels
         elif pixel[0] == 255:
-            pixels_c.add((x,y))
+            pixels_c.append((x,y))
 
         # Black pixels
         else:
-            pixels_b.add((x,y))
+            pixels_b.append((x,y))
 
 # Delte uneeded buffer image
 del buf_img
+
+# Left ring set
+pixels_bl = list(filter(lambda xy: xy[0] < LEFT_HALF_DX, pixels_b))
+pixels_cl = list(filter(lambda xy: xy[0] < LEFT_HALF_DX, pixels_c))
+
+# Right ring set
+pixels_br = list(filter(lambda xy: xy[0] >= LEFT_HALF_DX, pixels_b))
+pixels_cr = list(filter(lambda xy: xy[0] >= LEFT_HALF_DX, pixels_c))
 
 
 #################
@@ -300,7 +311,7 @@ def ignore_white(pixel: tuple, white_level: int = 250) -> bool:
 
 
 # Helper function to draw a ring
-def ring_helper(img_main: Image.Image, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer: str, buffer_co_ords: Optional[Tuple[int]] = None) -> None:
+def ring_helper(img_main: Image.Image, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer: str, side: Optional[str] = None) -> None:
     """A helper function to assist with drawing rings in a PIL image.
 
     Args:
@@ -311,23 +322,19 @@ def ring_helper(img_main: Image.Image, ring_fill: Tuple[int], main_co_ords: Tupl
         buffer_co_ords (Optional[Tuple[int]], optional): A tuple in the form x1, y1, dx, dy defining a subset of the buffer layer to copy to the main image.
     """
 
-    global pixels_b, pixels_c
+    global pixels_b, pixels_bl, pixels_br, pixels_c, pixels_cl, pixels_cr
 
     # Default to full list of pixels
     pixels_bf = pixels_b
     pixels_cf = pixels_c
 
-    # Modify filtered pixel list of buffer co-ords are presented
-    if buffer_co_ords:
-        # Determine boundaries
-        x_min = buffer_co_ords[0]
-        x_max = x_min + buffer_co_ords[2]
-        y_min = buffer_co_ords[1]
-        y_max = y_min + buffer_co_ords[3]
-
-        # Apply boundaries to sets
-        pixels_bf = set(filter(lambda xy: xy[0] >= x_min and xy[0] < x_max and xy[1] >= y_min and xy[1] < y_max, pixels_b))
-        pixels_cf = set(filter(lambda xy: xy[0] >= x_min and xy[0] < x_max and xy[1] >= y_min and xy[1] < y_max, pixels_c))
+    # Choose alternate co-ord list if needed
+    if side == "left":
+        pixels_bf = pixels_bl
+        pixels_cf = pixels_cl
+    elif side == "right":
+        pixels_bf = pixels_br
+        pixels_cf = pixels_cr
 
     # Itterate over black pixels
     for x,y in pixels_bf:
@@ -547,10 +554,10 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         x1, y1 = x*30+16, y*26
 
         # Draw left on top
-        ring_helper(new_img, pixel, (x1, y1), "top", (0, 0, 13, 50))
+        ring_helper(new_img, pixel, (x1, y1), "top", "left")
 
         # Draw right on bottom
-        ring_helper(new_img, pixel, (x1, y1), "bottom", (13, 0, 27, 50))
+        ring_helper(new_img, pixel, (x1, y1), "bottom", 'right')
 
     # Replace alpha with grey and convert to RGB
     grey_layer = Image.new("RGBA", new_img.size, (127,127,127,255))
