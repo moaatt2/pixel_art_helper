@@ -311,7 +311,7 @@ def ignore_white(pixel: tuple, white_level: int = 250) -> bool:
 
 
 # Helper function to draw a ring
-def ring_helper(img_main: Image.Image, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer: str, side: Optional[str] = None) -> None:
+def ring_helper(img_data, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer: str, side: Optional[str] = None) -> None:
     """A helper function to assist with drawing rings in a PIL image.
 
     Args:
@@ -340,33 +340,33 @@ def ring_helper(img_main: Image.Image, ring_fill: Tuple[int], main_co_ords: Tupl
     for x,y in pixels_bf:
 
         # Get corresponding main image location
-        loc_main = (x+main_co_ords[0], y+main_co_ords[1])
+        main_x, main_y = x+main_co_ords[0], y+main_co_ords[1]
 
         # If top layer overwite pixel in image
         if layer == "top":
-            img_main.putpixel(loc_main, (0,0,0,255))
+            img_data[main_x, main_y] = (0,0,0,255)
             continue
 
         # If bottom layer check if main image is alpha
-        pixel_main = img_main.getpixel(loc_main)
+        pixel_main = img_data[main_x, main_y]
         if pixel_main[3] == 0:
-            img_main.putpixel(loc_main, (0,0,0,255))
+            img_data[main_x, main_y] = (0,0,0,255)
 
     # Itterate over color pixels
     for x,y in pixels_cf:
 
         # Get corresponding main image location
-        loc_main = (x+main_co_ords[0], y+main_co_ords[1])
+        main_x, main_y = x+main_co_ords[0], y+main_co_ords[1]
 
         # If top layer overwite pixel in image
         if layer == "top":
-            img_main.putpixel(loc_main, ring_fill)
+            img_data[main_x, main_y] = ring_fill
             continue
 
         # If bottom layer check if main image is alpha
-        pixel_main = img_main.getpixel(loc_main)
+        pixel_main = img_data[main_x, main_y]
         if pixel_main[3] == 0:
-            img_main.putpixel(loc_main, ring_fill)
+            img_data[main_x, main_y] = ring_fill
 
 
 ####################################
@@ -521,6 +521,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     # Create new image
     width, height = image.size
     new_img = Image.new("RGBA", ((width-1) * 30+40+16, (height-1) * 26+50))
+    new_data = new_img.load()
 
 
     ##################
@@ -539,7 +540,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         x1, y1 = x*30,  y*26
 
         # Use helper function to draw ring
-        ring_helper(new_img, pixel, (x1, y1), "bottom")
+        ring_helper(new_data, pixel, (x1, y1), "bottom")
 
 
     # Handle odd layers
@@ -554,10 +555,10 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         x1, y1 = x*30+16, y*26
 
         # Draw left on top
-        ring_helper(new_img, pixel, (x1, y1), "top", "left")
+        ring_helper(new_data, pixel, (x1, y1), "top", "left")
 
         # Draw right on bottom
-        ring_helper(new_img, pixel, (x1, y1), "bottom", 'right')
+        ring_helper(new_data, pixel, (x1, y1), "bottom", 'right')
 
     # Replace alpha with grey and convert to RGB
     grey_layer = Image.new("RGBA", new_img.size, (127,127,127,255))
