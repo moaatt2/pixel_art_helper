@@ -345,11 +345,9 @@ def ring_helper(img_data, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer
         # If top layer overwite pixel in image
         if layer == "top":
             img_data[main_x, main_y] = (0,0,0,255)
-            continue
 
         # If bottom layer check if main image is alpha
-        pixel_main = img_data[main_x, main_y]
-        if pixel_main[3] == 0:
+        elif img_data[main_x, main_y][3] == 0:
             img_data[main_x, main_y] = (0,0,0,255)
 
     # Itterate over color pixels
@@ -361,11 +359,9 @@ def ring_helper(img_data, ring_fill: Tuple[int], main_co_ords: Tuple[int], layer
         # If top layer overwite pixel in image
         if layer == "top":
             img_data[main_x, main_y] = ring_fill
-            continue
 
         # If bottom layer check if main image is alpha
-        pixel_main = img_data[main_x, main_y]
-        if pixel_main[3] == 0:
+        elif img_data[main_x, main_y][3] == 0:
             img_data[main_x, main_y] = ring_fill
 
 
