@@ -516,7 +516,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
     # Create new image
     width, height = image.size
-    new_img = Image.new("RGBA", ((width-1) * 30+40+16, (height-1) * 26+50))
+    new_img = Image.new("RGBA", ((width-1) * INLAY_DELTA_H+RING_WIDTH+INLAY_OFFSET_H, (height-1) * INLAY_DELTA_V+RING_HEIGHT))
     new_data = new_img.load()
 
 
@@ -533,7 +533,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         pixel = image.getpixel((x, y))
 
         # Full circle co-ordinates
-        x1, y1 = x*30,  y*26
+        x1, y1 = x*INLAY_DELTA_H,  y*INLAY_DELTA_V
 
         # Use helper function to draw ring
         ring_helper(new_data, pixel, (x1, y1), "bottom")
@@ -548,7 +548,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         pixel = image.getpixel((x, y))
 
         # Full circle co-ordinates
-        x1, y1 = x*30+16, y*26
+        x1, y1 = x*INLAY_DELTA_H + INLAY_OFFSET_H,  y*INLAY_DELTA_V
 
         # Draw left on top
         ring_helper(new_data, pixel, (x1, y1), "top", "left")
