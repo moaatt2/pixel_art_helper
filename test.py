@@ -520,6 +520,13 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     new_data = new_img.load()
 
 
+    ##############################
+    ### Load Source Image Data ###
+    ##############################
+
+    source_data = image.load()
+
+
     ##################
     ### Draw Image ###
     ##################
@@ -530,7 +537,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
             continue
 
         # Get target color
-        pixel = image.getpixel((x, y))
+        pixel = source_data[x, y]
 
         # Full circle co-ordinates
         x1, y1 = x*INLAY_DELTA_H,  y*INLAY_DELTA_V
@@ -545,7 +552,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
             continue
 
         # Get target color
-        pixel = image.getpixel((x, y))
+        pixel = source_data[x, y]
 
         # Full circle co-ordinates
         x1, y1 = x*INLAY_DELTA_H + INLAY_OFFSET_H,  y*INLAY_DELTA_V
