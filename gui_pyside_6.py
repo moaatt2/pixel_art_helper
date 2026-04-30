@@ -4,7 +4,7 @@ from PIL import Image
 from pprint import pprint
 
 from calculate_cost import rings_by_color, convert_to_palette, calculate_cost
-from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size
+from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size, rotate_image
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage
@@ -263,8 +263,22 @@ class main_window(QMainWindow):
         ######################
         ### Rotate Section ###
         ######################
+        
+        rotate_section = QWidget()
+        rotate_section_layout = QVBoxLayout(rotate_section)
+        rotate_section_layout.setContentsMargins(20,0,0,0)
+        rotate_section_layout.setSpacing(0)
 
-        # TODO
+        # Rotate Right Button
+        rotate_right = QPushButton("Rotate 90° Right")
+        rotate_section_layout.addWidget(rotate_right)
+
+        # Rotate Left Button
+        rotate_left = QPushButton("Rotate 90° Left")
+        rotate_section_layout.addWidget(rotate_left)
+
+        # Add rotate section to accordian
+        rotate_accordian.set_content(rotate_section)
 
 
         ###################################
