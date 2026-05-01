@@ -271,10 +271,12 @@ class main_window(QMainWindow):
 
         # Rotate Right Button
         rotate_right = QPushButton("Rotate 90° Right")
+        rotate_right.clicked.connect(lambda: self.rotate_image(clockwise=True))
         rotate_section_layout.addWidget(rotate_right)
 
         # Rotate Left Button
         rotate_left = QPushButton("Rotate 90° Left")
+        rotate_left.clicked.connect(lambda: self.rotate_image(clockwise=False))
         rotate_section_layout.addWidget(rotate_left)
 
         # Add rotate section to accordian
@@ -743,6 +745,22 @@ class main_window(QMainWindow):
         # Show user message
         QMessageBox.information(self, "Cost Estimate", message)
         print(message)
+
+
+    # Function to rotate image
+    def rotate_image(self, clockwise):
+
+        # Ensure that image exists before trying to rotate
+        if self.image is not None:
+
+            # Rotate image
+            self.image = rotate_image(self.image, 90, clockwise)
+
+            # Update preview
+            self.image_preview = pil_to_pixmap(self.image)
+
+            # Update the image after changing it
+            self.update_image()
 
 
 # Start Application
