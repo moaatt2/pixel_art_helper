@@ -55,7 +55,6 @@ draw.ellipse((x3,y3,x4,y4), fill=(0,0,0,0), outline="black", width=1)
 
 ring_template = np.asarray(buf_img)
 ring_white_mask = (ring_template[:, :, :3] == 255).all(axis=-1)
-ring_colors = dict()
 
 del buf_img
 
@@ -436,6 +435,20 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     source_data = image.convert("RGBA").load()
 
 
+    ##############################
+    ### Precompute Ring Colors ###
+    ##############################
+
+    # Get set of unique colors in source image
+    unique_colors = set(tuple(source_data[x, y]) for x, y in product(range(width), range(height)))
+
+    # Create dictionary mapping unique colors to ring templates with that color
+    ring_colors = dict()
+    for color in unique_colors:
+        tmp = ring_template.copy()
+        tmp[ring_white_mask] = color
+        ring_colors[color] = tmp
+
     ##################
     ### Draw Image ###
     ##################
@@ -450,15 +463,9 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
         # Full circle co-ordinates
         x1, y1 = x*INLAY_DELTA_H,  y*INLAY_DELTA_V
-
-        # Create color mask if necessary
-        color_string = "|".join(map(str, pixel))
-        if color_string not in ring_colors:
-            ring_colors[color_string] = ring_template.copy()
-            ring_colors[color_string][ring_white_mask] = pixel
         
         # Get ring
-        ring = ring_colors[color_string]
+        ring = ring_colors[tuple(pixel)]
 
         # Copy ring to image under existing pixels
         sub = new_img[y1:y1+RING_HEIGHT, x1:x1+RING_WIDTH]
@@ -475,15 +482,9 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
         # Full circle co-ordinates
         x1, y1 = x*INLAY_DELTA_H + INLAY_OFFSET_H,  y*INLAY_DELTA_V
-
-        # Create color mask if necessary
-        color_string = "|".join(map(str, pixel))
-        if color_string not in ring_colors:
-            ring_colors[color_string] = ring_template.copy()
-            ring_colors[color_string][ring_white_mask] = pixel
         
         # Get ring
-        ring = ring_colors[color_string]
+        ring = ring_colors[tuple(pixel)]
 
         # Copy left of ring to image over existing pixels
         ring_left = ring[:, :LEFT_HALF_DX, :]
