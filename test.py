@@ -447,10 +447,13 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     for color in unique_colors:
         tmp = ring_template.copy()
         tmp[ring_white_mask] = color
-        ring_colors[color] = tmp
+        ring_colors[color] = {
+            "full": tmp,
+            "halves": (tmp[:, :LEFT_HALF_DX, :], tmp[:, LEFT_HALF_DX:, :]),
+        }
 
     ##################
-    ### Draw Image ###
+    ### Draw Image ###  
     ##################
 
     # Handle even layers
@@ -465,7 +468,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         x1, y1 = x*INLAY_DELTA_H,  y*INLAY_DELTA_V
         
         # Get ring
-        ring = ring_colors[tuple(pixel)]
+        ring = ring_colors[tuple(pixel)]["full"]
 
         # Copy ring to image under existing pixels
         sub = new_img[y1:y1+RING_HEIGHT, x1:x1+RING_WIDTH]
@@ -482,27 +485,16 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
         # Full circle co-ordinates
         x1, y1 = x*INLAY_DELTA_H + INLAY_OFFSET_H,  y*INLAY_DELTA_V
-        
-        # Get ring
-        ring = ring_colors[tuple(pixel)]
+
+        ring_left, ring_right = ring_colors[tuple(pixel)]["halves"]
 
         # Copy left of ring to image over existing pixels
-        ring_left = ring[:, :LEFT_HALF_DX, :]
         sub = new_img[y1:y1+RING_HEIGHT, x1:x1+LEFT_HALF_DX]
         np.copyto(sub, ring_left, where=(ring_left[...,3] != 0)[..., None])
 
 
         # Copy right of ring to image under existing pixels
-        ring_right = ring[:, LEFT_HALF_DX:, :]
         sub = new_img[y1:y1+RING_HEIGHT, x1+LEFT_HALF_DX:x1+RING_WIDTH]
-
-        if ring_right.shape != sub.shape:
-            print(f"Shape mismatch: {ring_right.shape} vs {sub.shape}")
-            print(f"x1: {x1}, y1: {y1}")
-            print(f"Ring shape: {ring.shape}")
-            print(f"Sub shape: {sub.shape}")
-            continue
-
         np.copyto(sub, ring_right, where=(sub == 0).all(axis=-1)[..., None])
 
     # Convert numpy array to PIL image
