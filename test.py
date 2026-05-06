@@ -472,7 +472,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
         # Copy ring to image under existing pixels
         sub = new_img[y1:y1+RING_HEIGHT, x1:x1+RING_WIDTH]
-        np.copyto(sub, ring, where=(sub == 0).all(axis=-1)[..., None])
+        np.copyto(sub, ring, where=(sub[..., 3] == 0)[..., None])
 
 
     # Handle odd layers
@@ -495,7 +495,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
         # Copy right of ring to image under existing pixels
         sub = new_img[y1:y1+RING_HEIGHT, x1+LEFT_HALF_DX:x1+RING_WIDTH]
-        np.copyto(sub, ring_right, where=(sub == 0).all(axis=-1)[..., None])
+        np.copyto(sub, ring_right, where=(sub[..., 3] == 0)[..., None])
 
     # Convert numpy array to PIL image
     new_img = Image.fromarray(new_img.astype('uint8'), 'RGBA')
