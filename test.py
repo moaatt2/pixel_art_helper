@@ -457,45 +457,47 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     ##################
 
     # Handle even layers
-    for x, y in product(range(width), range(height)):
-        if y%2 == 1:
-            continue
+    for y in range(height):
+        for x in range(width):
+            if y%2 == 1:
+                continue
 
-        # Get target color
-        pixel = source_data[x, y]
+            # Get target color
+            pixel = source_data[x, y]
 
-        # Full circle co-ordinates
-        x1, y1 = x*INLAY_DELTA_H,  y*INLAY_DELTA_V
-        
-        # Get ring
-        ring = ring_colors[tuple(pixel)]["full"]
+            # Full circle co-ordinates
+            x1, y1 = x*INLAY_DELTA_H,  y*INLAY_DELTA_V
+            
+            # Get ring
+            ring = ring_colors[pixel]["full"]
 
-        # Copy ring to image under existing pixels
-        sub = new_img[y1:y1+RING_HEIGHT, x1:x1+RING_WIDTH]
-        np.copyto(sub, ring, where=(sub[..., 3] == 0)[..., None])
+            # Copy ring to image under existing pixels
+            sub = new_img[y1:y1+RING_HEIGHT, x1:x1+RING_WIDTH]
+            np.copyto(sub, ring, where=(sub[..., 3] == 0)[..., None])
 
 
     # Handle odd layers
-    for x, y in product(range(width), range(height)):
-        if y%2 == 0:
-            continue
+    for y in range(height):
+        for x in range(width):
+            if y%2 == 0:
+                continue
 
-        # Get target color
-        pixel = source_data[x, y]
+            # Get target color
+            pixel = source_data[x, y]
 
-        # Full circle co-ordinates
-        x1, y1 = x*INLAY_DELTA_H + INLAY_OFFSET_H,  y*INLAY_DELTA_V
+            # Full circle co-ordinates
+            x1, y1 = x*INLAY_DELTA_H + INLAY_OFFSET_H,  y*INLAY_DELTA_V
 
-        ring_left, ring_right = ring_colors[tuple(pixel)]["halves"]
+            ring_left, ring_right = ring_colors[pixel]["halves"]
 
-        # Copy left of ring to image over existing pixels
-        sub = new_img[y1:y1+RING_HEIGHT, x1:x1+LEFT_HALF_DX]
-        np.copyto(sub, ring_left, where=(ring_left[...,3] != 0)[..., None])
+            # Copy left of ring to image over existing pixels
+            sub = new_img[y1:y1+RING_HEIGHT, x1:x1+LEFT_HALF_DX]
+            np.copyto(sub, ring_left, where=(ring_left[...,3] != 0)[..., None])
 
 
-        # Copy right of ring to image under existing pixels
-        sub = new_img[y1:y1+RING_HEIGHT, x1+LEFT_HALF_DX:x1+RING_WIDTH]
-        np.copyto(sub, ring_right, where=(sub[..., 3] == 0)[..., None])
+            # Copy right of ring to image under existing pixels
+            sub = new_img[y1:y1+RING_HEIGHT, x1+LEFT_HALF_DX:x1+RING_WIDTH]
+            np.copyto(sub, ring_right, where=(sub[..., 3] == 0)[..., None])
 
     # Convert numpy array to PIL image
     new_img = Image.fromarray(new_img.astype('uint8'), 'RGBA')
