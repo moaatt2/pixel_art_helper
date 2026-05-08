@@ -457,10 +457,8 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     ##################
 
     # Handle even layers
-    for y in range(height):
+    for y in range(0, height, 2):
         for x in range(width):
-            if y%2 == 1:
-                continue
 
             # Get target color
             pixel = source_data[x, y]
@@ -477,10 +475,8 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
 
     # Handle odd layers
-    for y in range(height):
+    for y in range(1, height, 2):
         for x in range(width):
-            if y%2 == 0:
-                continue
 
             # Get target color
             pixel = source_data[x, y]
