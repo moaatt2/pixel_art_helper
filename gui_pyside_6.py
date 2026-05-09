@@ -6,7 +6,7 @@ from pprint import pprint
 from calculate_cost import rings_by_color, convert_to_palette, calculate_cost
 from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size, rotate_image
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage
 from PySide6.QtCore import Qt, QSize
 
@@ -177,15 +177,12 @@ class main_window(QMainWindow):
 
         self.palette_accordion = Accordian("Palette Selection")
         menu_layout.addWidget(self.palette_accordion)
-        self.palette_accordion.set_content(QLabel("Palette content goes here"))
 
         image_accordion = Accordian("Image Options")
         menu_layout.addWidget(image_accordion)
-        # image_accordion.set_content(QLabel("Image options go here"))
 
-        self.pattern_accordion = Accordian("Pattern Options")
-        menu_layout.addWidget(self.pattern_accordion)
-        self.pattern_accordion.set_content(QLabel("Pattern options go here"))
+        pattern_accordion = Accordian("Pattern Options")
+        menu_layout.addWidget(pattern_accordion)
 
         # Create Side Menu
         self.side_menu = QFrame()
@@ -310,6 +307,48 @@ class main_window(QMainWindow):
 
         # Add Buttons to accordian
         palette_application_accordian.set_content(palette_application)
+
+
+        ###############################
+        ### Pattern Options Section ###
+        ###############################
+
+        # Create Pattern Options widget
+        pattern_options = QWidget()
+        pattern_options_layout = QVBoxLayout(pattern_options)
+        pattern_options_layout.setContentsMargins(20,0,0,0)
+        pattern_options_layout.setSpacing(0)
+
+        # Create Button Group
+        self.pattern_button_group = QButtonGroup()
+        self.pattern_button_group.setExclusive(True)
+
+        # No Pattern
+        no_pattern = QPushButton("No Pattern")
+        no_pattern.setCheckable(True)
+        self.pattern_button_group.addButton(no_pattern)
+        pattern_options_layout.addWidget(no_pattern)
+
+        # Half Stretch
+        half_stretch = QPushButton("Half Stretch")
+        half_stretch.setCheckable(True)
+        self.pattern_button_group.addButton(half_stretch)
+        pattern_options_layout.addWidget(half_stretch)
+
+        # Right Way
+        right_way = QPushButton("Right Way")
+        right_way.setCheckable(True)
+        self.pattern_button_group.addButton(right_way)
+        pattern_options_layout.addWidget(right_way)
+
+        # Wrong Way
+        wrong_way = QPushButton("Wrong Way")
+        wrong_way.setCheckable(True)
+        self.pattern_button_group.addButton(wrong_way)
+        pattern_options_layout.addWidget(wrong_way)
+
+        # Add Pattern Options to accordian
+        pattern_accordion.set_content(pattern_options)
 
 
         #############################
