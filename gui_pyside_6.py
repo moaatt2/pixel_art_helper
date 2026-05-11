@@ -4,7 +4,7 @@ from PIL import Image
 from pprint import pprint
 
 from calculate_cost import rings_by_color, convert_to_palette, calculate_cost
-from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size, rotate_image
+from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size, rotate_image, convert_to_inlay
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage
@@ -322,6 +322,7 @@ class main_window(QMainWindow):
         # Create Button Group
         self.pattern_button_group = QButtonGroup()
         self.pattern_button_group.setExclusive(True)
+        self.pattern_button_group.buttonClicked.connect(lambda button: self.apply_pattern(button.text()))
 
         # No Pattern
         no_pattern = QPushButton("No Pattern")
@@ -800,6 +801,42 @@ class main_window(QMainWindow):
 
             # Update the image after changing it
             self.update_image()
+    
+
+    # Apply selected chainmail pattern
+    def apply_pattern(self, pattern):
+        print(f"Apply pattern called with pattern: {pattern}")
+
+        # Exit early if there is no image to apply a pattern to
+        if self.image is None:
+            QMessageBox.warning(self, "No Image", "Please load an image before applying a pattern.")
+            return
+
+
+        # Revert back to no chainmail pattern if selected
+        if pattern == "No Pattern":
+            self.image_preview = pil_to_pixmap(self.image)
+
+        # Apply half stretch pattern
+        elif pattern == "Half Stretch":
+            self.image_preview = pil_to_pixmap(convert_to_inlay(self.image))
+
+        # TODO - Implement function to create right way pattern
+        elif pattern == "Right Way":
+            QMessageBox.warning(self, "Not Implemented", "The 'Right Way' pattern is not implemented yet.")
+ 
+        # TODO - Implement function to create wrong way pattern
+        elif pattern == "Wrong Way":
+            QMessageBox.warning(self, "Not Implemented", "The 'Wrong Way' pattern is not implemented yet.")
+
+        # Warning if unknown pattern is somehow selected
+        else:
+            QMessageBox.critical(self, "Unknown Pattern", f"An unknown pattern was selected: {pattern}. This should never happen, please report this bug to the developer.")
+
+
+        # Update the image after changing it
+        self.update_image()
+
 
 
 # Start Application
