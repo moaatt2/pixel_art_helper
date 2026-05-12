@@ -175,8 +175,8 @@ class main_window(QMainWindow):
         menu_layout.setContentsMargins(0,0,0,0)
         menu_layout.setSpacing(0)
 
-        self.palette_accordion = Accordian("Palette Selection")
-        menu_layout.addWidget(self.palette_accordion)
+        palette_accordian = Accordian("Palette Options")
+        menu_layout.addWidget(palette_accordian)
 
         image_accordion = Accordian("Image Options")
         menu_layout.addWidget(image_accordion)
@@ -189,6 +189,57 @@ class main_window(QMainWindow):
         self.side_menu.setLayout(menu_layout)
         self.side_menu.setLineWidth(2)
         self.side_menu.setFrameShape(QFrame.Box)
+
+
+        #######################
+        ### Palette Options ###
+        #######################
+
+        # Create Widget for image options
+        palette_options = QWidget()
+        palette_options_layout = QVBoxLayout(palette_options)
+        palette_options_layout.setContentsMargins(20,0,0,0)
+        palette_options_layout.setSpacing(0)
+
+        # Add palette Selection Accordian
+        self.palette_selection_accordion = Accordian("Palette Selection")
+        palette_options_layout.addWidget(self.palette_selection_accordion)
+
+        # Apply Palette
+        palette_application_accordian = Accordian("Palette Application Methods")
+        palette_options_layout.addWidget(palette_application_accordian)
+
+        # Set Palette accordian content
+        palette_accordian.set_content(palette_options)
+
+
+        ###################################
+        ### Palette Application Section ###
+        ###################################
+
+        # Create Appliation widget
+        palette_application = QWidget()
+        palette_application_layout = QVBoxLayout(palette_application)
+        palette_application_layout.setContentsMargins(20,0,0,0)
+        palette_application_layout.setSpacing(0)
+
+        # Euclidian Distance
+        ed = QPushButton("Use Euclidean Distance")
+        palette_application_layout.addWidget(ed)
+        ed.clicked.connect(lambda: self.apply_palette("Euclidean"))
+
+        # CIE LAB ΔE 1976
+        de_76 = QPushButton("Use ΔE 1976")
+        palette_application_layout.addWidget(de_76)
+        de_76.clicked.connect(lambda: self.apply_palette("delta_e_76"))
+
+        # CIE LAB ΔE 2000
+        de_00 = QPushButton("Use ΔE 2000")
+        palette_application_layout.addWidget(de_00)
+        de_00.clicked.connect(lambda: self.apply_palette("delta_e_00"))
+
+        # Add Buttons to accordian
+        palette_application_accordian.set_content(palette_application)
 
 
         #####################
@@ -208,11 +259,6 @@ class main_window(QMainWindow):
         # Rotate
         rotate_accordian = Accordian("Rotate Image")
         image_options_layout.addWidget(rotate_accordian)
-        rotate_accordian.set_content(QLabel("Rotate options go here"))
-
-        # Apply Palette
-        palette_application_accordian = Accordian("Apply Palette to Image")
-        image_options_layout.addWidget(palette_application_accordian)
 
         # Set Image accordian content
         image_accordion.set_content(image_options)
@@ -278,35 +324,6 @@ class main_window(QMainWindow):
 
         # Add rotate section to accordian
         rotate_accordian.set_content(rotate_section)
-
-
-        ###################################
-        ### Palette Application Section ###
-        ###################################
-
-        # Create Appliation widget
-        palette_application = QWidget()
-        palette_application_layout = QVBoxLayout(palette_application)
-        palette_application_layout.setContentsMargins(20,0,0,0)
-        palette_application_layout.setSpacing(0)
-
-        # Euclidian Distance
-        ed = QPushButton("Use Euclidean Distance")
-        palette_application_layout.addWidget(ed)
-        ed.clicked.connect(lambda: self.apply_palette("Euclidean"))
-
-        # CIE LAB ΔE 1976
-        de_76 = QPushButton("Use ΔE 1976")
-        palette_application_layout.addWidget(de_76)
-        de_76.clicked.connect(lambda: self.apply_palette("delta_e_76"))
-
-        # CIE LAB ΔE 2000
-        de_00 = QPushButton("Use ΔE 2000")
-        palette_application_layout.addWidget(de_00)
-        de_00.clicked.connect(lambda: self.apply_palette("delta_e_00"))
-
-        # Add Buttons to accordian
-        palette_application_accordian.set_content(palette_application)
 
 
         ###############################
@@ -598,7 +615,7 @@ class main_window(QMainWindow):
 
             palette_options_layout.addWidget(palette_widget)
 
-        self.palette_accordion.set_content(palette_options)
+        self.palette_selection_accordion.set_content(palette_options)
 
 
     # Show/hide Given container and change button text when it is clicked
