@@ -223,23 +223,39 @@ class main_window(QMainWindow):
         palette_application_layout.setContentsMargins(20,0,0,0)
         palette_application_layout.setSpacing(0)
 
-        # Euclidian Distance
-        ed = QPushButton("Use Euclidean Distance")
+        # Create Button Group
+        self.palette_application_button_group = QButtonGroup()
+        self.palette_application_button_group.setExclusive(True)
+        self.palette_application_button_group.buttonClicked.connect(lambda button: self.apply_palette(button.text()))
+
+        # No Palette
+        np = QPushButton("No Palette")
+        np.setCheckable(True)
+        np.setChecked(True)
+        self.palette_application_button_group.addButton(np)
+        palette_application_layout.addWidget(np)
+
+        # Euclidean Distance
+        ed = QPushButton("Euclidean Distance")
+        ed.setCheckable(True)
+        self.palette_application_button_group.addButton(ed)
         palette_application_layout.addWidget(ed)
-        ed.clicked.connect(lambda: self.apply_palette("Euclidean"))
 
         # CIE LAB ΔE 1976
-        de_76 = QPushButton("Use ΔE 1976")
+        de_76 = QPushButton("Delta E 1976")
+        de_76.setCheckable(True)
+        self.palette_application_button_group.addButton(de_76)
         palette_application_layout.addWidget(de_76)
-        de_76.clicked.connect(lambda: self.apply_palette("delta_e_76"))
-
+    
         # CIE LAB ΔE 2000
-        de_00 = QPushButton("Use ΔE 2000")
+        de_00 = QPushButton("Delta E 2000")
+        de_00.setCheckable(True)
+        self.palette_application_button_group.addButton(de_00)
         palette_application_layout.addWidget(de_00)
-        de_00.clicked.connect(lambda: self.apply_palette("delta_e_00"))
 
         # Add Buttons to accordian
         palette_application_accordian.set_content(palette_application)
+
 
 
         #####################
@@ -344,6 +360,7 @@ class main_window(QMainWindow):
         # No Pattern
         no_pattern = QPushButton("No Pattern")
         no_pattern.setCheckable(True)
+        no_pattern.setChecked(True)
         self.pattern_button_group.addButton(no_pattern)
         pattern_options_layout.addWidget(no_pattern)
 
@@ -699,34 +716,36 @@ class main_window(QMainWindow):
     def apply_palette(self, function: str) -> None:
         print(f"Apply palette called with function: {function}")
 
-        if self.image is not None:
+        if self.image is None:
+            QMessageBox.warning(self, "No Image", "Please load an image before applying a palette.")
+            return None
 
-            # Get Palette
-            palette = dict()
-            for palette_name in self.palettes.keys():
-                if self.palettes[palette_name]["enabled"]:
-                   for color in self.palettes[palette_name]["colors"].keys():
-                       if self.palettes[palette_name]["colors"][color]["enabled"]:
-                           palette[f"{palette_name}_{color}"] = self.palettes[palette_name]["colors"][color]["rgb"]
-            
-            # Warn user if palette is empty
-            if len(palette) < 1:
-                QMessageBox.critical(self, "Empty Palette", "Your palette doesn't have any colors, please select at least one to continue.")
-                return None
+        # Get Palette
+        palette = dict()
+        for palette_name in self.palettes.keys():
+            if self.palettes[palette_name]["enabled"]:
+                for color in self.palettes[palette_name]["colors"].keys():
+                    if self.palettes[palette_name]["colors"][color]["enabled"]:
+                        palette[f"{palette_name}_{color}"] = self.palettes[palette_name]["colors"][color]["rgb"]
+        
+        # Warn user if palette is empty
+        if len(palette) < 1:
+            QMessageBox.warning(self, "Empty Palette", "Your palette doesn't have any colors, please select at least one to continue.")
+            return None
 
-            # Apply palette
-            if function == "Euclidean":
-                self.image = apply_palette(palette, self.image, closest_color_euclidean, "rgb")
-            elif function == "delta_e_76":
-                self.image = apply_palette(palette, self.image, closest_color_cie_76, "cielab")
-            elif function == "delta_e_00":
-                self.image = apply_palette(palette, self.image, closest_color_cie_00, "cielab")
+        # Apply palette
+        if function == "Euclidean Distance":
+            self.image = apply_palette(palette, self.image, closest_color_euclidean, "rgb")
+        elif function == "Delta E 1976":
+            self.image = apply_palette(palette, self.image, closest_color_cie_76, "cielab")
+        elif function == "Delta E 2000":
+            self.image = apply_palette(palette, self.image, closest_color_cie_00, "cielab")
 
-            # Update Preview
-            self.image_preview = pil_to_pixmap(self.image)
+        # Update Preview
+        self.image_preview = pil_to_pixmap(self.image)
 
-            # Ensure screen updates
-            self.update_image()
+        # Ensure screen updates
+        self.update_image()
 
 
     # Estimate size of completed inlay
