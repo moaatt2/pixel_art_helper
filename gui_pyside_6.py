@@ -295,9 +295,10 @@ class main_window(QMainWindow):
         height_mult_layout = QHBoxLayout(height_mult)
         height_mult_layout.setContentsMargins(0,0,0,0)
         height_mult_layout.addWidget(QLabel("Height Multiplier:"))
-        height_mult_val = QSpinBox()
-        height_mult_val.setMinimum(1)
-        height_mult_layout.addWidget(height_mult_val)
+        self.height_mult_val = QSpinBox()
+        self.height_mult_val.setMinimum(1)
+        self.height_mult_val.valueChanged.connect(self.redraw_image)
+        height_mult_layout.addWidget(self.height_mult_val)
         resize_section_layout.addWidget(height_mult)
 
         # Width Multiplier
@@ -305,15 +306,11 @@ class main_window(QMainWindow):
         width_mult_layout = QHBoxLayout(width_mult)
         width_mult_layout.setContentsMargins(0,0,0,0)
         width_mult_layout.addWidget(QLabel("Width Multiplier: "))
-        width_mult_val = QSpinBox()
-        width_mult_val.setMinimum(1)
-        width_mult_layout.addWidget(width_mult_val)
+        self.width_mult_val = QSpinBox()
+        self.width_mult_val.setMinimum(1)
+        self.width_mult_val.valueChanged.connect(self.redraw_image)
+        width_mult_layout.addWidget(self.width_mult_val)
         resize_section_layout.addWidget(width_mult)
-
-        # Apply Button
-        apply = QPushButton("Apply")
-        apply.clicked.connect(lambda checked, h=height_mult_val, w=width_mult_val: self.resize_image(h.value(), w.value()))
-        resize_section_layout.addWidget(apply)
 
         # Add resize section to accordian
         resize_accordian.set_content(resize_section)
@@ -697,21 +694,6 @@ class main_window(QMainWindow):
                 )
 
 
-    # Function to resize the image
-    def resize_image(self, height_mult, width_mult):
-        print(f"Resize Called:\n\tHeight Multipler: {height_mult}\n\tWidth Multiplier: {width_mult}")
-
-        # Update internal image
-        if self.image is not None:
-            self.image = resize_image(self.image, width_mult, height_mult)
-
-            # Update the preview image
-            self.image_preview = pil_to_pixmap(self.image)
-
-            # Ensure the screen updates
-            self.update_image()
-
-
     # Apply palette to image
     def apply_palette(self, function: str) -> None:
         print(f"Apply palette called with function: {function}")
@@ -872,6 +854,36 @@ class main_window(QMainWindow):
 
         # Update the image after changing it
         self.update_image()
+
+
+    def redraw_image(self):
+
+        # Confirm image exists
+        if self.image is None:
+            QMessageBox.warning(self, "No Image", "Please load an image before modifing one.")
+            return
+        
+        # Create a temp copy of the image
+        img_copy = self.image.copy()
+
+        # Get height
+        h_mult = self.height_mult_val.value()
+
+        # Get width
+        w_mult = self.width_mult_val.value()
+
+        # Modify Image
+        img_copy = resize_image(img_copy, w_mult, h_mult)
+
+        # Copy the drawn image to the preview
+        self.image_preview = pil_to_pixmap(img_copy)
+
+        # Delete the temp image copy
+        del img_copy
+
+        # Update the preview image
+        self.update_image()
+ 
 
 
 
