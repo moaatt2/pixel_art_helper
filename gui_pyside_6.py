@@ -226,7 +226,7 @@ class main_window(QMainWindow):
         # Create Button Group
         self.palette_application_button_group = QButtonGroup()
         self.palette_application_button_group.setExclusive(True)
-        self.palette_application_button_group.buttonClicked.connect(lambda button: self.apply_palette(button.text()))
+        self.palette_application_button_group.buttonClicked.connect(self.redraw_image)
 
         # No Palette
         np = QPushButton("No Palette")
@@ -694,42 +694,6 @@ class main_window(QMainWindow):
                 )
 
 
-    # Apply palette to image
-    def apply_palette(self, function: str) -> None:
-        print(f"Apply palette called with function: {function}")
-
-        if self.image is None:
-            QMessageBox.warning(self, "No Image", "Please load an image before applying a palette.")
-            return None
-
-        # Get Palette
-        palette = dict()
-        for palette_name in self.palettes.keys():
-            if self.palettes[palette_name]["enabled"]:
-                for color in self.palettes[palette_name]["colors"].keys():
-                    if self.palettes[palette_name]["colors"][color]["enabled"]:
-                        palette[f"{palette_name}_{color}"] = self.palettes[palette_name]["colors"][color]["rgb"]
-        
-        # Warn user if palette is empty
-        if len(palette) < 1:
-            QMessageBox.warning(self, "Empty Palette", "Your palette doesn't have any colors, please select at least one to continue.")
-            return None
-
-        # Apply palette
-        if function == "Euclidean Distance":
-            self.image = apply_palette(palette, self.image, closest_color_euclidean, "rgb")
-        elif function == "Delta E 1976":
-            self.image = apply_palette(palette, self.image, closest_color_cie_76, "cielab")
-        elif function == "Delta E 2000":
-            self.image = apply_palette(palette, self.image, closest_color_cie_00, "cielab")
-
-        # Update Preview
-        self.image_preview = pil_to_pixmap(self.image)
-
-        # Ensure screen updates
-        self.update_image()
-
-
     # Estimate size of completed inlay
     def run_estimate_size(self) -> None:
 
@@ -866,6 +830,42 @@ class main_window(QMainWindow):
         # Create a temp copy of the image
         img_copy = self.image.copy()
 
+
+        #####################
+        ### Apply Palette ###
+        #####################
+
+        # Find selected option
+        palette_option = self.palette_application_button_group.checkedButton().text()
+
+        # Skip logic if palette option is no palette
+        if palette_option != "No Palette":
+
+            # Get Palette
+            palette = dict()
+            for palette_name in self.palettes.keys():
+                if self.palettes[palette_name]["enabled"]:
+                    for color in self.palettes[palette_name]["colors"].keys():
+                        if self.palettes[palette_name]["colors"][color]["enabled"]:
+                            palette[f"{palette_name}_{color}"] = self.palettes[palette_name]["colors"][color]["rgb"]
+
+            # Warn user if palette is empty - but only skip palette application
+            if len(palette) < 1:
+                QMessageBox.warning(self, "Empty Palette", "Your palette doesn't have any colors, please select at least one or apply 'No Palette'.")
+
+            # Apply palettes if a valid option is selected
+            elif palette_option == "Euclidean Distance":
+                img_copy = apply_palette(palette, img_copy, closest_color_euclidean, "rgb")
+            elif palette_option == "Delta E 1976":
+                img_copy = apply_palette(palette, img_copy, closest_color_cie_76, "cielab")
+            elif palette_option == "Delta E 2000":
+                img_copy = apply_palette(palette, img_copy, closest_color_cie_00, "cielab")
+
+
+        ####################
+        ### Resize Image ###
+        ####################
+
         # Get height
         h_mult = self.height_mult_val.value()
 
@@ -874,6 +874,11 @@ class main_window(QMainWindow):
 
         # Modify Image
         img_copy = resize_image(img_copy, w_mult, h_mult)
+
+
+        ######################
+        ### Update Preview ###
+        ######################
 
         # Copy the drawn image to the preview
         self.image_preview = pil_to_pixmap(img_copy)
