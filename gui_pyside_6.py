@@ -352,7 +352,7 @@ class main_window(QMainWindow):
         # Create Button Group
         self.pattern_button_group = QButtonGroup()
         self.pattern_button_group.setExclusive(True)
-        self.pattern_button_group.buttonClicked.connect(lambda button: self.apply_pattern(button.text()))
+        self.pattern_button_group.buttonClicked.connect(self.redraw_image)
 
         # No Pattern
         no_pattern = QPushButton("No Pattern")
@@ -783,41 +783,6 @@ class main_window(QMainWindow):
 
             # Update the image after changing it
             self.update_image()
-    
-
-    # Apply selected chainmail pattern
-    def apply_pattern(self, pattern):
-        print(f"Apply pattern called with pattern: {pattern}")
-
-        # Exit early if there is no image to apply a pattern to
-        if self.image is None:
-            QMessageBox.warning(self, "No Image", "Please load an image before applying a pattern.")
-            return
-
-
-        # Revert back to no chainmail pattern if selected
-        if pattern == "No Pattern":
-            self.image_preview = pil_to_pixmap(self.image)
-
-        # Apply half stretch pattern
-        elif pattern == "Half Stretch":
-            self.image_preview = pil_to_pixmap(convert_to_inlay(self.image))
-
-        # TODO - Implement function to create right way pattern
-        elif pattern == "Right Way":
-            QMessageBox.warning(self, "Not Implemented", "The 'Right Way' pattern is not implemented yet.")
- 
-        # TODO - Implement function to create wrong way pattern
-        elif pattern == "Wrong Way":
-            QMessageBox.warning(self, "Not Implemented", "The 'Wrong Way' pattern is not implemented yet.")
-
-        # Warning if unknown pattern is somehow selected
-        else:
-            QMessageBox.critical(self, "Unknown Pattern", f"An unknown pattern was selected: {pattern}. This should never happen, please report this bug to the developer.")
-
-
-        # Update the image after changing it
-        self.update_image()
 
 
     def redraw_image(self):
@@ -837,6 +802,7 @@ class main_window(QMainWindow):
 
         # Find selected option
         palette_option = self.palette_application_button_group.checkedButton().text()
+        print(f"Palette Option: {palette_option}")
 
         # Skip logic if palette option is no palette
         if palette_option != "No Palette":
@@ -874,6 +840,36 @@ class main_window(QMainWindow):
 
         # Modify Image
         img_copy = resize_image(img_copy, w_mult, h_mult)
+        print(f"Resizing to: {w_mult} x {h_mult}")
+
+
+        #############################
+        ### Apply Pattern Options ###
+        #############################
+
+        # Find selected option
+        pattern_option = self.pattern_button_group.checkedButton().text()
+        print(f"Pattern Option: {pattern_option}")
+
+        # Revert back to no chainmail pattern if selected
+        if pattern_option == "No Pattern":
+            pass
+
+        # Apply half stretch pattern
+        elif pattern_option == "Half Stretch":
+            img_copy = convert_to_inlay(img_copy)
+
+        # TODO - Implement function to create right way pattern
+        elif pattern_option == "Right Way":
+            QMessageBox.warning(self, "Not Implemented", "The 'Right Way' pattern is not implemented yet.")
+ 
+        # TODO - Implement function to create wrong way pattern
+        elif pattern_option == "Wrong Way":
+            QMessageBox.warning(self, "Not Implemented", "The 'Wrong Way' pattern is not implemented yet.")
+
+        # Warning if unknown pattern is somehow selected
+        else:
+            QMessageBox.critical(self, "Unknown Pattern", f"An unknown pattern was selected: {pattern_option}. This should never happen, please report this bug to the developer.")
 
 
         ######################
@@ -889,8 +885,6 @@ class main_window(QMainWindow):
         # Update the preview image
         self.update_image()
  
-
-
 
 # Start Application
 if __name__ == "__main__":
