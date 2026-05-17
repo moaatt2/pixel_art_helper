@@ -773,16 +773,14 @@ class main_window(QMainWindow):
     def rotate_image(self, clockwise):
 
         # Ensure that image exists before trying to rotate
-        if self.image is not None:
+        if self.image is None:
+            return
 
-            # Rotate image
-            self.image = rotate_image(self.image, 90, clockwise)
+        # Rotate image
+        self.image = rotate_image(self.image, 90, clockwise)
 
-            # Update preview
-            self.image_preview = pil_to_pixmap(self.image)
-
-            # Update the image after changing it
-            self.update_image()
+        # Update the image after changing it
+        self.redraw_image()
 
 
     def redraw_image(self):
