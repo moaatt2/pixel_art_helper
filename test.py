@@ -14,6 +14,9 @@ from math import sqrt, atan2, degrees, sin, cos, exp, radians
 # Width reduction value assuming a 30 degree angle
 ANGLE_FACTOR = 0.866
 
+# Size multiplier for a check image
+CHECK_IMAGE_SIZE_MULT = 8
+
 
 ######################
 ### Inlay Settings ###
@@ -507,6 +510,36 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
     return new_img
 
 
+# Create checkable image 
+def create_check_image(image: Image.Image) -> Image.Image:
+
+    # Get size of initial image
+    width, height = image.size
+
+    # Calculate size of target image
+    new_width  = width  * (CHECK_IMAGE_SIZE_MULT + 1) + 1
+    new_height = height * (CHECK_IMAGE_SIZE_MULT + 1) + 1
+
+    # Create new image as a black canvas for now
+    new_img = Image.new("RGBA", (new_width, new_height), (127,127,127))
+
+    # Itterate over all pixels in original image in RGB format
+    for x, y in product(range(width), range(height)):
+        pixel = image.getpixel((x, y))
+        pixel = tuple(list(pixel)[:3])
+
+        # Determine offset
+        x_off = (x * (CHECK_IMAGE_SIZE_MULT + 1)) + 1
+        y_off = (y * (CHECK_IMAGE_SIZE_MULT + 1)) + 1
+
+        for dx, dy in product(range(CHECK_IMAGE_SIZE_MULT), range(CHECK_IMAGE_SIZE_MULT)):
+            new_img.putpixel((x_off + dx, y_off + dy), pixel)
+    
+    # Return checkable image
+    return new_img
+
+
+
 ###############################
 ### File Operation Wrappers ###
 ###############################
@@ -608,6 +641,25 @@ def convert_to_inlay_f(filename: str) -> str:
         return output_file
 
 
+# File wrapper for create check image
+def create_check_image_f(filename: str) -> str:
+
+    # Open image and convert to check image
+    with Image.open(filename) as source:
+        new_img = create_check_image(source)
+
+        # Construct output filename
+        input_filename  = filename.split(".")[0]
+        input_extension = filename.split(".")[-1]
+        output_file = f"{input_filename}_check_image.{input_extension}"
+
+        # Save modified image
+        new_img.save(output_file)
+
+        # Return output filename
+        return output_file
+
+
 # Only run tests when this file is called
 if __name__ == "__main__":
 
@@ -619,27 +671,40 @@ if __name__ == "__main__":
     # apply_palette("palettes/ring_lord_palette_derived.json", "test_images/blog/finalists/super_metroid_metroid_sprite_2x2.bmp", closest_color_euclidean, "rgb")
 
 
+    ###########################
+    ### Check Image Testing ###
+    ###########################
+
+    from datetime import datetime as dt
+
+    start = dt.now()
+    create_check_image_f("test_images/TADC/Caine.png")
+    end = dt.now()
+    print(f"\tTest Input: {(end-start).total_seconds():.2f} seconds")
+
+
+
     ################################
     ### Inlay Conversion Testing ###
     ################################
 
-    from datetime import datetime as dt
+    # from datetime import datetime as dt
 
-    # Original function
-    start = dt.now()
-    convert_to_inlay_f("test_images/img_to_ring_testing/test_input.png")
-    end = dt.now()
-    print(f"\tTest Input: {(end-start).total_seconds():.2f} seconds")
+    # # Original function
+    # start = dt.now()
+    # convert_to_inlay_f("test_images/img_to_ring_testing/test_input.png")
+    # end = dt.now()
+    # print(f"\tTest Input: {(end-start).total_seconds():.2f} seconds")
 
-    start = dt.now()
-    convert_to_inlay_f("test_images/TADC/caine.bmp")
-    end = dt.now()
-    print(f"\tCaine: {(end-start).total_seconds():.2f} seconds")
+    # start = dt.now()
+    # convert_to_inlay_f("test_images/TADC/caine.bmp")
+    # end = dt.now()
+    # print(f"\tCaine: {(end-start).total_seconds():.2f} seconds")
 
-    start = dt.now()
-    convert_to_inlay_f("test_images/exdeath_2x2.bmp")
-    end = dt.now()
-    print(f"\tExdeath 2x2: {(end-start).total_seconds():.2f} seconds")
+    # start = dt.now()
+    # convert_to_inlay_f("test_images/exdeath_2x2.bmp")
+    # end = dt.now()
+    # print(f"\tExdeath 2x2: {(end-start).total_seconds():.2f} seconds")
 
     #############
     ### Tests ###
