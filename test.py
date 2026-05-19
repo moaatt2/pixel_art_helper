@@ -520,21 +520,28 @@ def create_check_image(image: Image.Image) -> Image.Image:
     new_width  = width  * (CHECK_IMAGE_SIZE_MULT + 1) + 1
     new_height = height * (CHECK_IMAGE_SIZE_MULT + 1) + 1
 
-    # Create new image as a black canvas for now
-    new_img = Image.new("RGBA", (new_width, new_height), (127,127,127))
+    # Define background color
+    background = (127,127,127)
+
+    # Create new numpy array for image with defined background color
+    new_img = np.zeros((new_height, new_width, 3), dtype=np.uint8)
+    new_img[:,:] = background
 
     # Itterate over all pixels in original image in RGB format
     for x, y in product(range(width), range(height)):
         pixel = image.getpixel((x, y))
-        pixel = tuple(list(pixel)[:3])
+        pixel = list(pixel)[:3]
 
         # Determine offset
-        x_off = (x * (CHECK_IMAGE_SIZE_MULT + 1)) + 1
-        y_off = (y * (CHECK_IMAGE_SIZE_MULT + 1)) + 1
+        x1, y1 = (x * (CHECK_IMAGE_SIZE_MULT + 1)) + 1, (y * (CHECK_IMAGE_SIZE_MULT + 1)) + 1
+        x2, y2 = x1 + CHECK_IMAGE_SIZE_MULT, y1 + CHECK_IMAGE_SIZE_MULT
 
-        for dx, dy in product(range(CHECK_IMAGE_SIZE_MULT), range(CHECK_IMAGE_SIZE_MULT)):
-            new_img.putpixel((x_off + dx, y_off + dy), pixel)
-    
+        # Update array
+        new_img[y1:y2,x1:x2] = pixel
+
+    # Convert array to image
+    new_img = Image.fromarray(new_img.astype('uint8'), 'RGB')
+
     # Return checkable image
     return new_img
 
@@ -682,6 +689,10 @@ if __name__ == "__main__":
     end = dt.now()
     print(f"\tTest Input: {(end-start).total_seconds():.2f} seconds")
 
+    start = dt.now()
+    create_check_image_f("test_images/exdeath_2x2.bmp")
+    end = dt.now()
+    print(f"\tTest Input: {(end-start).total_seconds():.2f} seconds")
 
 
     ################################
