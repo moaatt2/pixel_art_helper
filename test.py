@@ -17,6 +17,15 @@ ANGLE_FACTOR = 0.866
 # Size multiplier for a check image
 CHECK_IMAGE_SIZE_MULT = 8
 
+# Fixed background options for check image
+CHECK_IMAGE_BACKGROUND_OPTIONS = {
+    "Black": (  0,   0,   0),
+    "Grey":  (127, 127, 127),
+    "White": (255, 255, 255),
+    "Red":   (255,   0,   0),
+    "Cyan":  (0,   255, 255),
+}
+
 
 ######################
 ### Inlay Settings ###
@@ -513,6 +522,9 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 # Create checkable image 
 def create_check_image(image: Image.Image) -> Image.Image:
 
+    # Load image as np-like object
+    source_data = image.convert("RGB").load()
+
     # Get size of initial image
     width, height = image.size
 
@@ -520,8 +532,33 @@ def create_check_image(image: Image.Image) -> Image.Image:
     new_width  = width  * (CHECK_IMAGE_SIZE_MULT + 1) + 1
     new_height = height * (CHECK_IMAGE_SIZE_MULT + 1) + 1
 
-    # Define background color
-    background = (127,127,127)
+    # Get set of unique colors in source image
+    unique_rgb = set(tuple(source_data[x, y]) for x, y in product(range(width), range(height)))
+    unique_lab = {rgb_to_cielab(i) for i in unique_rgb}
+
+    # Intialize background and ready for search for best background
+    background   = None
+    highest_de = -np.inf
+
+    # Determine best background color
+    for value in CHECK_IMAGE_BACKGROUND_OPTIONS.values():
+
+        # Placeholder for lowest delta e
+        lowest_de = np.inf
+
+        value_lab = rgb_to_cielab(value)
+
+        # Look for lowest delta e amoung all colors in image
+        for color in unique_lab:
+            de = cielab_76(value_lab, color)
+            if de < lowest_de:
+                lowest_de = de
+        
+        # If colors worst DE is better than
+        if lowest_de > highest_de:
+            highest_de = lowest_de
+            background = value
+
 
     # Create new numpy array for image with defined background color
     new_img = np.zeros((new_height, new_width, 3), dtype=np.uint8)
@@ -529,7 +566,7 @@ def create_check_image(image: Image.Image) -> Image.Image:
 
     # Itterate over all pixels in original image in RGB format
     for x, y in product(range(width), range(height)):
-        pixel = image.getpixel((x, y))
+        pixel = source_data[x, y]
         pixel = list(pixel)[:3]
 
         # Determine offset
