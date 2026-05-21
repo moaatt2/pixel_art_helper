@@ -4,7 +4,7 @@ from PIL import Image
 from pprint import pprint
 
 from calculate_cost import rings_by_color, convert_to_palette, calculate_cost
-from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size, rotate_image, convert_to_inlay
+from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size, rotate_image, convert_to_inlay, create_check_image
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage
@@ -378,6 +378,12 @@ class main_window(QMainWindow):
         wrong_way.setCheckable(True)
         self.pattern_button_group.addButton(wrong_way)
         pattern_options_layout.addWidget(wrong_way)
+
+        # Check Image
+        check_image = QPushButton("Check Image")
+        check_image.setCheckable(True)
+        self.pattern_button_group.addButton(check_image)
+        pattern_options_layout.addWidget(check_image)
 
         # Add Pattern Options to accordian
         pattern_accordion.set_content(pattern_options)
@@ -864,6 +870,10 @@ class main_window(QMainWindow):
         # TODO - Implement function to create wrong way pattern
         elif pattern_option == "Wrong Way":
             QMessageBox.warning(self, "Not Implemented", "The 'Wrong Way' pattern is not implemented yet.")
+
+        # Apply check image pattern
+        elif pattern_option == "Check Image":
+            img_copy = create_check_image(img_copy)
 
         # Warning if unknown pattern is somehow selected
         else:
