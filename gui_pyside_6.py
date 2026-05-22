@@ -3,6 +3,10 @@ import json
 from PIL import Image
 from pprint import pprint
 
+# Enable reload of functions from test
+import test
+import importlib
+
 from calculate_cost import rings_by_color, convert_to_palette, calculate_cost
 from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size, rotate_image, convert_to_inlay, create_check_image
 
@@ -164,6 +168,17 @@ class main_window(QMainWindow):
         estimate_cost.setShortcut("Ctrl+E+C")
         estimate_cost.setStatusTip("Estimate cost of inlay materials")
         extra_menu.addAction(estimate_cost)
+
+
+        # Create Dev menu
+        dev_menu = menu.addMenu("&Dev")
+
+        # Add Reload Inlay Function
+        reload_inlay = QAction("&Reload Inlay Function", self)
+        reload_inlay.triggered.connect(self.reload_inlay_function)
+        reload_inlay.setShortcut("Ctrl+Shift+R")
+        reload_inlay.setStatusTip("Reload the inlay generation function")
+        dev_menu.addAction(reload_inlay)
 
 
         #################
@@ -789,6 +804,7 @@ class main_window(QMainWindow):
         self.redraw_image()
 
 
+    # Redraw the image preview based on selected options
     def redraw_image(self):
 
         # Confirm image exists
@@ -892,6 +908,22 @@ class main_window(QMainWindow):
 
         # Update the preview image
         self.update_image()
+    
+
+    # Reload the inlay generation function and redraw the image
+    def reload_inlay_function(self):
+
+        print("Reloading Inlay Function")
+
+        # Ensure that I am using the global convert_to_inlay function
+        global convert_to_inlay
+
+        # Reload the module and replace the function with the update version
+        importlib.reload(test)
+        convert_to_inlay = test.convert_to_inlay
+
+        # Redraw the image
+        self.redraw_image()
  
 
 # Start Application
