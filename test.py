@@ -32,14 +32,14 @@ CHECK_IMAGE_BACKGROUND_OPTIONS = {
 ######################
 
 # Ring Settings
-RING_WIDTH     = 40
+RING_WIDTH     = 43
 RING_HEIGHT    = 50
 RING_THICKNESS = 8
 RING_OUTLINE   = 1
 
 # Inlay structure settings
 INLAY_DELTA_V  = 26
-INLAY_DELTA_H  = 30
+INLAY_DELTA_H  = 33
 INLAY_OFFSET_H = 16
 
 # Horizontal ring split for alternating rows
