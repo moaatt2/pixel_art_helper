@@ -11,7 +11,7 @@ from calculate_cost import rings_by_color, convert_to_palette, calculate_cost
 from test import resize_image, apply_palette, closest_color_euclidean, closest_color_cie_76, closest_color_cie_00, estimate_size, rotate_image, convert_to_inlay, create_check_image
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup
-from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage
+from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage, QIcon
 from PySide6.QtCore import Qt, QSize
 
 
@@ -93,6 +93,14 @@ class main_window(QMainWindow):
         self.palettes = dict()
         self.image = None
         self.image_preview = None
+
+        #######################
+        ### Set Window Icon ###
+        #######################
+
+        icon = QIcon()
+        icon.addFile("assets/images/icon.ico")
+        self.setWindowIcon(icon)
 
 
         ################
