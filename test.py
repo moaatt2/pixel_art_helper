@@ -62,7 +62,7 @@ INLAY_DELTA_H  = 20
 INLAY_OFFSET_H = 16
 
 # Horizontal ring split for alternating rows
-LEFT_HALF_DX = 13
+LEFT_HALF_DX = 10
 
 
 ########################
