@@ -27,9 +27,9 @@ CHECK_IMAGE_BACKGROUND_OPTIONS = {
 }
 
 
-######################
-### Inlay Settings ###
-######################
+###################################
+### Half Stretch Inlay Settings ###
+###################################
 
 # Ring Settings
 RING_WIDTH     = 43
@@ -40,6 +40,25 @@ RING_OUTLINE   = 1
 # Inlay structure settings
 INLAY_DELTA_V  = 26
 INLAY_DELTA_H  = 33
+INLAY_OFFSET_H = 16
+
+# Horizontal ring split for alternating rows
+LEFT_HALF_DX = 13
+
+
+################################
+### Right Way Inlay Settings ###
+################################
+
+# Ring Settings
+RING_WIDTH     = 40
+RING_HEIGHT    = 50
+RING_THICKNESS = 8
+RING_OUTLINE   = 1
+
+# Inlay structure settings
+INLAY_DELTA_V  = 26
+INLAY_DELTA_H  = 20
 INLAY_OFFSET_H = 16
 
 # Horizontal ring split for alternating rows
