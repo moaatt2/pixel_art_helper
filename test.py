@@ -27,67 +27,122 @@ CHECK_IMAGE_BACKGROUND_OPTIONS = {
 }
 
 
-###################################
-### Half Stretch Inlay Settings ###
-###################################
+####################################################
+### Intialize Dictionary of Ring Size/Shape Data ###
+####################################################
+
+# Initialize dictionary to hold ring templates for each inlay type
+ring_shapes = dict()
+
+
+######################################
+### Create Half Stretch Ring Masks ###
+######################################
 
 # Ring Settings
-RING_WIDTH     = 43
-RING_HEIGHT    = 50
-RING_THICKNESS = 8
-RING_OUTLINE   = 1
+ring_width     = 43
+ring_height    = 50
+ring_thickness = 8
+ring_outline   = 1
 
 # Inlay structure settings
-INLAY_DELTA_V  = 26
-INLAY_DELTA_H  = 33
-INLAY_OFFSET_H = 16
+inlay_delta_v  = 26
+inlay_delta_h  = 33
+inlay_offset_h = 16
 
 # Horizontal ring split for alternating rows
-LEFT_HALF_DX = 13
-
-
-################################
-### Right Way Inlay Settings ###
-################################
-
-# Ring Settings
-RING_WIDTH     = 40
-RING_HEIGHT    = 50
-RING_THICKNESS = 8
-RING_OUTLINE   = 1
-
-# Inlay structure settings
-INLAY_DELTA_V  = 26
-INLAY_DELTA_H  = 20
-INLAY_OFFSET_H = 16
-
-# Horizontal ring split for alternating rows
-LEFT_HALF_DX = 10
-
-
-########################
-### Create Ring Sets ###
-########################
+left_half_dx = 13
 
 # Create template image
-buf_img = Image.new("RGBA",(RING_WIDTH, RING_HEIGHT))
+buf_img = Image.new("RGBA",(ring_width, ring_height))
 
 # Determine ring size from buffer size
 x1, y1 = 0, 0
-x2, y2 = RING_WIDTH-1, RING_HEIGHT-1
+x2, y2 = ring_width-1, ring_height-1
 
 # Use thickness to determine size of inner ring
-x3, y3, x4, y4 = x1+RING_THICKNESS, y1+RING_THICKNESS, x2-RING_THICKNESS, y2-RING_THICKNESS
+x3, y3, x4, y4 = x1+ring_thickness, y1+ring_thickness, x2-ring_thickness, y2-ring_thickness
 
 # Draw sample ring in image buffer
 draw = ImageDraw.Draw(buf_img)
 draw.ellipse((0,0,x2,y2),   fill="white",   outline="black", width=1)
 draw.ellipse((x3,y3,x4,y4), fill=(0,0,0,0), outline="black", width=1)
 
+# Create Ring templates and mask
 ring_template = np.asarray(buf_img)
 ring_white_mask = (ring_template[:, :, :3] == 255).all(axis=-1)
 
+# Delete unused image
 del buf_img
+
+# Add Half Stretch Data to ring_shapes dict
+ring_shapes["Half Stretch"] = {
+    "ring_width":      ring_width,
+    "ring_height":     ring_height,
+    "ring_thickness":  ring_thickness,
+    "ring_outline":    ring_outline,
+    "inlay_delta_v":   inlay_delta_v,
+    "inlay_delta_h":   inlay_delta_h,
+    "inlay_offset_h":  inlay_offset_h,
+    "left_half_dx":    left_half_dx,
+    "ring_template":   ring_template,
+    "ring_white_mask": ring_white_mask,
+}
+
+
+###################################
+### Create Right Way Ring Masks ###
+###################################
+
+# Ring Settings
+ring_width     = 40
+ring_height    = 50
+ring_thickness = 8
+ring_outline   = 1
+
+# Inlay structure settings
+inlay_delta_v  = 26
+inlay_delta_h  = 20
+inlay_offset_h = 16
+
+# Horizontal ring split for alternating rows
+left_half_dx = 10
+
+# Create template image
+buf_img = Image.new("RGBA",(ring_width, ring_height))
+
+# Determine ring size from buffer size
+x1, y1 = 0, 0
+x2, y2 = ring_width-1, ring_height-1
+
+# Use thickness to determine size of inner ring
+x3, y3, x4, y4 = x1+ring_thickness, y1+ring_thickness, x2-ring_thickness, y2-ring_thickness
+
+# Draw sample ring in image buffer
+draw = ImageDraw.Draw(buf_img)
+draw.ellipse((0,0,x2,y2),   fill="white",   outline="black", width=1)
+draw.ellipse((x3,y3,x4,y4), fill=(0,0,0,0), outline="black", width=1)
+
+# Create Ring templates and mask
+ring_template = np.asarray(buf_img)
+ring_white_mask = (ring_template[:, :, :3] == 255).all(axis=-1)
+
+# Delete unused image
+del buf_img
+
+# Add Right Way Data to ring_shapes dict
+ring_shapes["Right Way"] = {
+    "ring_width":      ring_width,
+    "ring_height":     ring_height,
+    "ring_thickness":  ring_thickness,
+    "ring_outline":    ring_outline,
+    "inlay_delta_v":   inlay_delta_v,
+    "inlay_delta_h":   inlay_delta_h,
+    "inlay_offset_h":  inlay_offset_h,
+    "left_half_dx":    left_half_dx,
+    "ring_template":   ring_template,
+    "ring_white_mask": ring_white_mask,
+}
 
 
 #################
@@ -445,8 +500,20 @@ def estimate_size(image: Image.Image, gauge: int, gauge_system: str, internal_di
 
 
 # Create inlay preview from image
-def convert_to_inlay(image: Image.Image) -> Image.Image:
+def convert_to_inlay(image: Image.Image, inlay_type: str) -> Image.Image:
 
+    #####################################
+    ### Load Type Variables From Dict ###
+    #####################################
+
+    ring_width      = ring_shapes[inlay_type]["ring_width"]
+    ring_height     = ring_shapes[inlay_type]["ring_height"]
+    inlay_delta_h   = ring_shapes[inlay_type]["inlay_delta_h"]
+    inlay_delta_v   = ring_shapes[inlay_type]["inlay_delta_v"]
+    inlay_offset_h  = ring_shapes[inlay_type]["inlay_offset_h"]
+    left_half_dx    = ring_shapes[inlay_type]["left_half_dx"]
+    ring_template   = ring_shapes[inlay_type]["ring_template"]
+    ring_white_mask = ring_shapes[inlay_type]["ring_white_mask"]
 
     ########################
     ### Create New Image ###
@@ -454,8 +521,8 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
 
     # Create new image
     width, height = image.size
-    new_width = (width-1) * INLAY_DELTA_H + RING_WIDTH + INLAY_OFFSET_H
-    new_height = (height-1) * INLAY_DELTA_V + RING_HEIGHT
+    new_width = (width-1) * inlay_delta_h + ring_width + inlay_offset_h
+    new_height = (height-1) * inlay_delta_v + ring_height
     new_img = np.zeros((new_height, new_width, 4), dtype=np.uint8)
 
 
@@ -480,7 +547,7 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
         tmp[ring_white_mask] = color
         ring_colors[color] = {
             "full": tmp,
-            "halves": (tmp[:, :LEFT_HALF_DX, :], tmp[:, LEFT_HALF_DX:, :]),
+            "halves": (tmp[:, :left_half_dx, :], tmp[:, left_half_dx:, :]),
         }
 
     ##################
@@ -495,13 +562,13 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
             pixel = source_data[x, y]
 
             # Full circle co-ordinates
-            x1, y1 = x*INLAY_DELTA_H,  y*INLAY_DELTA_V
+            x1, y1 = x*inlay_delta_h,  y*inlay_delta_v
             
             # Get ring
             ring = ring_colors[pixel]["full"]
 
             # Copy ring to image under existing pixels
-            sub = new_img[y1:y1+RING_HEIGHT, x1:x1+RING_WIDTH]
+            sub = new_img[y1:y1+ring_height, x1:x1+ring_width]
             np.copyto(sub, ring, where=(sub[..., 3] == 0)[..., None])
 
 
@@ -513,17 +580,17 @@ def convert_to_inlay(image: Image.Image) -> Image.Image:
             pixel = source_data[x, y]
 
             # Full circle co-ordinates
-            x1, y1 = x*INLAY_DELTA_H + INLAY_OFFSET_H,  y*INLAY_DELTA_V
+            x1, y1 = x*inlay_delta_h + inlay_offset_h,  y*inlay_delta_v
 
             ring_left, ring_right = ring_colors[pixel]["halves"]
 
             # Copy left of ring to image over existing pixels
-            sub = new_img[y1:y1+RING_HEIGHT, x1:x1+LEFT_HALF_DX]
+            sub = new_img[y1:y1+ring_height, x1:x1+left_half_dx]
             np.copyto(sub, ring_left, where=(ring_left[...,3] != 0)[..., None])
 
 
             # Copy right of ring to image under existing pixels
-            sub = new_img[y1:y1+RING_HEIGHT, x1+LEFT_HALF_DX:x1+RING_WIDTH]
+            sub = new_img[y1:y1+ring_height, x1+left_half_dx:x1+ring_width]
             np.copyto(sub, ring_right, where=(sub[..., 3] == 0)[..., None])
 
     # Convert numpy array to PIL image
@@ -686,11 +753,11 @@ def estimate_size_f(filename: str, gauge: int, gauge_system: str, internal_diame
 
 
 # Wrapper for convert to inlay that operates on files
-def convert_to_inlay_f(filename: str) -> str:
+def convert_to_inlay_f(filename: str, inlay_type: str) -> str:
 
     # Open image and convert to inlay
     with Image.open(filename) as source:
-        new_img = convert_to_inlay(source)
+        new_img = convert_to_inlay(source, inlay_type)
 
         # Construct output filename
         input_filename  = filename.split(".")[0]
