@@ -885,11 +885,11 @@ class main_window(QMainWindow):
 
         # Apply half stretch pattern
         elif pattern_option == "Half Stretch":
-            img_copy = convert_to_inlay(img_copy)
+            img_copy = convert_to_inlay(img_copy, "Half Stretch")
 
-        # TODO - Implement function to create right way pattern
+        # Apply right way pattern
         elif pattern_option == "Right Way":
-            QMessageBox.warning(self, "Not Implemented", "The 'Right Way' pattern is not implemented yet.")
+            img_copy = convert_to_inlay(img_copy, "Right Way")
  
         # TODO - Implement function to create wrong way pattern
         elif pattern_option == "Wrong Way":
