@@ -145,6 +145,61 @@ ring_shapes["Right Way"] = {
 }
 
 
+###################################
+### Create Wrong Way Ring Masks ###
+###################################
+
+# Ring Settings
+ring_width     = 43
+ring_height    = 50
+ring_thickness = 8
+ring_outline   = 1
+
+# Inlay structure settings
+inlay_delta_v  = 26
+inlay_delta_h  = 33
+inlay_offset_h = 16
+
+# Horizontal ring split for alternating rows
+left_half_dx = 13
+
+# Create template image
+buf_img = Image.new("RGBA",(ring_width, ring_height))
+
+# Determine ring size from buffer size
+x1, y1 = 0, 0
+x2, y2 = ring_width-1, ring_height-1
+
+# Use thickness to determine size of inner ring
+x3, y3, x4, y4 = x1+ring_thickness, y1+ring_thickness, x2-ring_thickness, y2-ring_thickness
+
+# Draw sample ring in image buffer
+draw = ImageDraw.Draw(buf_img)
+draw.ellipse((0,0,x2,y2),   fill="white",   outline="black", width=1)
+draw.ellipse((x3,y3,x4,y4), fill=(0,0,0,0), outline="black", width=1)
+
+# Create Ring templates and mask
+ring_template = np.asarray(buf_img)
+ring_white_mask = (ring_template[:, :, :3] == 255).all(axis=-1)
+
+# Delete unused image
+del buf_img
+
+# Add Wrong Way Data to ring_shapes dict
+ring_shapes["Wrong Way"] = {
+    "ring_width":      ring_width,
+    "ring_height":     ring_height,
+    "ring_thickness":  ring_thickness,
+    "ring_outline":    ring_outline,
+    "inlay_delta_v":   inlay_delta_v,
+    "inlay_delta_h":   inlay_delta_h,
+    "inlay_offset_h":  inlay_offset_h,
+    "left_half_dx":    left_half_dx,
+    "ring_template":   ring_template,
+    "ring_white_mask": ring_white_mask,
+}
+
+
 #################
 ### Load Data ###
 #################
@@ -472,6 +527,7 @@ def get_average_color_f(image: Image.Image, ignore_function: object = None) -> O
         return f"{average_r}{average_g}{average_b}".upper()
 
 
+
 # Estimate physical size of resulting inlay project based on wire size
 def estimate_size(image: Image.Image, gauge: int, gauge_system: str, internal_diameter: float, units: str) -> Tuple[float, float]:
 
@@ -518,6 +574,10 @@ def convert_to_inlay(image: Image.Image, inlay_type: str) -> Image.Image:
     ########################
     ### Create New Image ###
     ########################
+
+    # Rotate image if wrong way pattern is chosen
+    if inlay_type == "Wrong Way":
+        image = image.rotate(90, expand=True)
 
     # Create new image
     width, height = image.size
@@ -600,6 +660,10 @@ def convert_to_inlay(image: Image.Image, inlay_type: str) -> Image.Image:
     grey_layer = Image.new("RGBA", (new_width, new_height), (127,127,127,255))
     new_img = Image.alpha_composite(grey_layer, new_img)
     new_img = new_img.convert("RGB")
+
+    # Rotate image if wrong way pattern is chosen
+    if inlay_type == "Wrong Way":
+        new_img = new_img.rotate(-90, expand=True)
 
     # Return inlay image
     return new_img
