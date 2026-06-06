@@ -893,7 +893,7 @@ class main_window(QMainWindow):
  
         # TODO - Implement function to create wrong way pattern
         elif pattern_option == "Wrong Way":
-            QMessageBox.warning(self, "Not Implemented", "The 'Wrong Way' pattern is not implemented yet.")
+            img_copy = convert_to_inlay(img_copy, "Wrong Way")
 
         # Apply check image pattern
         elif pattern_option == "Check Image":
