@@ -494,7 +494,7 @@ class main_window(QMainWindow):
     def save_as(self) -> None:
         print("Save As File")
 
-        if self.image is None:
+        if self.image_preview is None:
             return
 
         # Create File Dialog
@@ -510,7 +510,7 @@ class main_window(QMainWindow):
         if file_dialog.exec():
             file_name = file_dialog.selectedFiles()[0]
             print(f"Selected file: {file_name}")
-            self.image.save(file_name)
+            self.image_preview.save(file_name)
 
 
     # Placeholder for reload palettes functionality
