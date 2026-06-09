@@ -484,6 +484,9 @@ class main_window(QMainWindow):
             self.image_path = file_name
             self.update_image()
 
+            # Update Window Title
+            self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
+
 
     # Placeholder for save file functionality
     def save(self):
@@ -511,6 +514,9 @@ class main_window(QMainWindow):
             file_name = file_dialog.selectedFiles()[0]
             print(f"Selected file: {file_name}")
             self.image_preview.save(file_name)
+
+            # Update Window Title
+            self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
 
 
     # Placeholder for reload palettes functionality
