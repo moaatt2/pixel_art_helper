@@ -93,6 +93,7 @@ class main_window(QMainWindow):
         self.palettes = dict()
         self.image = None
         self.image_preview = None
+        self.filepath = None
 
         #######################
         ### Set Window Icon ###
@@ -484,6 +485,9 @@ class main_window(QMainWindow):
             self.image_path = file_name
             self.update_image()
 
+            # Update file path
+            self.filepath = file_name
+
             # Update Window Title
             self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
 
@@ -514,6 +518,9 @@ class main_window(QMainWindow):
             file_name = file_dialog.selectedFiles()[0]
             print(f"Selected file: {file_name}")
             self.image_preview.save(file_name)
+
+            # Update file path
+            self.filepath = file_name
 
             # Update Window Title
             self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
