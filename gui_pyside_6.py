@@ -496,6 +496,15 @@ class main_window(QMainWindow):
     def save(self):
         print("Save File")
 
+        # Guard against saving nothing
+        if self.image_preview is None:
+            return
+
+        # Save file using last used filepath
+        print(f"Saving File As: {self.filepath}")
+        self.image_preview.save(self.filepath)
+
+
 
     # Placeholder for save as functionality
     def save_as(self) -> None:
