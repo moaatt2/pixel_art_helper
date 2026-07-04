@@ -766,7 +766,7 @@ class main_window(QMainWindow):
     def run_estimate_cost(self) -> None:
 
         # Exit early if no image exists
-        if self.image is None:
+        if self.image_preview is None:
             return
 
         # Create palette
@@ -785,7 +785,7 @@ class main_window(QMainWindow):
             return None
         
         # Get a count of pixels by color
-        color_count = rings_by_color(self.image)
+        color_count = rings_by_color(self.image_preview)
 
         # Convert to palette counts
         rings_by_palette = convert_to_palette(color_count, palette)
