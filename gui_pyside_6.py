@@ -766,7 +766,7 @@ class main_window(QMainWindow):
     def run_estimate_cost(self) -> None:
 
         # Exit early if no image exists
-        if self.image_preview is None:
+        if self.pre_pattern_image is None:
             return
 
         # Create palette
@@ -783,13 +783,9 @@ class main_window(QMainWindow):
         if len(palette) < 1:
             QMessageBox.critical(self, "Empty Palette", "Your palette doesn't have any colors, please select at least one to continue.")
             return None
-        
-        # Convert image preview to PIL image
-        q_image = self.image_preview.toImage()
-        p_image = ImageQt.fromqimage(q_image).convert("RGB")
 
         # Get a count of pixels by color
-        color_count = rings_by_color(p_image)
+        color_count = rings_by_color(self.pre_pattern_image)
 
         # Convert to palette counts
         rings_by_palette = convert_to_palette(color_count, palette)
@@ -820,7 +816,9 @@ class main_window(QMainWindow):
         message += f"\t\t* Extra Rings: {t_bags*300 - t_rings}\n"
 
         # Show user message
+        # TODO: Add copy to clipboard button
         QMessageBox.information(self, "Cost Estimate", message)
+        print(message)
 
 
     # Function to rotate image
@@ -894,6 +892,9 @@ class main_window(QMainWindow):
         # Modify Image
         img_copy = resize_image(img_copy, w_mult, h_mult)
         print(f"Resizing to: {w_mult} x {h_mult}")
+
+        # Save pre-pattern option for cost estimation
+        self.pre_pattern_image = img_copy.copy()
 
 
         #############################
