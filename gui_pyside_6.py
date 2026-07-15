@@ -427,9 +427,12 @@ class main_window(QMainWindow):
         image_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        self.image_container = ImageLabel("Press Ctrl+O to open an image", self.image_frame)
+        self.image_container = ImageLabel("Press Ctrl+O to open an image or drag an image here", self.image_frame)
         self.image_container.setAlignment(Qt.AlignCenter)
         image_layout.addWidget(self.image_container)
+
+        # Allow opening images by dragging and dropping them onto the image frame
+        self.setAcceptDrops(True)
 
 
         ##########################
@@ -503,7 +506,6 @@ class main_window(QMainWindow):
         # Save file using last used filepath
         print(f"Saving File As: {self.filepath}")
         self.image_preview.save(self.filepath)
-
 
 
     # Placeholder for save as functionality
@@ -743,6 +745,66 @@ class main_window(QMainWindow):
                         Qt.SmoothTransformation
                     )
                 )
+
+
+    # Update preview area when user drags file to application
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasText() and event.mimeData().text().lower().endswith((".bmp", ".jpg", ".png")):
+            self.image_container.setText("Release to drop image")
+            event.acceptProposedAction()
+        else:
+            self.image_container.setText("File must be bmp, jpg, or png")
+
+
+    # Handle case when user doesn't drop image
+    def dragLeaveEvent(self, event):
+        if self.image_preview is not None:
+            size = self.image_container.size()
+
+            if size.width() > 0 and size.height() > 0:
+                self.image_container.setPixmap(
+                    self.image_preview.scaled(
+                        size,
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation
+                    )
+                )
+        else:
+            self.image_container.setText("Press Ctrl+O to open an image or drag an image here")
+
+
+    # Handle user drops
+    def dropEvent(self, event):        
+        # If valid load the image
+        if event.mimeData().hasText() and event.mimeData().text().lower().endswith((".bmp", ".jpg", ".png")):
+            file_name = event.mimeData().text()[8:]
+            self.image = Image.open(file_name)
+            self.image = self.image.convert("RGB")
+            self.image_preview = QPixmap(file_name)
+            self.image_path = file_name
+            self.update_image()
+
+            # Update file path
+            self.filepath = file_name
+
+            # Update Window Title
+            self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
+
+        # If invalid drop reset the container
+        else:
+            if self.image_preview is not None:
+                size = self.image_container.size()
+
+                if size.width() > 0 and size.height() > 0:
+                    self.image_container.setPixmap(
+                        self.image_preview.scaled(
+                            size,
+                            Qt.KeepAspectRatio,
+                            Qt.SmoothTransformation
+                        )
+                    )
+            else:
+                self.image_container.setText("Press Ctrl+O to open an image or drag an image here")
 
 
     # Estimate size of completed inlay
