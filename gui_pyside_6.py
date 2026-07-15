@@ -464,6 +464,22 @@ class main_window(QMainWindow):
         self.setStatusBar(QStatusBar(self))
 
 
+    # Handle loading iamges from a filename
+    def load_image(self, file_name: str) -> None:
+        # Load the selected image into the image container
+        self.image = Image.open(file_name)
+        self.image = self.image.convert("RGB")
+        self.image_preview = QPixmap(file_name)
+        self.image_path = file_name
+        self.update_image()
+
+        # Update file path
+        self.filepath = file_name
+
+        # Update Window Title
+        self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
+
+
     # On open button, create file dialog, load selected image, display image in container
     def open(self):
         print("Open File")
@@ -481,18 +497,8 @@ class main_window(QMainWindow):
             file_name = file_dialog.selectedFiles()[0]
             print(f"Selected file: {file_name}")
 
-            # Load the selected image into the image container
-            self.image = Image.open(file_name)
-            self.image = self.image.convert("RGB")
-            self.image_preview = QPixmap(file_name)
-            self.image_path = file_name
-            self.update_image()
-
-            # Update file path
-            self.filepath = file_name
-
-            # Update Window Title
-            self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
+            # Load the image
+            self.load_image(file_name)
 
 
     # Placeholder for save file functionality
@@ -778,17 +784,7 @@ class main_window(QMainWindow):
         # If valid load the image
         if event.mimeData().hasText() and event.mimeData().text().lower().endswith((".bmp", ".jpg", ".png")):
             file_name = event.mimeData().text()[8:]
-            self.image = Image.open(file_name)
-            self.image = self.image.convert("RGB")
-            self.image_preview = QPixmap(file_name)
-            self.image_path = file_name
-            self.update_image()
-
-            # Update file path
-            self.filepath = file_name
-
-            # Update Window Title
-            self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
+            self.load_image(file_name)
 
         # If invalid drop reset the container
         else:
