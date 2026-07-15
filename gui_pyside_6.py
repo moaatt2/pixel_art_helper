@@ -785,6 +785,7 @@ class main_window(QMainWindow):
         if event.mimeData().hasText() and event.mimeData().text().lower().endswith((".bmp", ".jpg", ".png")):
             file_name = event.mimeData().text()[8:]
             self.load_image(file_name)
+            event.acceptProposedAction()
 
         # If invalid drop reset the container
         else:
