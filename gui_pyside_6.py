@@ -753,6 +753,14 @@ class main_window(QMainWindow):
                 )
 
 
+    # Helper to reset image container if an action is aborted or goes wrong
+    def reset_image_container(self):
+        if self.image_preview is not None:
+            self.update_image()
+        else:
+            self.image_container.setText("Press Ctrl+O to open an image or drag an image here")
+
+
     # Update preview area when user drags file to application
     def dragEnterEvent(self, event):
         if event.mimeData().hasText() and event.mimeData().text().lower().endswith((".bmp", ".jpg", ".png")):
@@ -764,19 +772,8 @@ class main_window(QMainWindow):
 
     # Handle case when user doesn't drop image
     def dragLeaveEvent(self, event):
-        if self.image_preview is not None:
-            size = self.image_container.size()
-
-            if size.width() > 0 and size.height() > 0:
-                self.image_container.setPixmap(
-                    self.image_preview.scaled(
-                        size,
-                        Qt.KeepAspectRatio,
-                        Qt.SmoothTransformation
-                    )
-                )
-        else:
-            self.image_container.setText("Press Ctrl+O to open an image or drag an image here")
+        self.reset_image_container()
+        event.accept()
 
 
     # Handle user drops
@@ -789,19 +786,7 @@ class main_window(QMainWindow):
 
         # If invalid drop reset the container
         else:
-            if self.image_preview is not None:
-                size = self.image_container.size()
-
-                if size.width() > 0 and size.height() > 0:
-                    self.image_container.setPixmap(
-                        self.image_preview.scaled(
-                            size,
-                            Qt.KeepAspectRatio,
-                            Qt.SmoothTransformation
-                        )
-                    )
-            else:
-                self.image_container.setText("Press Ctrl+O to open an image or drag an image here")
+            self.reset_image_container()
 
 
     # Estimate size of completed inlay
