@@ -467,17 +467,23 @@ class main_window(QMainWindow):
     # Handle loading iamges from a filename
     def load_image(self, file_name: str) -> None:
         # Load the selected image into the image container
-        self.image = Image.open(file_name)
-        self.image = self.image.convert("RGB")
-        self.image_preview = QPixmap(file_name)
-        self.image_path = file_name
-        self.update_image()
+        try:
+            self.image = Image.open(file_name)
+            self.image = self.image.convert("RGB")
+            self.image_preview = QPixmap(file_name)
+            self.image_path = file_name
+            self.update_image()
 
-        # Update file path
-        self.filepath = file_name
+            # Update file path
+            self.filepath = file_name
 
-        # Update Window Title
-        self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
+            # Update Window Title
+            self.setWindowTitle(f"Pixel Art Helper - {file_name.split('/')[-1]}")
+
+        # Handle case where image cannot be opened
+        except Exception as e:
+            self.reset_image_container()
+            QMessageBox.critical(self, "Error Opening Image", f"An error occurred while trying to open the image:\n\n{str(e)}")
 
 
     # On open button, create file dialog, load selected image, display image in container
@@ -768,6 +774,7 @@ class main_window(QMainWindow):
             event.acceptProposedAction()
         else:
             self.image_container.setText("File must be bmp, jpg, or png")
+            event.acceptProposedAction()
 
 
     # Handle case when user doesn't drop image
