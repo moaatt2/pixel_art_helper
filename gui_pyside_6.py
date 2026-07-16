@@ -468,9 +468,8 @@ class main_window(QMainWindow):
     def load_image(self, file_name: str) -> None:
         # Load the selected image into the image container
         try:
-            self.image = Image.open(file_name)
-            self.image = self.image.convert("RGB")
-            self.image_preview = QPixmap(file_name)
+            self.image = Image.open(file_name).convert("RGB")
+            self.image_preview = pil_to_pixmap(self.image)
             self.image_path = file_name
             self.update_image()
 
