@@ -464,7 +464,7 @@ class main_window(QMainWindow):
         self.setStatusBar(QStatusBar(self))
 
 
-    # Handle loading iamges from a filename
+    # Handle loading images from a filename
     def load_image(self, file_name: str) -> None:
         # Load the selected image into the image container
         try:
@@ -774,7 +774,6 @@ class main_window(QMainWindow):
             event.acceptProposedAction()
         else:
             self.image_container.setText("File must be bmp, jpg, or png")
-            event.acceptProposedAction()
 
 
     # Handle case when user doesn't drop image
