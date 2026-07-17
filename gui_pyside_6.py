@@ -768,26 +768,6 @@ class main_window(QMainWindow):
 
     # Update preview area when user drags file to application
     def dragEnterEvent(self, event):
-        # print("##################")
-        # print("### Event Data ###")
-        # print("##################\n")
-        # print(f"Event: {event}")
-        # print(f"Data Type: {type(event)}")
-        # print(f"Event Type: {event.type()}")
-        # print()
-        # print()
-
-        # print("#################")
-        # print("### Mime Data ###")
-        # print("#################\n")
-        # print(f"Mime Data: {event.mimeData()}")
-        # print(f"Mime Data Type: {type(event.mimeData())}")
-        # print(f"Mime Data Has Text: {event.mimeData().hasText()}")
-        # print(f"Mime Data Text: {event.mimeData().text()}")
-        # print(f"Mime Has URLs: {event.mimeData().hasUrls()}")
-        # print(f"Mime Data URLs: {event.mimeData().urls()}")
-        # print()
-        # print()
 
         # Handle case where user drags something other than a file
         if not event.mimeData().hasUrls():
@@ -810,20 +790,6 @@ class main_window(QMainWindow):
             return
         
         event.acceptProposedAction()
-
-        # print("################")
-        # print("### URL Data ###")
-        # print("################\n")
-        # print(f"URL: {url}")
-        # print(f"URL Type: {type(url)}")
-        # print(f"URL is Local File: {url.isLocalFile()}")
-        # print(f"URL Scheme: {url.scheme()}")
-        # print(f"URL Path: {url.path()}")
-        # print(f"URL File Name: {url.fileName()}")
-        # print(f"URL to Local File: {url.toLocalFile()}")
-        # print(f"URL Host: {url.host()}")
-        # print()
-        # print()
 
 
     # Handle case when user doesn't drop image
