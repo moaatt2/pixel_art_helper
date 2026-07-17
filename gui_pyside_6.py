@@ -768,11 +768,62 @@ class main_window(QMainWindow):
 
     # Update preview area when user drags file to application
     def dragEnterEvent(self, event):
-        if event.mimeData().hasText() and event.mimeData().text().lower().endswith((".bmp", ".jpg", ".png")):
-            self.image_container.setText("Release to drop image")
-            event.acceptProposedAction()
-        else:
-            self.image_container.setText("File must be bmp, jpg, or png")
+        # print("##################")
+        # print("### Event Data ###")
+        # print("##################\n")
+        # print(f"Event: {event}")
+        # print(f"Data Type: {type(event)}")
+        # print(f"Event Type: {event.type()}")
+        # print()
+        # print()
+
+        # print("#################")
+        # print("### Mime Data ###")
+        # print("#################\n")
+        # print(f"Mime Data: {event.mimeData()}")
+        # print(f"Mime Data Type: {type(event.mimeData())}")
+        # print(f"Mime Data Has Text: {event.mimeData().hasText()}")
+        # print(f"Mime Data Text: {event.mimeData().text()}")
+        # print(f"Mime Has URLs: {event.mimeData().hasUrls()}")
+        # print(f"Mime Data URLs: {event.mimeData().urls()}")
+        # print()
+        # print()
+
+        # Handle case where user drags something other than a file
+        if not event.mimeData().hasUrls():
+            self.image_container.setText("Please drag and drop an image file (.bmp, .jpg, .png)")
+            return
+
+        # Handle case where user drags multiple files
+        if len(event.mimeData().urls()) > 1:
+            self.image_container.setText("Please drag and drop a single image file (.bmp, .jpg, .png)")
+            return
+
+        # Handle non local files
+        if not event.mimeData().urls()[0].isLocalFile():
+            self.image_container.setText("Please drag and drop a local image file (.bmp, .jpg, .png)")
+            return
+    
+        # Handle invalid file formats
+        if not event.mimeData().urls()[0].toLocalFile().lower().endswith((".bmp", ".jpg", ".png")):
+            self.image_container.setText("Please drag and drop a  valid image file (.bmp, .jpg, .png)")
+            return
+        
+        event.acceptProposedAction()
+
+        # print("################")
+        # print("### URL Data ###")
+        # print("################\n")
+        # print(f"URL: {url}")
+        # print(f"URL Type: {type(url)}")
+        # print(f"URL is Local File: {url.isLocalFile()}")
+        # print(f"URL Scheme: {url.scheme()}")
+        # print(f"URL Path: {url.path()}")
+        # print(f"URL File Name: {url.fileName()}")
+        # print(f"URL to Local File: {url.toLocalFile()}")
+        # print(f"URL Host: {url.host()}")
+        # print()
+        # print()
 
 
     # Handle case when user doesn't drop image
@@ -782,16 +833,10 @@ class main_window(QMainWindow):
 
 
     # Handle user drops
-    def dropEvent(self, event):        
-        # If valid load the image
-        if event.mimeData().hasText() and event.mimeData().text().lower().endswith((".bmp", ".jpg", ".png")):
-            file_name = event.mimeData().text()[8:]
-            self.load_image(file_name)
-            event.acceptProposedAction()
-
-        # If invalid drop reset the container
-        else:
-            self.reset_image_container()
+    def dropEvent(self, event):
+        file_name = event.mimeData().urls()[0].toLocalFile()
+        self.load_image(file_name)
+        event.acceptProposedAction()
 
 
     # Estimate size of completed inlay
