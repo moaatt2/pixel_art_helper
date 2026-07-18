@@ -788,7 +788,9 @@ class main_window(QMainWindow):
         if not event.mimeData().urls()[0].toLocalFile().lower().endswith((".bmp", ".jpg", ".png")):
             self.image_container.setText("Please drag and drop a  valid image file (.bmp, .jpg, .png)")
             return
-        
+
+
+        self.image_container.setText("Release to load the image")
         event.acceptProposedAction()
 
 
