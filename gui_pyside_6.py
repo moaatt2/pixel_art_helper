@@ -15,6 +15,10 @@ from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QIma
 from PySide6.QtCore import Qt, QSize
 
 
+########################
+### Helper Functions ###
+########################
+
 # Helper function for converting a pil image to a pixmap
 def pil_to_pixmap(image: Image.Image) -> QPixmap:
     image = image.convert("RGB")
@@ -22,6 +26,10 @@ def pil_to_pixmap(image: Image.Image) -> QPixmap:
     qi = QImage(data, image.size[0], image.size[1], image.size[0]*3, QImage.Format.Format_RGB888)
     return QPixmap.fromImage(qi)
 
+
+#########################
+### Custom UI Widgets ###
+#########################
 
 # Helper class to display a solid color window
 class Color(QWidget):
@@ -81,6 +89,10 @@ class Accordian(QWidget):
             
         self.content_layout.addWidget(content)
 
+
+##########################
+### Create Application ###
+##########################
 
 # Main Window Class
 class main_window(QMainWindow):
@@ -737,9 +749,9 @@ class main_window(QMainWindow):
         pprint(self.palettes)
 
 
+    # TODO: Check for unsaved work and ask if user is sure
     # Function to safely quit the application
     def exit(self):
-        # TODO: Check for unsaved work and ask if user is sure
         QApplication.instance().quit()
 
 
