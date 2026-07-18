@@ -1,4 +1,7 @@
 .venv
 __pycache__
 launch.json
+
+# Ignore image files
 test_images
+*.jpg
