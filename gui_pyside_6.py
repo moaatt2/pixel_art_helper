@@ -786,7 +786,7 @@ class main_window(QMainWindow):
     
         # Handle invalid file formats
         if not event.mimeData().urls()[0].toLocalFile().lower().endswith((".bmp", ".jpg", ".png")):
-            self.image_container.setText("Please drag and drop a  valid image file (.bmp, .jpg, .png)")
+            self.image_container.setText("Please drag and drop a valid image file (.bmp, .jpg, .png)")
             return
 
 
