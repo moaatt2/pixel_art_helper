@@ -775,17 +775,19 @@ class main_window(QMainWindow):
             return
 
         # Handle case where user drags multiple files
-        if len(event.mimeData().urls()) > 1:
+        urls = event.mimeData().urls()
+        if len(urls) > 1:
             self.image_container.setText("Please drag and drop a single image file (.bmp, .jpg, .png)")
             return
 
         # Handle non local files
-        if not event.mimeData().urls()[0].isLocalFile():
+        url = urls[0]
+        if not url.isLocalFile():
             self.image_container.setText("Please drag and drop a local image file (.bmp, .jpg, .png)")
             return
     
         # Handle invalid file formats
-        if not event.mimeData().urls()[0].toLocalFile().lower().endswith((".bmp", ".jpg", ".png")):
+        if not url.toLocalFile().lower().endswith((".bmp", ".jpg", ".png")):
             self.image_container.setText("Please drag and drop a supported image file (.bmp, .jpg, .png)")
             return
 
