@@ -9,6 +9,11 @@ from PySide6.QtCore import Qt, QSize
 # Main Window Class
 class main_window(QMainWindow):
     def __init__(self):
+
+        #####################
+        ### Initial Setup ###
+        #####################
+
         super().__init__()                             # Initialize super class
         self.setWindowTitle("Palette Creation Helper") # Set Window title
         self.setMinimumSize(900, 600)                  # Set Window Size
@@ -18,6 +23,12 @@ class main_window(QMainWindow):
         self.image = None
         self.image_preview = None
         self.filepath = None
+
+        # Set Status Bar
+        self.setStatusBar(QStatusBar(self))
+
+        # Allow opening images by dragging and dropping them onto the image frame
+        self.setAcceptDrops(True)
 
         #######################
         ### Set Window Icon ###
@@ -52,14 +63,6 @@ class main_window(QMainWindow):
         file_menu.addAction(exit_action)
 
 
-        ######################
-        ### Add Status Bar ###
-        ######################
-
-        # Set Status Bar
-        self.setStatusBar(QStatusBar(self))
-
-
     # Function to safely quit the application
     def exit(self):
         QApplication.instance().quit()
@@ -67,7 +70,7 @@ class main_window(QMainWindow):
 
     # Open a folder and set up application
     def open(self):
-        pass 
+        pass
 
 # Start Application
 if __name__ == "__main__":
