@@ -52,12 +52,20 @@ class main_window(QMainWindow):
         file_menu.addAction(exit_action)
 
 
+        ######################
+        ### Add Status Bar ###
+        ######################
+
+        # Set Status Bar
+        self.setStatusBar(QStatusBar(self))
+
+
     # Function to safely quit the application
     def exit(self):
         QApplication.instance().quit()
 
 
-    # 
+    # Open a folder and set up application
     def open(self):
         pass 
 
