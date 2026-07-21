@@ -54,6 +54,13 @@ class main_window(QMainWindow):
         open_action.setStatusTip("Open a file")
         file_menu.addAction(open_action)
 
+        # Create Export button
+        export_action = QAction("E&xport", self)
+        export_action.triggered.connect(self.export)
+        export_action.setShortcut(QKeySequence("Ctrl+Shift+E"))
+        export_action.setStatusTip("Export the palette for inlay helper")
+        file_menu.addAction(export_action)
+
         # Add Exit action
         file_menu.addSeparator()
         exit_action = QAction("&Exit", self)
@@ -66,6 +73,11 @@ class main_window(QMainWindow):
     # Function to safely quit the application
     def exit(self):
         QApplication.instance().quit()
+    
+
+    # Export a palette to main
+    def export(self):
+        pass
 
 
     # Open a folder and set up application
