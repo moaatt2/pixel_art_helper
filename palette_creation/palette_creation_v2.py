@@ -49,7 +49,7 @@ class main_window(QMainWindow):
 
         # Create open button
         open_action = QAction("&Open", self)
-        open_action.triggered.connect(self.open)
+        open_action.triggered.connect(self.select_folder)
         open_action.setShortcut(QKeySequence("Ctrl+O"))
         open_action.setStatusTip("Open a folder")
         file_menu.addAction(open_action)
@@ -81,8 +81,16 @@ class main_window(QMainWindow):
 
 
     # Open a folder and set up application
-    def open(self):
+    def open_folder(self, folder_path):
         pass
+
+
+    # Select the folder to open and pass it to the folder opening function
+    def select_folder(self):
+        folder_path = QFileDialog.getExistingDirectory(self, "Select Folder")
+        if folder_path:
+            self.open_folder(folder_path)
+
 
 # Start Application
 if __name__ == "__main__":
