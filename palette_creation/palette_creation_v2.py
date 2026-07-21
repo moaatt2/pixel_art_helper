@@ -51,7 +51,7 @@ class main_window(QMainWindow):
         open_action = QAction("&Open", self)
         open_action.triggered.connect(self.open)
         open_action.setShortcut(QKeySequence("Ctrl+O"))
-        open_action.setStatusTip("Open a file")
+        open_action.setStatusTip("Open a folder")
         file_menu.addAction(open_action)
 
         # Create Export button
