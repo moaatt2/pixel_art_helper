@@ -6,6 +6,20 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QV
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage, QIcon
 from PySide6.QtCore import Qt, QSize
 
+#########################
+### Custom UI Widgets ###
+#########################
+
+# Custom Label class overwriting min size hint so the splitter can make the image smaller
+class ImageLabel(QLabel):
+    def minimumSizeHint(self):
+        return QSize(0,0)
+
+
+###################
+### Main Window ###
+###################
+
 # Main Window Class
 class main_window(QMainWindow):
     def __init__(self):
@@ -68,6 +82,101 @@ class main_window(QMainWindow):
         exit_action.setShortcut(QKeySequence("Ctrl+W"))
         exit_action.setStatusTip("Exit the application")
         file_menu.addAction(exit_action)
+
+
+        ########################
+        ### Create Image Box ###
+        ########################
+
+        # Create Frame for image
+        image_box = QFrame()
+        image_box.setLineWidth(2)
+        image_box.setFrameShape(QFrame.Box)
+
+        # Create Layout for image
+        image_layout = QVBoxLayout(image_box)
+        image_layout.setContentsMargins(0,0,0,0)
+
+        # Create label for image
+        image_container = ImageLabel("Press Ctrl+O to open an image or drag an image here", image_box)
+        image_container.setAlignment(Qt.AlignCenter)
+        image_layout.addWidget(image_container)
+
+
+        #######################
+        ### Create Mask Box ###
+        #######################
+
+        # Create Frame for image
+        mask_box = QFrame()
+        mask_box.setLineWidth(2)
+        mask_box.setFrameShape(QFrame.Box)
+
+        # Create Layout for image
+        mask_layout = QVBoxLayout(mask_box)
+        mask_layout.setContentsMargins(0,0,0,0)
+
+        # Create label for image
+        mask_container = ImageLabel("Mask Box", mask_box)
+        mask_container.setAlignment(Qt.AlignCenter)
+        mask_layout.addWidget(mask_container)
+
+
+        #########################
+        ### Create Folder Box ###
+        #########################
+
+        # Create Frame for image
+        folder_box = QFrame()
+        folder_box.setLineWidth(2)
+        folder_box.setFrameShape(QFrame.Box)
+
+        # Create Layout for image
+        folder_layout = QVBoxLayout(folder_box)
+        folder_layout.setContentsMargins(0,0,0,0)
+
+        # Create label for image
+        folder_container = ImageLabel("Folder Box", folder_box)
+        folder_container.setAlignment(Qt.AlignCenter)
+        folder_layout.addWidget(folder_container)
+
+
+        ###################################
+        ### Create Mask/Folder Splitter ###
+        ###################################
+
+        # Create vertical splitter
+        vsplitter = QSplitter(Qt.Vertical)
+        vsplitter.addWidget(mask_box)
+        vsplitter.addWidget(folder_box)
+
+        # Set an inital 1:1 ratio
+        vsplitter.setSizes([1,1])
+
+        # Set splitter stretch factors to maintain 1:1 ratio
+        vsplitter.setStretchFactor(0,1)
+        vsplitter.setStretchFactor(1,1)
+
+
+        ##########################
+        ### Create Main Layout ###
+        ##########################
+
+        # Create Splitter
+        splitter = QSplitter(Qt.Horizontal)
+        # splitter = QSplitter(Qt.Vertical)
+        splitter.addWidget(vsplitter)
+        splitter.addWidget(image_box)
+
+        # Set an inital 1:3 ratio
+        splitter.setSizes([200,600])
+
+        # Set splitter stretch factors to maintain 1:3 ratio
+        splitter.setStretchFactor(0,1)
+        splitter.setStretchFactor(1,3)
+
+        # Set splitter as central widget
+        self.setCentralWidget(splitter)
 
 
     # Function to safely quit the application
