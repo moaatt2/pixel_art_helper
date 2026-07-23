@@ -1,5 +1,6 @@
 import glob
 import json
+import pathlib
 from PIL import Image, ImageQt
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup
@@ -37,6 +38,8 @@ class main_window(QMainWindow):
         self.image = None
         self.image_preview = None
         self.filepath = None
+        self.config = None
+        self.config_path = None
 
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
@@ -191,7 +194,46 @@ class main_window(QMainWindow):
 
     # Open a folder and set up application
     def open_folder(self, folder_path):
-        pass
+        print(folder_path)
+
+        # Get images by extension
+        bmps  = glob.glob("*.bmp",  root_dir=folder_path)
+        pngs  = glob.glob("*.png",  root_dir=folder_path)
+        jpgs  = glob.glob("*.jpg",  root_dir=folder_path)
+        jpegs = glob.glob("*.jpeg", root_dir=folder_path)
+
+        # Combine images
+        images = list()
+        images.extend(bmps + pngs + jpgs + jpegs)
+        images.sort()
+
+        # Load config from file if it exists
+        self.config_path = pathlib.Path(folder_path, "_config.json")
+        if self.config_path.exists(follow_symlinks=False):
+            with open(str(self.config_path)) as config_file:
+                self.config = json.load(config_file)
+
+        # Otherwise create config
+        else:
+            self.config = dict()
+            for image in images:
+
+                # Get image name without extension
+                image_name = ''.join(image.split('.')[:-1])
+
+                # Add image to config
+                self.config[image] = {
+                    "image_path": str(pathlib.Path(folder_path, image)),
+                    "image_name": ''.join(image.split('.')[:-1]).replace("_", " ").title(),
+                    "hex_code": "",
+                    "masks": dict()
+                }
+
+            # Write config to file
+            with open(self.config_path, 'w') as config_file:
+                json.dump(self.config, config_file)
+
+
 
 
     # Select the folder to open and pass it to the folder opening function
