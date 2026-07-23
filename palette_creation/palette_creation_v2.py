@@ -98,7 +98,7 @@ class main_window(QMainWindow):
         image_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        image_container = ImageLabel("Press Ctrl+O to open an image or drag an image here", image_box)
+        image_container = ImageLabel("Press Ctrl+O to open a folder or drag a folder here", image_box)
         image_container.setAlignment(Qt.AlignCenter)
         image_layout.addWidget(image_container)
 
