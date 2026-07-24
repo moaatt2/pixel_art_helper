@@ -231,7 +231,7 @@ class main_window(QMainWindow):
 
             # Write config to file
             with open(self.config_path, 'w') as config_file:
-                json.dump(self.config, config_file)
+                json.dump(self.config, config_file, indent=4)
 
 
 
