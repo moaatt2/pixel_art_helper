@@ -207,43 +207,24 @@ class main_window(QMainWindow):
         images.extend(bmps + pngs + jpgs + jpegs)
         images.sort()
 
-        # Load config from file if it exists
+        # Create config file path and verify it exists
         self.config_path = pathlib.Path(folder_path, "_config.json")
-        if self.config_path.exists(follow_symlinks=False):
+        config_exists = self.config_path.exists(follow_symlinks=False)
+
+        # If config exists load it
+        if config_exists:
             with open(str(self.config_path)) as config_file:
                 self.config = json.load(config_file)
 
-            # Ensure all images are in config
-            images_added = list()
-            for image in images:
-                if image not in self.config:
-                    images_added.append(image)
-                    self.config[image] = {
-                        "image_path": str(pathlib.Path(folder_path, image)),
-                        "image_name": ''.join(image.split('.')[:-1]).replace("_", " ").title(),
-                        "hex_code": "",
-                        "masks": dict()
-                    }
-
-            # Update config and alert user if images were missing from config
-            if len(images_added) > 0:
-                with open(self.config_path, 'w') as config_file:
-                    json.dump(self.config, config_file, indent=4)
-
-                images_added = ''.join([f"\n\t{i}" for i in images_added])
-                QMessageBox.warning(self,"Images Added to Config",f"The following images were added to the existing config:{images_added}")
-
-
-
-        # Otherwise create config
+        # If config doesnt exist initalize
         else:
             self.config = dict()
-            for image in images:
 
-                # Get image name without extension
-                image_name = ''.join(image.split('.')[:-1])
-
-                # Add image to config
+        # Ensure all images are in config
+        images_added = list()
+        for image in images:
+            if image not in self.config:
+                images_added.append(image)
                 self.config[image] = {
                     "image_path": str(pathlib.Path(folder_path, image)),
                     "image_name": ''.join(image.split('.')[:-1]).replace("_", " ").title(),
@@ -251,11 +232,17 @@ class main_window(QMainWindow):
                     "masks": dict()
                 }
 
-            # Write config to file
+
+        # Update config if it was modified
+        if len(images_added) > 0:
             with open(self.config_path, 'w') as config_file:
                 json.dump(self.config, config_file, indent=4)
 
 
+        # Notify user if images were added to existing config
+        if config_exists and len(images_added) > 0:
+            images_added = ''.join([f"\n\t{i}" for i in images_added])
+            QMessageBox.warning(self,"Images Added to Config",f"The following images were added to the existing config:{images_added}")
 
 
     # Select the folder to open and pass it to the folder opening function
