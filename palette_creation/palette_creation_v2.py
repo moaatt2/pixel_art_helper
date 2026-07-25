@@ -233,16 +233,24 @@ class main_window(QMainWindow):
                 }
 
 
-        # Update config if it was modified
-        if len(images_added) > 0:
-            with open(self.config_path, 'w') as config_file:
-                json.dump(self.config, config_file, indent=4)
-
-
         # Notify user if images were added to existing config
         if config_exists and len(images_added) > 0:
             images_added = ''.join([f"\n\t{i}" for i in images_added])
             QMessageBox.warning(self,"Images Added to Config",f"The following images were added to the existing config:{images_added}")
+
+
+        # Mark config items if they are on disk
+        for item in self.config:
+            path = self.config[item]['image_path']
+            if pathlib.Path(path).exists(follow_symlinks=False):
+                self.config[item]['path_valid'] = True
+            else:
+                self.config[item]['path_valid'] = False 
+
+
+        # Update config on file in case changes occured
+        with open(self.config_path, 'w') as config_file:
+            json.dump(self.config, config_file, indent=4)
 
 
     # Select the folder to open and pass it to the folder opening function
