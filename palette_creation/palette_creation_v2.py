@@ -192,6 +192,11 @@ class main_window(QMainWindow):
         pass
 
 
+    # Read config and fill out folder box
+    def update_folder_box(self):
+        pass
+
+
     # Open a folder and set up application
     def open_folder(self, folder_path):
         print(folder_path)
@@ -251,6 +256,10 @@ class main_window(QMainWindow):
         # Update config on file in case changes occured
         with open(self.config_path, 'w') as config_file:
             json.dump(self.config, config_file, indent=4)
+
+
+        # update the folder box with config data
+        self.update_folder_box()
 
 
     # Select the folder to open and pass it to the folder opening function
