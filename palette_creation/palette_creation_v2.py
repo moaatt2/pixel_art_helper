@@ -130,16 +130,16 @@ class main_window(QMainWindow):
         #########################
 
         # Create Frame for image
-        folder_box = QFrame()
-        folder_box.setLineWidth(2)
-        folder_box.setFrameShape(QFrame.Box)
+        self.folder_box = QFrame()
+        self.folder_box.setLineWidth(2)
+        self.folder_box.setFrameShape(QFrame.Box)
 
         # Create Layout for image
-        folder_layout = QVBoxLayout(folder_box)
+        folder_layout = QVBoxLayout(self.folder_box)
         folder_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        folder_container = ImageLabel("Folder Box", folder_box)
+        folder_container = ImageLabel("Folder Box", self.folder_box)
         folder_container.setAlignment(Qt.AlignCenter)
         folder_layout.addWidget(folder_container)
 
@@ -151,7 +151,7 @@ class main_window(QMainWindow):
         # Create vertical splitter
         vsplitter = QSplitter(Qt.Vertical)
         vsplitter.addWidget(mask_box)
-        vsplitter.addWidget(folder_box)
+        vsplitter.addWidget(self.folder_box)
 
         # Set an inital 1:1 ratio
         vsplitter.setSizes([1,1])
@@ -194,7 +194,16 @@ class main_window(QMainWindow):
 
     # Read config and fill out folder box
     def update_folder_box(self):
-        pass
+
+        # Find layout for folder box
+        folder_layout = self.folder_box.layout()
+
+        # Add items to layout
+        for key in self.config:
+            name = self.config[key]["image_name"]
+
+            button = QPushButton(name)
+            folder_layout.addWidget(button)
 
 
     # Open a folder and set up application
