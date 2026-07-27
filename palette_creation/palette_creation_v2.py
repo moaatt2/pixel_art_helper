@@ -198,6 +198,12 @@ class main_window(QMainWindow):
         # Find layout for folder box
         folder_layout = self.folder_box.layout()
 
+        # Clear existing items from folderbox layout
+        for _ in range(folder_layout.count()):
+            w = folder_layout.itemAt(0).widget()
+            w.setParent(None)
+            w.deleteLater()
+
         # Add items to layout
         for key in self.config:
             name = self.config[key]["image_name"]
