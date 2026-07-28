@@ -204,12 +204,27 @@ class main_window(QMainWindow):
             w.setParent(None)
             w.deleteLater()
 
-        # Add items to layout
+
+        # Create widget to hold file buttons
+        file_section = QWidget()
+        file_section_layout = QVBoxLayout(file_section)
+        file_section_layout.setSpacing(3)
+
+
+        # Create buttons for each folder
         for key in self.config:
             name = self.config[key]["image_name"]
 
             button = QPushButton(name)
-            folder_layout.addWidget(button)
+            file_section_layout.addWidget(button)
+
+
+        # Create a scroll area to hold a large list of files
+        scroll_area = QScrollArea()
+        scroll_area.setWidget(file_section)
+
+        # Add the scroll area to the layout
+        folder_layout.addWidget(scroll_area)
 
 
     # Open a folder and set up application
