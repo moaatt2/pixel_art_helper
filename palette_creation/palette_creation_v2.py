@@ -209,6 +209,7 @@ class main_window(QMainWindow):
         file_section = QWidget()
         file_section_layout = QVBoxLayout(file_section)
         file_section_layout.setSpacing(3)
+        file_section_layout.setAlignment(Qt.AlignTop)
 
 
         # Create buttons for each folder
@@ -222,6 +223,11 @@ class main_window(QMainWindow):
         # Create a scroll area to hold a large list of files
         scroll_area = QScrollArea()
         scroll_area.setWidget(file_section)
+
+        # Scroll Area Setting
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # Add the scroll area to the layout
         folder_layout.addWidget(scroll_area)
