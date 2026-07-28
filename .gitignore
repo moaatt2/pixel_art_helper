@@ -5,3 +5,6 @@ launch.json
 # Ignore image files
 test_images
 *.jpg
+
+# Ignore palette creation images and configs
+palette_creation/*/*
