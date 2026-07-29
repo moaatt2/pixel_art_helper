@@ -216,8 +216,10 @@ class main_window(QMainWindow):
         for key in self.config:
             name = self.config[key]["image_name"]
 
-            button = QPushButton(name)
-            button.setStyleSheet("text-align: left;")
+            text = f"✔️ {name}" if self.config[key]['hex_code'] else f"❌ {name}"
+
+            button = QPushButton(text)
+            button.setStyleSheet("text-align: left; padding-left: 5px; padding-right: 5px; padding-top: 3px; padding-bottom: 3px;")
             file_section_layout.addWidget(button)
 
 
