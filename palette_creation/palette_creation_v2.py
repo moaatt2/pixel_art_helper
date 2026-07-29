@@ -217,6 +217,7 @@ class main_window(QMainWindow):
             name = self.config[key]["image_name"]
 
             button = QPushButton(name)
+            button.setStyleSheet("text-align: left;")
             file_section_layout.addWidget(button)
 
 
