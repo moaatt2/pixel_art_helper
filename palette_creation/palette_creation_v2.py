@@ -139,7 +139,7 @@ class main_window(QMainWindow):
         folder_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        folder_container = ImageLabel("Folder Box", self.folder_box)
+        folder_container = ImageLabel("Open a folder to get started", self.folder_box)
         folder_container.setAlignment(Qt.AlignCenter)
         folder_layout.addWidget(folder_container)
 
