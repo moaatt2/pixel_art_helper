@@ -1,6 +1,7 @@
 import glob
 import json
 import pathlib
+import functools
 from PIL import Image, ImageQt
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup
@@ -192,6 +193,11 @@ class main_window(QMainWindow):
         pass
 
 
+    # Handle user clicking an image button
+    def image_click(self, button=None):
+        print(f"Clicked {button} image button")
+
+
     # Read config and fill out folder box
     def update_folder_box(self):
 
@@ -219,6 +225,7 @@ class main_window(QMainWindow):
             text = f"✔️ {name}" if self.config[key]['hex_code'] else f"❌ {name}"
 
             button = QPushButton(text)
+            button.clicked.connect(functools.partial(self.image_click, button=key))
             button.setStyleSheet("text-align: left; padding-left: 5px; padding-right: 5px; padding-top: 3px; padding-bottom: 3px;")
             file_section_layout.addWidget(button)
 
