@@ -41,6 +41,7 @@ class main_window(QMainWindow):
         self.filepath = None
         self.config = None
         self.config_path = None
+        self.image_buttons = None
 
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
@@ -217,6 +218,9 @@ class main_window(QMainWindow):
         file_section_layout.setSpacing(3)
         file_section_layout.setAlignment(Qt.AlignTop)
 
+        # Create Exclusive Button group to add buttons to
+        self.image_buttons = QButtonGroup()
+        self.image_buttons.setExclusive(True)
 
         # Create buttons for each folder
         for key in self.config:
@@ -225,8 +229,10 @@ class main_window(QMainWindow):
             text = f"✔️ {name}" if self.config[key]['hex_code'] else f"❌ {name}"
 
             button = QPushButton(text)
+            button.setCheckable(True)
             button.clicked.connect(functools.partial(self.image_click, button=key))
             button.setStyleSheet("text-align: left; padding-left: 5px; padding-right: 5px; padding-top: 3px; padding-bottom: 3px;")
+            self.image_buttons.addButton(button)
             file_section_layout.addWidget(button)
 
 
