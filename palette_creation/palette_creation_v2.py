@@ -103,9 +103,9 @@ class main_window(QMainWindow):
         image_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        image_container = ImageLabel("Press Ctrl+O to open a folder or drag a folder here", image_box)
-        image_container.setAlignment(Qt.AlignCenter)
-        image_layout.addWidget(image_container)
+        self.image_container = ImageLabel("Press Ctrl+O to open a folder or drag a folder here", image_box)
+        self.image_container.setAlignment(Qt.AlignCenter)
+        image_layout.addWidget(self.image_container)
 
 
         #######################
@@ -122,9 +122,9 @@ class main_window(QMainWindow):
         mask_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        mask_container = ImageLabel("Mask Box", mask_box)
-        mask_container.setAlignment(Qt.AlignCenter)
-        mask_layout.addWidget(mask_container)
+        self.mask_container = ImageLabel("Open a folder to get started", mask_box)
+        self.mask_container.setAlignment(Qt.AlignCenter)
+        mask_layout.addWidget(self.mask_container)
 
 
         #########################
@@ -313,6 +313,12 @@ class main_window(QMainWindow):
         # update the folder box with config data
         self.update_folder_box()
 
+
+        # Update Image box text
+        self.image_container.setText("Select an image to continue")
+
+        # Update Mask box text
+        self.mask_container.setText("Select an image to continue")
 
     # Select the folder to open and pass it to the folder opening function
     def select_folder(self):
