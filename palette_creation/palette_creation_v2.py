@@ -286,7 +286,16 @@ class main_window(QMainWindow):
                     "image_path": str(pathlib.Path(folder_path, image)),
                     "image_name": ''.join(image.split('.')[:-1]).replace("_", " ").title(),
                     "hex_code": "",
-                    "masks": dict()
+                    "masks": [{
+                        "type": "rgb_subtractive",
+                        "active": False,
+                        "rmax": 255,
+                        "rmin": 180,
+                        "gmax": 255,
+                        "gmin": 180,
+                        "bmax": 255,
+                        "bmin": 180,
+                    }]
                 }
 
 
