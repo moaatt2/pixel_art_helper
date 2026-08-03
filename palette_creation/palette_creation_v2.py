@@ -287,6 +287,7 @@ class main_window(QMainWindow):
                     "image_name": ''.join(image.split('.')[:-1]).replace("_", " ").title(),
                     "hex_code": "",
                     "masks": [{
+                        "name": "Mask 1",
                         "type": "rgb_subtractive",
                         "active": False,
                         "rmax": 255,
