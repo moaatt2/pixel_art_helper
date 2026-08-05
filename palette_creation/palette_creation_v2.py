@@ -8,6 +8,19 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QV
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage, QIcon
 from PySide6.QtCore import Qt, QSize
 
+
+########################
+### Helper Functions ###
+########################
+
+# Helper function for converting a pil image to a pixmap
+def pil_to_pixmap(image: Image.Image) -> QPixmap:
+    image = image.convert("RGB")
+    data = image.tobytes("raw", "RGB")
+    qi = QImage(data, image.size[0], image.size[1], image.size[0]*3, QImage.Format.Format_RGB888)
+    return QPixmap.fromImage(qi)
+
+
 #########################
 ### Custom UI Widgets ###
 #########################
@@ -194,17 +207,55 @@ class main_window(QMainWindow):
         pass
 
 
+    # Resize image based on available space
+    def update_image(self):
+        if self.image_preview is not None:
+            size = self.image_container.size()
+            if size.width() > 0 and size.height() > 0:
+                self.image_container.setPixmap(
+                    self.image_preview.scaled(
+                        size,
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation
+                    )
+                )
+
+
     # Handle user clicking an image button
     def image_click(self, button=None):
         print(f"Clicked {button} image button")
 
-        # Load image
+        ##################
+        ### Load image ###
+        ##################
 
-        # Load Masks
+        # Open image
+        image_path = self.config[button]['image_path']
+        self.image = Image.open(image_path)
 
-        # Run Masks
+        # Create preview
+        self.image_preview = pil_to_pixmap(self.image)
 
-        # Fill Image background
+        # Draw image to image box
+        self.update_image()
+
+        ##################
+        ### Load Masks ###
+        ##################
+
+        # TODO
+
+        #################
+        ### Run Masks ###
+        #################
+
+        # TODO
+
+        #############################
+        ### Fill Image background ###
+        #############################
+
+        # TODO
 
 
     # Read config and fill out folder box
