@@ -198,6 +198,14 @@ class main_window(QMainWindow):
     def image_click(self, button=None):
         print(f"Clicked {button} image button")
 
+        # Load image
+
+        # Load Masks
+
+        # Run Masks
+
+        # Fill Image background
+
 
     # Read config and fill out folder box
     def update_folder_box(self):
