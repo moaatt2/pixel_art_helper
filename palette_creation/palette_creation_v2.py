@@ -4,7 +4,7 @@ import pathlib
 import functools
 from PIL import Image, ImageQt
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup, QSlider
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage, QIcon
 from PySide6.QtCore import Qt, QSize
 
@@ -126,16 +126,16 @@ class main_window(QMainWindow):
         #######################
 
         # Create Frame for image
-        mask_box = QFrame()
-        mask_box.setLineWidth(2)
-        mask_box.setFrameShape(QFrame.Box)
+        self.mask_box = QFrame()
+        self.mask_box.setLineWidth(2)
+        self.mask_box.setFrameShape(QFrame.Box)
 
         # Create Layout for image
-        mask_layout = QVBoxLayout(mask_box)
+        mask_layout = QVBoxLayout(self.mask_box)
         mask_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        self.mask_container = ImageLabel("Open a folder to get started", mask_box)
+        self.mask_container = ImageLabel("Open a folder to get started", self.mask_box)
         self.mask_container.setAlignment(Qt.AlignCenter)
         mask_layout.addWidget(self.mask_container)
 
@@ -165,7 +165,7 @@ class main_window(QMainWindow):
 
         # Create vertical splitter
         vsplitter = QSplitter(Qt.Vertical)
-        vsplitter.addWidget(mask_box)
+        vsplitter.addWidget(self.mask_box)
         vsplitter.addWidget(self.folder_box)
 
         # Set an inital 1:1 ratio
@@ -243,7 +243,47 @@ class main_window(QMainWindow):
         ### Load Masks ###
         ##################
 
-        # TODO
+
+        # Find layout for mask box
+        mask_layout = self.mask_box.layout()
+
+        # Clear existing items from mask box layout
+        for _ in range(mask_layout.count()):
+            w = mask_layout.itemAt(0).widget()
+            w.setParent(None)
+            w.deleteLater()
+
+        # Itterate over masks for image
+        self.masks = list()
+        for mask in self.config[button]['masks']:
+
+            # Create container & layout for sliders
+            sliders = QWidget()
+            slider_layout = QVBoxLayout(sliders)
+
+            slider_config = [
+                ["Red Min",   "rmin"],
+                ["Red Max",   "rmax"],
+                ["Green Min", "gmin"],
+                ["Green Max", "gmax"],
+                ["Blue Min",  "bmin"],
+                ["Blue Max",  "bmax"],
+            ]
+
+            for label, key in slider_config:
+                widget = QWidget()
+                layout = QHBoxLayout(widget)
+                label = QLabel(label)
+                slider = QSlider()
+                slider.setRange(0, 255)
+                slider.setSingleStep(1)
+                slider.setSliderPosition(mask[key])
+                slider.setOrientation(Qt.Horizontal)
+                layout.addWidget(label)
+                layout.addWidget(slider)
+                slider_layout.addWidget(widget)
+
+            mask_layout.addWidget(sliders)
 
         #################
         ### Run Masks ###
