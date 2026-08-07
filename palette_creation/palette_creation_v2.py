@@ -255,7 +255,10 @@ class main_window(QMainWindow):
 
         # Itterate over masks for image
         self.masks = list()
-        for mask in self.config[button]['masks']:
+        for mask_name in self.config[button]['masks']:
+
+            # Get mask data
+            mask = self.config[button]['masks'][mask_name]
 
             # Create container & layout for sliders
             sliders = QWidget()
@@ -385,17 +388,18 @@ class main_window(QMainWindow):
                     "image_path": str(pathlib.Path(folder_path, image)),
                     "image_name": ''.join(image.split('.')[:-1]).replace("_", " ").title(),
                     "hex_code": "",
-                    "masks": [{
-                        "name": "Mask 1",
-                        "type": "rgb_subtractive",
-                        "active": False,
-                        "rmax": 255,
-                        "rmin": 180,
-                        "gmax": 255,
-                        "gmin": 180,
-                        "bmax": 255,
-                        "bmin": 180,
-                    }]
+                    "masks": {
+                        "default": {
+                            "type": "rgb_subtractive",
+                            "active": False,
+                            "rmax": 255,
+                            "rmin": 180,
+                            "gmax": 255,
+                            "gmin": 180,
+                            "bmax": 255,
+                            "bmin": 180,                            
+                        },
+                    },
                 }
 
 
