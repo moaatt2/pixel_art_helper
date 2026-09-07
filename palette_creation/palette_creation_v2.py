@@ -221,6 +221,12 @@ class main_window(QMainWindow):
                 )
 
 
+    # Custom Resize Event to rescale image when window is resized
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.update_image()
+
+
     # Handle user clicking an image button
     def image_click(self, button=None):
         print(f"Clicked {button} image button")
