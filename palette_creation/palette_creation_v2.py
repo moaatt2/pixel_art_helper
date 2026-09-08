@@ -193,6 +193,9 @@ class main_window(QMainWindow):
         splitter.setStretchFactor(0,1)
         splitter.setStretchFactor(1,3)
 
+        # Connect Splitter to image resizing
+        splitter.splitterMoved.connect(self.update_image)
+
         # Set splitter as central widget
         self.setCentralWidget(splitter)
 
