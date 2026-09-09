@@ -8,6 +8,8 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QV
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage, QIcon
 from PySide6.QtCore import Qt, QSize
 
+from superqt import QLabeledRangeSlider
+
 
 ########################
 ### Helper Functions ###
@@ -274,23 +276,21 @@ class main_window(QMainWindow):
             slider_layout = QVBoxLayout(sliders)
 
             slider_config = [
-                ["Red Min",   "rmin"],
-                ["Red Max",   "rmax"],
-                ["Green Min", "gmin"],
-                ["Green Max", "gmax"],
-                ["Blue Min",  "bmin"],
-                ["Blue Max",  "bmax"],
+                ["Red",   "rmin", "rmax"],
+                ["Green", "gmin", "gmax"],
+                ["Blue",  "bmin", "bmax"],
             ]
 
-            for label, key in slider_config:
+            for label, kmin, kmax in slider_config:
                 widget = QWidget()
                 layout = QHBoxLayout(widget)
                 label = QLabel(label)
-                slider = QSlider()
+                slider = QLabeledRangeSlider()
                 slider.setRange(0, 255)
-                slider.setSingleStep(1)
-                slider.setSliderPosition(mask[key])
-                slider.setOrientation(Qt.Horizontal)
+                slider.setValue((mask[kmin], mask[kmax]))
+                # slider.setSingleStep(1)
+                # slider.setSliderPosition(mask[key])
+                # slider.setOrientation(Qt.Horizontal)
                 layout.addWidget(label)
                 layout.addWidget(slider)
                 slider_layout.addWidget(widget)
