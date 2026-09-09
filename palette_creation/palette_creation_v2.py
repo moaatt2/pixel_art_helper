@@ -282,17 +282,23 @@ class main_window(QMainWindow):
             ]
 
             for label, kmin, kmax in slider_config:
+
+                # Create widget to contain label and slider
                 widget = QWidget()
                 layout = QHBoxLayout(widget)
+
+                # Create Label for row
                 label = QLabel(label)
+                layout.addWidget(label)
+
+                # Create and modify slider for row
                 slider = QLabeledRangeSlider()
                 slider.setRange(0, 255)
                 slider.setValue((mask[kmin], mask[kmax]))
                 # slider.setSingleStep(1)
-                # slider.setSliderPosition(mask[key])
-                # slider.setOrientation(Qt.Horizontal)
-                layout.addWidget(label)
                 layout.addWidget(slider)
+
+                # Add row to slider layout
                 slider_layout.addWidget(widget)
 
             mask_layout.addWidget(sliders)
