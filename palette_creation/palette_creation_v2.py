@@ -291,11 +291,19 @@ class main_window(QMainWindow):
                 label = QLabel(label)
                 layout.addWidget(label)
 
-                # Create and modify slider for row
+                # Create slider
                 slider = QLabeledRangeSlider()
+
+                # Set slider range and values
                 slider.setRange(0, 255)
                 slider.setValue((mask[kmin], mask[kmax]))
-                # slider.setSingleStep(1)
+
+                # Modify slider settings
+                slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
+                slider.setHandleLabelPosition(QLabeledRangeSlider.LabelPosition.NoLabel)
+
+                print(slider.barColor)
+
                 layout.addWidget(slider)
 
                 # Add row to slider layout
