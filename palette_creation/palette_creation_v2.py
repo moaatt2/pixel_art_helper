@@ -302,8 +302,35 @@ class main_window(QMainWindow):
                 slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
                 slider.setHandleLabelPosition(QLabeledRangeSlider.LabelPosition.NoLabel)
 
-                print(slider.barColor)
+                # Restyle slider to remove red from groove
+                slider.setStyleSheet("""
+                    QSlider::groove:horizontal {
+                        height: 4px;
+                        background: #999999;
+                        border: none;
+                        border-radius: 2px;
+                    }
 
+                    QSlider::sub-page:horizontal,
+                    QSlider::add-page:horizontal {
+                        background: #999999;
+                        border: none;
+                    }
+
+                    QSlider::handle:horizontal {
+                        width: 4px;
+                        margin: -5px 0;
+                        background: #ef806d;
+                        border: 5px solid #555555;
+                        border-radius: 7px;
+                    }
+
+                    QRangeSlider {
+                        qproperty-barColor: #ef806d;
+                    }
+                """)
+
+                # Add slider to the widget
                 layout.addWidget(slider)
 
                 # Add row to slider layout
