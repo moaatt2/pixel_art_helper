@@ -281,14 +281,14 @@ class main_window(QMainWindow):
                 ["Blue",  "bmin", "bmax"],
             ]
 
-            for label, kmin, kmax in slider_config:
+            for color, kmin, kmax in slider_config:
 
                 # Create widget to contain label and slider
                 widget = QWidget()
                 layout = QHBoxLayout(widget)
 
                 # Create Label for row
-                label = QLabel(label)
+                label = QLabel(color)
                 layout.addWidget(label)
 
                 # Create slider
@@ -329,6 +329,8 @@ class main_window(QMainWindow):
                         qproperty-barColor: #ef806d;
                     }
                 """)
+
+                slider.valueChanged.connect(functools.partial(print, f"{mask_name} - {color} changed to: {slider.value()}"))
 
                 # Add slider to the widget
                 layout.addWidget(slider)
