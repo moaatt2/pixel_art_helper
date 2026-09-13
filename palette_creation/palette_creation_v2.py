@@ -33,6 +33,82 @@ class ImageLabel(QLabel):
         return QSize(0,0)
 
 
+# Custom mask widget to hold mask controls
+class Mask(QWidget):
+
+    SLIDER_STYLE = """
+        QSlider::groove:horizontal {
+            height: 4px;
+            background: #999999;
+            border: none;
+            border-radius: 2px;
+        }
+
+        QSlider::sub-page:horizontal,
+        QSlider::add-page:horizontal {
+            background: #999999;
+            border: none;
+        }
+
+        QSlider::handle:horizontal {
+            width: 4px;
+            margin: -5px 0;
+            background: #ef806d;
+            border: 5px solid #555555;
+            border-radius: 7px;
+        }
+
+        QRangeSlider {
+            qproperty-barColor: #ef806d;
+        }
+    """
+
+    def __init__(self, mask):
+        super().__init__()
+
+        main_layout = QVBoxLayout()
+
+        slider_config = [
+            ["Red",   "rmin", "rmax"],
+            ["Green", "gmin", "gmax"],
+            ["Blue",  "bmin", "bmax"],
+        ]
+
+        for color, kmin, kmax in slider_config:
+
+            # Create widget to contain label and slider
+            row = QWidget()
+            row_layout = QHBoxLayout(row)
+
+            # Create Label for row
+            row_label = QLabel(color)
+            row_layout.addWidget(row_label)
+
+            # Create slider
+            slider = QLabeledRangeSlider()
+
+            # Set slider range and values
+            slider.setRange(0, 255)
+            slider.setValue((mask[kmin], mask[kmax]))
+
+            # Modify slider settings
+            slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
+            slider.setHandleLabelPosition(QLabeledRangeSlider.LabelPosition.NoLabel)
+
+            # Restyle slider to remove red from groove
+            slider.setStyleSheet(self.SLIDER_STYLE)
+
+            # Add slider to the widget
+            row_layout.addWidget(slider)
+
+            # Add row to slider layout
+            main_layout.addWidget(row)
+
+        self.setLayout(main_layout)
+
+
+
+
 ###################
 ### Main Window ###
 ###################
@@ -338,7 +414,9 @@ class main_window(QMainWindow):
                 # Add row to slider layout
                 slider_layout.addWidget(widget)
 
-            mask_layout.addWidget(sliders)
+            # mask_layout.addWidget(sliders)
+        
+            mask_layout.addWidget(Mask(mask))
 
         #################
         ### Run Masks ###
