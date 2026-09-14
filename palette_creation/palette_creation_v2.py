@@ -63,8 +63,10 @@ class Mask(QWidget):
         }
     """
 
-    def __init__(self, mask):
+    def __init__(self, mask, mask_name):
         super().__init__()
+
+        self.mask_name = mask_name
 
         main_layout = QVBoxLayout()
 
@@ -345,7 +347,7 @@ class main_window(QMainWindow):
         for mask_name in self.config[button]['masks']:
 
             # Get mask data
-            mask = self.config[button]['masks'][mask_name]
+            mask_data = self.config[button]['masks'][mask_name]
 
             # Create container & layout for sliders
             sliders = QWidget()
@@ -372,7 +374,7 @@ class main_window(QMainWindow):
 
                 # Set slider range and values
                 slider.setRange(0, 255)
-                slider.setValue((mask[kmin], mask[kmax]))
+                slider.setValue((mask_data[kmin], mask_data[kmax]))
 
                 # Modify slider settings
                 slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
@@ -416,7 +418,11 @@ class main_window(QMainWindow):
 
             # mask_layout.addWidget(sliders)
         
-            mask_layout.addWidget(Mask(mask))
+            mask = Mask(mask_data, mask_name)
+
+            self.masks.append(mask)
+
+            mask_layout.addWidget(mask)
 
         #################
         ### Run Masks ###
