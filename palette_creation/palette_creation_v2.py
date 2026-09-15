@@ -70,43 +70,118 @@ class Mask(QWidget):
 
         main_layout = QVBoxLayout()
 
-        slider_config = [
-            ["Red",   "rmin", "rmax"],
-            ["Green", "gmin", "gmax"],
-            ["Blue",  "bmin", "bmax"],
-        ]
+        ##################
+        ### Red Slider ###
+        ##################
 
-        for color, kmin, kmax in slider_config:
+        # Create widget to contain label and slider
+        red_row = QWidget()
+        red_row_layout = QHBoxLayout(red_row)
 
-            # Create widget to contain label and slider
-            row = QWidget()
-            row_layout = QHBoxLayout(row)
+        # Create Label for row
+        red_row_layout.addWidget(QLabel("Red"))
 
-            # Create Label for row
-            row_label = QLabel(color)
-            row_layout.addWidget(row_label)
+        # Create slider
+        self.red_slider = QLabeledRangeSlider()
 
-            # Create slider
-            slider = QLabeledRangeSlider()
+        # Set slider range and values
+        self.red_slider.setRange(0, 255)
+        self.red_slider.setValue((mask["rmin"], mask["rmax"]))
 
-            # Set slider range and values
-            slider.setRange(0, 255)
-            slider.setValue((mask[kmin], mask[kmax]))
+        # Modify slider settings
+        self.red_slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
+        self.red_slider.setHandleLabelPosition(QLabeledRangeSlider.LabelPosition.NoLabel)
 
-            # Modify slider settings
-            slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
-            slider.setHandleLabelPosition(QLabeledRangeSlider.LabelPosition.NoLabel)
+        # Restyle slider to remove red from groove
+        self.red_slider.setStyleSheet(self.SLIDER_STYLE)
 
-            # Restyle slider to remove red from groove
-            slider.setStyleSheet(self.SLIDER_STYLE)
+        # Add slider to the widget
+        red_row_layout.addWidget(self.red_slider)
 
-            # Add slider to the widget
-            row_layout.addWidget(slider)
-
-            # Add row to slider layout
-            main_layout.addWidget(row)
+        # Add row to slider layout
+        main_layout.addWidget(red_row)
 
         self.setLayout(main_layout)
+
+
+        ####################
+        ### Green Slider ###
+        ####################
+
+        # Create widget to contain label and slider
+        green_row = QWidget()
+        green_row_layout = QHBoxLayout(green_row)
+
+        # Create Label for row
+        green_row_layout.addWidget(QLabel("Green"))
+
+        # Create slider
+        self.green_slider = QLabeledRangeSlider()
+
+        # Set slider range and values
+        self.green_slider.setRange(0, 255)
+        self.green_slider.setValue((mask["gmin"], mask["gmax"]))
+
+        # Modify slider settings
+        self.green_slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
+        self.green_slider.setHandleLabelPosition(QLabeledRangeSlider.LabelPosition.NoLabel)
+
+        # Restyle slider to remove red from groove
+        self.green_slider.setStyleSheet(self.SLIDER_STYLE)
+
+        # Add slider to the widget
+        green_row_layout.addWidget(self.green_slider)
+
+        # Add row to slider layout
+        main_layout.addWidget(green_row)
+
+        self.setLayout(main_layout)
+
+
+        ###################
+        ### Blue Slider ###
+        ###################
+
+        # Create widget to contain label and slider
+        blue_row = QWidget()
+        blue_row_layout = QHBoxLayout(blue_row)
+
+        # Create Label for row
+        blue_row_layout.addWidget(QLabel("Blue"))
+
+        # Create slider
+        self.blue_slider = QLabeledRangeSlider()
+
+        # Set slider range and values
+        self.blue_slider.setRange(0, 255)
+        self.blue_slider.setValue((mask["bmin"], mask["bmax"]))
+
+        # Modify slider settings
+        self.blue_slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
+        self.blue_slider.setHandleLabelPosition(QLabeledRangeSlider.LabelPosition.NoLabel)
+
+        # Restyle slider to remove red from groove
+        self.blue_slider.setStyleSheet(self.SLIDER_STYLE)
+
+        # Add slider to the widget
+        blue_row_layout.addWidget(self.blue_slider)
+
+        # Add row to slider layout
+        main_layout.addWidget(blue_row)
+
+        self.setLayout(main_layout)
+
+    # Get mask values
+    def values(self):
+        return {
+            "name": self.mask_name,
+            "r_min": self.red_slider.value()[0],
+            "r_max": self.red_slider.value()[1],
+            "g_min": self.green_slider.value()[0],
+            "g_max": self.green_slider.value()[1],
+            "b_min": self.blue_slider.value()[0],
+            "b_max": self.blue_slider.value()[1],
+        }
 
 
 
@@ -423,6 +498,8 @@ class main_window(QMainWindow):
             self.masks.append(mask)
 
             mask_layout.addWidget(mask)
+
+            print(mask.values())
 
         #################
         ### Run Masks ###
