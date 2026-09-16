@@ -6,7 +6,7 @@ from PIL import Image, ImageQt
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup, QSlider
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage, QIcon
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, Signal
 
 from superqt import QLabeledRangeSlider
 
@@ -36,6 +36,7 @@ class ImageLabel(QLabel):
 # Custom mask widget to hold mask controls
 class Mask(QWidget):
 
+    # Set style to be used across all sliders
     SLIDER_STYLE = """
         QSlider::groove:horizontal {
             height: 4px;
@@ -63,6 +64,10 @@ class Mask(QWidget):
         }
     """
 
+    # Create a signal to send out
+    valueChanged = Signal()
+
+    # Create the sliders
     def __init__(self, mask, mask_name):
         super().__init__()
 
@@ -74,6 +79,11 @@ class Mask(QWidget):
         self.r_slider = QLabeledRangeSlider()
         self.g_slider = QLabeledRangeSlider()
         self.b_slider = QLabeledRangeSlider()
+
+        # Connect slider value changing to mask signal
+        self.r_slider.valueChanged.connect(self.valueChanged)
+        self.g_slider.valueChanged.connect(self.valueChanged)
+        self.b_slider.valueChanged.connect(self.valueChanged)
 
         # Set up data for loop
         slider_config = [
@@ -110,6 +120,7 @@ class Mask(QWidget):
             # Add row to slider layout
             main_layout.addWidget(row)
 
+        # Set the layout of the widget
         self.setLayout(main_layout)
 
     # Get mask values
@@ -123,8 +134,6 @@ class Mask(QWidget):
             "b_min": self.b_slider.value()[0],
             "b_max": self.b_slider.value()[1],
         }
-
-
 
 
 ###################
@@ -435,6 +444,8 @@ class main_window(QMainWindow):
             # mask_layout.addWidget(sliders)
         
             mask = Mask(mask_data, mask_name)
+
+            mask.valueChanged.connect(functools.partial(print, f"Mask Value changed"))
 
             self.masks.append(mask)
 
