@@ -374,84 +374,18 @@ class main_window(QMainWindow):
             # Get mask data
             mask_data = self.config[button]['masks'][mask_name]
 
-            # Create container & layout for sliders
-            sliders = QWidget()
-            slider_layout = QVBoxLayout(sliders)
-
-            slider_config = [
-                ["Red",   "rmin", "rmax"],
-                ["Green", "gmin", "gmax"],
-                ["Blue",  "bmin", "bmax"],
-            ]
-
-            for color, kmin, kmax in slider_config:
-
-                # Create widget to contain label and slider
-                widget = QWidget()
-                layout = QHBoxLayout(widget)
-
-                # Create Label for row
-                label = QLabel(color)
-                layout.addWidget(label)
-
-                # Create slider
-                slider = QLabeledRangeSlider()
-
-                # Set slider range and values
-                slider.setRange(0, 255)
-                slider.setValue((mask_data[kmin], mask_data[kmax]))
-
-                # Modify slider settings
-                slider.setEdgeLabelMode(QLabeledRangeSlider.EdgeLabelMode.LabelIsValue)
-                slider.setHandleLabelPosition(QLabeledRangeSlider.LabelPosition.NoLabel)
-
-                # Restyle slider to remove red from groove
-                slider.setStyleSheet("""
-                    QSlider::groove:horizontal {
-                        height: 4px;
-                        background: #999999;
-                        border: none;
-                        border-radius: 2px;
-                    }
-
-                    QSlider::sub-page:horizontal,
-                    QSlider::add-page:horizontal {
-                        background: #999999;
-                        border: none;
-                    }
-
-                    QSlider::handle:horizontal {
-                        width: 4px;
-                        margin: -5px 0;
-                        background: #ef806d;
-                        border: 5px solid #555555;
-                        border-radius: 7px;
-                    }
-
-                    QRangeSlider {
-                        qproperty-barColor: #ef806d;
-                    }
-                """)
-
-                slider.valueChanged.connect(functools.partial(print, f"{mask_name} - {color} changed to: {slider.value()}"))
-
-                # Add slider to the widget
-                layout.addWidget(slider)
-
-                # Add row to slider layout
-                slider_layout.addWidget(widget)
-
-            # mask_layout.addWidget(sliders)
-        
+            # Create a mask
             mask = Mask(mask_data, mask_name)
 
+            # Connect to the signal for when a mask value changes
             mask.valueChanged.connect(functools.partial(print, f"Mask Value changed"))
 
+            # Add the mask to the list of masks
             self.masks.append(mask)
 
+            # Add the mask to the list of masks
             mask_layout.addWidget(mask)
 
-            print(mask.values())
 
         #################
         ### Run Masks ###
