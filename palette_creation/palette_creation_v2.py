@@ -2,6 +2,7 @@ import glob
 import json
 import pathlib
 import functools
+import numpy as np
 from PIL import Image, ImageQt
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup, QSlider
@@ -347,16 +348,10 @@ class main_window(QMainWindow):
         image_path = self.config[button]['image_path']
         self.image = Image.open(image_path)
 
-        # Create preview
-        self.image_preview = pil_to_pixmap(self.image)
-
-        # Draw image to image box
-        self.update_image()
 
         ##################
         ### Load Masks ###
         ##################
-
 
         # Find layout for mask box
         mask_layout = self.mask_box.layout()
@@ -391,7 +386,17 @@ class main_window(QMainWindow):
         ### Run Masks ###
         #################
 
-        # TODO
+        # Convert image to a numpy array
+        image_data = np.array(self.image.convert("RGBA"))
+
+        # TODO: Run mask filters on image data
+
+        # Create preview from numpy array
+        self.image_preview = pil_to_pixmap(Image.fromarray(image_data, "RGBA"))
+
+        # Draw the preview image
+        self.update_image()
+
 
         #############################
         ### Fill Image background ###
