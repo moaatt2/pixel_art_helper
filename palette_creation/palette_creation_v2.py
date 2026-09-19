@@ -18,9 +18,8 @@ from superqt import QLabeledRangeSlider
 
 # Helper function for converting a pil image to a pixmap
 def pil_to_pixmap(image: Image.Image) -> QPixmap:
-    image = image.convert("RGB")
-    data = image.tobytes("raw", "RGB")
-    qi = QImage(data, image.size[0], image.size[1], image.size[0]*3, QImage.Format.Format_RGB888)
+    data = image.tobytes("raw", "RGBA")
+    qi = QImage(data, image.size[0], image.size[1], image.size[0]*4, QImage.Format.Format_RGBA8888)
     return QPixmap.fromImage(qi)
 
 
@@ -390,6 +389,25 @@ class main_window(QMainWindow):
         image_data = np.array(self.image.convert("RGBA"))
 
         # TODO: Run mask filters on image data
+        for mask in self.masks:
+            mask_values = mask.values()
+
+            for column in image_data:
+                for pixel in column:
+                    r, g, b, a = pixel
+
+                    r_filter = mask_values["r_min"] <= r <= mask_values["r_max"]
+                    g_filter = mask_values["g_min"] <= g <= mask_values["g_max"]
+                    b_filter = mask_values["b_min"] <= b <= mask_values["b_max"]
+
+                    if r_filter or g_filter or b_filter:
+                        pixel[3] = 0
+
+            # print(image_data.shape)
+
+            # print(image_data)
+
+        Image.fromarray(image_data, "RGBA").save("test.png")
 
         # Create preview from numpy array
         self.image_preview = pil_to_pixmap(Image.fromarray(image_data, "RGBA"))
