@@ -400,7 +400,7 @@ class main_window(QMainWindow):
                     g_filter = mask_values["g_min"] <= g <= mask_values["g_max"]
                     b_filter = mask_values["b_min"] <= b <= mask_values["b_max"]
 
-                    if r_filter or g_filter or b_filter:
+                    if r_filter and g_filter and b_filter:
                         pixel[3] = 0
 
             # print(image_data.shape)
