@@ -403,12 +403,6 @@ class main_window(QMainWindow):
                     if r_filter and g_filter and b_filter:
                         pixel[3] = 0
 
-            # print(image_data.shape)
-
-            # print(image_data)
-
-        Image.fromarray(image_data, "RGBA").save("test.png")
-
         # Create preview from numpy array
         self.image_preview = pil_to_pixmap(Image.fromarray(image_data, "RGBA"))
 
