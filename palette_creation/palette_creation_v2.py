@@ -388,20 +388,34 @@ class main_window(QMainWindow):
         # Convert image to a numpy array
         image_data = np.array(self.image.convert("RGBA"))
 
+        # RGB data for masking
+        img_rgb = image_data[...,:3]
+
         # TODO: Run mask filters on image data
         for mask in self.masks:
+
+            # Get upper and lower bound values from mask
             mask_values = mask.values()
+            min = np.array([
+                mask_values["r_min"],
+                mask_values["g_min"],
+                mask_values["b_min"],
+            ])
+            max = np.array([
+                mask_values["r_max"],
+                mask_values["g_max"],
+                mask_values["b_max"],
+            ])
 
-            for column in image_data:
-                for pixel in column:
-                    r, g, b, a = pixel
+            # Apply masks to data
+            filter_max = np.all(img_rgb <= max, axis=-1)
+            filter_min = np.all(img_rgb >= min, axis=-1)
 
-                    r_filter = mask_values["r_min"] <= r <= mask_values["r_max"]
-                    g_filter = mask_values["g_min"] <= g <= mask_values["g_max"]
-                    b_filter = mask_values["b_min"] <= b <= mask_values["b_max"]
+            # Combine filters
+            filter = filter_min & filter_max
 
-                    if r_filter and g_filter and b_filter:
-                        pixel[3] = 0
+            # Set alpha of matches to 0
+            image_data[filter, 3] = 0
 
         # Create preview from numpy array
         self.image_preview = pil_to_pixmap(Image.fromarray(image_data, "RGBA"))
