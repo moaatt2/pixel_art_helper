@@ -391,7 +391,7 @@ class main_window(QMainWindow):
         # RGB data for masking
         img_rgb = image_data[...,:3]
 
-        # TODO: Run mask filters on image data
+        # Run mask filters on image data
         for mask in self.masks:
 
             # Get upper and lower bound values from mask
@@ -428,7 +428,16 @@ class main_window(QMainWindow):
         ### Fill Image background ###
         #############################
 
-        # TODO
+        # Filte to just visible pixels
+        filter = image_data[...,3] > 0
+
+        # Calculate color channel averages
+        r_avg, g_avg, b_avg, a_avg = image_data[filter].transpose().mean(axis=1)
+
+        # Convert averages to integer
+        r_avg, g_avg, b_avg = map(int, [r_avg, g_avg, b_avg])
+
+        # TODO: Fill background with average color
 
 
     # Read config and fill out folder box
