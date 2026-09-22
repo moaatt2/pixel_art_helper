@@ -212,16 +212,19 @@ class main_window(QMainWindow):
         ########################
 
         # Create Frame for image
-        image_box = QFrame()
-        image_box.setLineWidth(2)
-        image_box.setFrameShape(QFrame.Box)
+        self.image_box = QFrame()
+        self.image_box.setLineWidth(2)
+        self.image_box.setFrameShape(QFrame.Box)
+
+        # Enable setting background color
+        self.image_box.setAutoFillBackground(True)
 
         # Create Layout for image
-        image_layout = QVBoxLayout(image_box)
+        image_layout = QVBoxLayout(self.image_box)
         image_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
-        self.image_container = ImageLabel("Press Ctrl+O to open a folder or drag a folder here", image_box)
+        self.image_container = ImageLabel("Press Ctrl+O to open a folder or drag a folder here", self.image_box)
         self.image_container.setAlignment(Qt.AlignCenter)
         image_layout.addWidget(self.image_container)
 
@@ -289,7 +292,7 @@ class main_window(QMainWindow):
         splitter = QSplitter(Qt.Horizontal)
         # splitter = QSplitter(Qt.Vertical)
         splitter.addWidget(vsplitter)
-        splitter.addWidget(image_box)
+        splitter.addWidget(self.image_box)
 
         # Set an inital 1:3 ratio
         splitter.setSizes([200,600])
@@ -437,7 +440,13 @@ class main_window(QMainWindow):
         # Convert averages to integer
         r_avg, g_avg, b_avg = map(int, [r_avg, g_avg, b_avg])
 
-        # TODO: Fill background with average color
+        # Convert averages to QColor object
+        background = QColor(r_avg, g_avg, b_avg)
+
+        # Set Background color to average color
+        palette = self.image_box.palette()
+        palette.setColor(QPalette.ColorRole.Window, background)
+        self.image_box.setPalette(palette)
 
 
     # Read config and fill out folder box
