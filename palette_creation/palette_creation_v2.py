@@ -160,6 +160,7 @@ class main_window(QMainWindow):
         self.config = None
         self.config_path = None
         self.image_buttons = None
+        self.masks = None
 
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
@@ -338,55 +339,12 @@ class main_window(QMainWindow):
         self.update_image()
 
 
-    # Handle user clicking an image button
-    def image_click(self, button=None):
-        print(f"Clicked {button} image button")
+    # When masks or image are updated rerun masks and recalculate background color
+    def runMasks(self):
 
-        ##################
-        ### Load image ###
-        ##################
-
-        # Open image
-        image_path = self.config[button]['image_path']
-        self.image = Image.open(image_path)
-
-
-        ##################
-        ### Load Masks ###
-        ##################
-
-        # Find layout for mask box
-        mask_layout = self.mask_box.layout()
-
-        # Clear existing items from mask box layout
-        for _ in range(mask_layout.count()):
-            w = mask_layout.itemAt(0).widget()
-            w.setParent(None)
-            w.deleteLater()
-
-        # Itterate over masks for image
-        self.masks = list()
-        for mask_name in self.config[button]['masks']:
-
-            # Get mask data
-            mask_data = self.config[button]['masks'][mask_name]
-
-            # Create a mask
-            mask = Mask(mask_data, mask_name)
-
-            # Connect to the signal for when a mask value changes
-            mask.valueChanged.connect(functools.partial(print, f"Mask Value changed"))
-
-            # Add the mask to the list of masks
-            self.masks.append(mask)
-
-            # Add the mask to the list of masks
-            mask_layout.addWidget(mask)
-
-
-        #################
-        ### Run Masks ###
-        #################
+        ###################
+        ### Apply Masks ###
+        ###################
 
         # Convert image to a numpy array
         image_data = np.array(self.image.convert("RGBA"))
@@ -447,6 +405,60 @@ class main_window(QMainWindow):
         palette = self.image_box.palette()
         palette.setColor(QPalette.ColorRole.Window, background)
         self.image_box.setPalette(palette)
+
+
+    # Handle user clicking an image button
+    def image_click(self, button=None):
+        print(f"Clicked {button} image button")
+
+        ##################
+        ### Load image ###
+        ##################
+
+        # Open image
+        image_path = self.config[button]['image_path']
+        self.image = Image.open(image_path)
+
+
+        ###################
+        ### Clear Masks ###
+        ###################
+
+        # Find layout for mask box
+        mask_layout = self.mask_box.layout()
+
+        # Clear existing items from mask box layout
+        for _ in range(mask_layout.count()):
+            w = mask_layout.itemAt(0).widget()
+            w.setParent(None)
+            w.deleteLater()
+
+
+        ##################
+        ### Load Masks ###
+        ##################
+
+        # Itterate over masks for image
+        self.masks = list()
+        for mask_name in self.config[button]['masks']:
+
+            # Get mask data
+            mask_data = self.config[button]['masks'][mask_name]
+
+            # Create a mask
+            mask = Mask(mask_data, mask_name)
+
+            # Connect to the signal for when a mask value changes
+            mask.valueChanged.connect(self.runMasks)
+
+            # Add the mask to the list of masks
+            self.masks.append(mask)
+
+            # Add the mask to the list of masks
+            mask_layout.addWidget(mask)
+
+        # Apply Loaded Masks
+        self.runMasks()
 
 
     # Read config and fill out folder box
