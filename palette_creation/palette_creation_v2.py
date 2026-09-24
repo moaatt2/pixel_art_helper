@@ -392,14 +392,22 @@ class main_window(QMainWindow):
         # Filte to just visible pixels
         filter = image_data[...,3] > 0
 
-        # Calculate color channel averages
-        r_avg, g_avg, b_avg, a_avg = image_data[filter].transpose().mean(axis=1)
+        # Only take average if data exists
+        if image_data[filter].shape[0] > 0:
 
-        # Convert averages to integer
-        r_avg, g_avg, b_avg = map(int, [r_avg, g_avg, b_avg])
+            # Calculate color channel averages
+            r_avg, g_avg, b_avg, a_avg = image_data[filter].transpose().mean(axis=1)
 
-        # Convert averages to QColor object
-        background = QColor(r_avg, g_avg, b_avg)
+            # Convert averages to integer
+            r_avg, g_avg, b_avg = map(int, [r_avg, g_avg, b_avg])
+
+            # Convert averages to QColor object
+            background = QColor(r_avg, g_avg, b_avg)
+
+        # If no data exists use black
+        else:
+            background = QColor(0, 0, 0)
+            
 
         # Set Background color to average color
         palette = self.image_box.palette()
