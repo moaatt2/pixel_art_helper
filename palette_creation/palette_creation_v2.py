@@ -87,9 +87,9 @@ class Mask(QWidget):
 
         # Set up data for loop
         slider_config = [
-            ["Red",   "rmin", "rmax", self.r_slider],
-            ["Green", "gmin", "gmax", self.g_slider],
-            ["Blue",  "bmin", "bmax", self.b_slider],
+            ["Red",   "r_min", "r_max", self.r_slider],
+            ["Green", "g_min", "g_max", self.g_slider],
+            ["Blue",  "b_min", "b_max", self.b_slider],
         ]
 
         # Loop over slider row data
@@ -560,12 +560,12 @@ class main_window(QMainWindow):
                         "default": {
                             "type": "rgb_subtractive",
                             "active": False,
-                            "rmax": 255,
-                            "rmin": 180,
-                            "gmax": 255,
-                            "gmin": 180,
-                            "bmax": 255,
-                            "bmin": 180,                            
+                            "r_max": 255,
+                            "r_min": 180,
+                            "g_max": 255,
+                            "g_min": 180,
+                            "b_max": 255,
+                            "b_min": 180,                            
                         },
                     },
                 }
