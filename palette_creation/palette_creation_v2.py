@@ -161,6 +161,7 @@ class main_window(QMainWindow):
         self.config_path = None
         self.image_buttons = None
         self.masks = None
+        self.current_image = None
 
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
@@ -378,6 +379,14 @@ class main_window(QMainWindow):
             # Set alpha of matches to 0
             image_data[filter, 3] = 0
 
+            # Update config
+            rgb_values = {k:v for k, v in mask_values.items() if k != 'name'}
+            self.config[self.current_image]['masks'][mask_values["name"]].update(rgb_values)
+
+            # Save updated config
+            with open(self.config_path, 'w') as config_file:
+                json.dump(self.config, config_file, indent=4)
+
         # Create preview from numpy array
         self.image_preview = pil_to_pixmap(Image.fromarray(image_data, "RGBA"))
 
@@ -422,6 +431,9 @@ class main_window(QMainWindow):
         ##################
         ### Load image ###
         ##################
+
+        # Record what image is open
+        self.current_image = button
 
         # Open image
         image_path = self.config[button]['image_path']
@@ -600,6 +612,7 @@ class main_window(QMainWindow):
 
         # Update Mask box text
         self.mask_container.setText("Select an image to continue")
+
 
     # Select the folder to open and pass it to the folder opening function
     def select_folder(self):
