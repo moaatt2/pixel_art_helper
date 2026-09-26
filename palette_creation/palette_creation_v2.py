@@ -396,7 +396,7 @@ class main_window(QMainWindow):
         if image_data[filter].shape[0] > 0:
 
             # Calculate color channel averages
-            r_avg, g_avg, b_avg, a_avg = image_data[filter].transpose().mean(axis=1)
+            r_avg, g_avg, b_avg = img_rgb[filter].transpose().mean(axis=1)
 
             # Convert averages to integer
             r_avg, g_avg, b_avg = map(int, [r_avg, g_avg, b_avg])
