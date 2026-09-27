@@ -5,7 +5,7 @@ import functools
 import numpy as np
 from PIL import Image, ImageQt
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup, QSlider
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup, QGridLayout
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage, QIcon
 from PySide6.QtCore import Qt, QSize, Signal
 
@@ -71,9 +71,11 @@ class Mask(QWidget):
     def __init__(self, mask, mask_name):
         super().__init__()
 
+        # Store name as an attribute
         self.mask_name = mask_name
 
-        main_layout = QVBoxLayout()
+        # Create primary layout
+        main_layout = QGridLayout()
 
         # Create sliders
         self.r_slider = QLabeledRangeSlider()
@@ -87,21 +89,17 @@ class Mask(QWidget):
 
         # Set up data for loop
         slider_config = [
-            ["R", "r_min", "r_max", self.r_slider],
-            ["G", "g_min", "g_max", self.g_slider],
-            ["B", "b_min", "b_max", self.b_slider],
+            ["Red",   "r_min", "r_max", self.r_slider, 0],
+            ["Green", "g_min", "g_max", self.g_slider, 1],
+            ["Blue",  "b_min", "b_max", self.b_slider, 2],
         ]
 
         # Loop over slider row data
-        for color, kmin, kmax, slider in slider_config:
+        for color, kmin, kmax, slider, row in slider_config:
 
-            # Create widget to contain label and slider
-            row = QWidget()
-            row_layout = QHBoxLayout(row)
-
-            # Create Label for row
+            # Create label and add it to the layout
             row_label = QLabel(color)
-            row_layout.addWidget(row_label)
+            main_layout.addWidget(row_label, row, 0)
 
             # Set slider range and values
             slider.setRange(0, 255)
@@ -114,11 +112,8 @@ class Mask(QWidget):
             # Restyle slider to remove red from groove
             slider.setStyleSheet(self.SLIDER_STYLE)
 
-            # Add slider to the widget
-            row_layout.addWidget(slider)
-
-            # Add row to slider layout
-            main_layout.addWidget(row)
+            # Add slider to the layout
+            main_layout.addWidget(slider, row, 1)
 
         # Set the layout of the widget
         self.setLayout(main_layout)
