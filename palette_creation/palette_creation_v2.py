@@ -87,9 +87,9 @@ class Mask(QWidget):
 
         # Set up data for loop
         slider_config = [
-            ["Red",   "r_min", "r_max", self.r_slider],
-            ["Green", "g_min", "g_max", self.g_slider],
-            ["Blue",  "b_min", "b_max", self.b_slider],
+            ["R", "r_min", "r_max", self.r_slider],
+            ["G", "g_min", "g_max", self.g_slider],
+            ["B", "b_min", "b_max", self.b_slider],
         ]
 
         # Loop over slider row data
