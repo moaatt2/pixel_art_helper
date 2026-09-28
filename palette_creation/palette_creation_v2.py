@@ -294,11 +294,12 @@ class main_window(QMainWindow):
         vsplitter.addWidget(self.folder_box)
 
         # Set an inital 1:1 ratio
-        vsplitter.setSizes([5,1,5])
+        vsplitter.setSizes([100,5,100])
 
         # Set splitter stretch factors to maintain 1:1 ratio
         vsplitter.setStretchFactor(0,1)
-        vsplitter.setStretchFactor(1,1)
+        vsplitter.setStretchFactor(1,5)
+        vsplitter.setStretchFactor(2,1)
 
 
         ##########################
