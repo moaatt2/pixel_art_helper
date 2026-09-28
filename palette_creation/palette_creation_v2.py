@@ -246,6 +246,25 @@ class main_window(QMainWindow):
 
 
         #########################
+        ### Create Accept Box ###
+        #########################
+
+        # Create Frame for image
+        self.accept_box = QFrame()
+        self.accept_box.setLineWidth(2)
+        self.accept_box.setFrameShape(QFrame.Box)
+
+        # Create Layout for image
+        accept_layout = QVBoxLayout(self.accept_box)
+        accept_layout.setContentsMargins(0,0,0,0)
+
+        # Create label for image
+        self.accept_container = QLabel("Open a folder to get started", self.accept_box)
+        self.accept_container.setAlignment(Qt.AlignCenter)
+        accept_layout.addWidget(self.accept_container)
+
+
+        #########################
         ### Create Folder Box ###
         #########################
 
@@ -271,10 +290,11 @@ class main_window(QMainWindow):
         # Create vertical splitter
         vsplitter = QSplitter(Qt.Vertical)
         vsplitter.addWidget(self.mask_box)
+        vsplitter.addWidget(self.accept_box)
         vsplitter.addWidget(self.folder_box)
 
         # Set an inital 1:1 ratio
-        vsplitter.setSizes([1,1])
+        vsplitter.setSizes([5,1,5])
 
         # Set splitter stretch factors to maintain 1:1 ratio
         vsplitter.setStretchFactor(0,1)
