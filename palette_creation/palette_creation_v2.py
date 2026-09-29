@@ -255,7 +255,7 @@ class main_window(QMainWindow):
         self.accept_box.setFrameShape(QFrame.Box)
 
         # Create Layout for image
-        accept_layout = QVBoxLayout(self.accept_box)
+        accept_layout = QHBoxLayout(self.accept_box)
         accept_layout.setContentsMargins(0,0,0,0)
 
         # Create label for image
@@ -456,6 +456,26 @@ class main_window(QMainWindow):
         self.image = Image.open(image_path)
 
 
+        #########################
+        ### Set Accept Button ###
+        #########################
+
+        # Clear accept box
+        accept_layout = self.accept_box.layout()
+        for _ in range(accept_layout.count()):
+            w = accept_layout.itemAt(0).widget()
+            w.setParent(None)
+            w.deleteLater()
+
+        # Create Label
+        self.average_color = QLabel("#000000")
+        accept_layout.addWidget(self.average_color)
+
+        # Create button
+        accept_button = QPushButton("Accept")
+        accept_layout.addWidget(accept_button)
+
+
         ###################
         ### Clear Masks ###
         ###################
@@ -628,6 +648,9 @@ class main_window(QMainWindow):
 
         # Update Mask box text
         self.mask_container.setText("Select an image to continue")
+
+        # Update Acceptance box text
+        self.accept_container.setText("Select an image to continue")
 
 
     # Select the folder to open and pass it to the folder opening function
