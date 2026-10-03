@@ -256,7 +256,7 @@ class main_window(QMainWindow):
 
         # Create Layout for image
         accept_layout = QHBoxLayout(self.accept_box)
-        accept_layout.setContentsMargins(0,0,0,0)
+        accept_layout.setContentsMargins(10,0,10,0)
 
         # Create label for image
         self.accept_container = QLabel("Open a folder to get started", self.accept_box)
