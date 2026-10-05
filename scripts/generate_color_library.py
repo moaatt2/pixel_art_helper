@@ -147,6 +147,26 @@ for path, prefix in PALETTES:
             output += "\n\n"
 
 
+###############
+### Outline ###
+###############
+
+output += """
+########################
+### Outline Material ###
+########################
+
+outline = bpy.data.materials.new(name='Black Outline')
+outline.use_nodes = True
+outline.use_backface_culling = True
+nodes = outline.node_tree.nodes
+node = nodes.get("Principled BSDF")
+node.inputs['Base Color'].default_value = (0.0, 0.0, 0.0, 1.0)
+node.inputs['Emission Color'].default_value = (0.0, 0.0, 0.0, 1.0)
+node.inputs['Roughness'].default_value = 1
+
+
+"""
 
 
 print(output)
