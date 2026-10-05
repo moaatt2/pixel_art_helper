@@ -1,4 +1,18 @@
 import json
+from typing import Tuple
+
+
+def linearize_channel(c: int) -> float:
+    c /= 255.0
+
+    if c <= 0.04045:
+        return c / 12.92
+    return ((c + 0.055) / 1.055) ** 2.4
+
+
+def srgb_to_linear(r: int, g: int, b:int) -> Tuple[float,float,float]:
+    return linearize_channel(r), linearize_channel(g), linearize_channel(b)
+
 
 with open("palettes/ring_lord_palette_derived.json", "r") as f:
     data = json.load(f)
@@ -10,10 +24,8 @@ for color, hex in data.items():
     g = int(hex[2:4],16)
     b = int(hex[4:6],16)
 
-    # Normalize rgb values to 0-1 range
-    r /= 255.0
-    g /= 255.0
-    b /= 255.0
+    # Convert sRGB to Linear
+    r, g, b = srgb_to_linear(r, g, b)
 
     # Create Variable Name
     var_name = f"base_ring_lord_palette_derived_{color}"
