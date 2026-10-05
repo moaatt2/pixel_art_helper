@@ -1,10 +1,14 @@
 
-#######################
-### Imports & Setup ###
-#######################
+##########################
+### Imports & Settings ###
+##########################
 
 import json
 from typing import Tuple
+
+PALETTES = [
+    ("palettes/ring_lord_palette_derived.json", "RLD")
+]
 
 ########################
 ### Helper Functions ###
@@ -22,9 +26,9 @@ def srgb_to_linear(r: int, g: int, b:int) -> Tuple[float,float,float]:
     return linearize_channel(r), linearize_channel(g), linearize_channel(b)
 
 
-#####################
-### Output Header ###
-#####################
+####################
+### Setup Output ###
+####################
 
 output = """
 ###############
@@ -99,33 +103,50 @@ for var_name, color, r, g, b in tutoral_materials:
     output += "\n\n"
 
 
-with open("palettes/ring_lord_palette_derived.json", "r") as f:
-    data = json.load(f)
+#########################
+### Palette Materials ###
+#########################
 
-for color, hex in data.items():
+# Itterate through selected palettes
+for path, prefix in PALETTES:
 
-    # Convert hex to rgb
-    r = int(hex[0:2],16)
-    g = int(hex[2:4],16)
-    b = int(hex[4:6],16)
+    section_length = len(prefix) + 16
+    section_bar = "#" * section_length + "\n"
 
-    # Convert sRGB to Linear
-    r, g, b = srgb_to_linear(r, g, b)
+    output += section_bar
+    output += f"### {prefix} Palette ###\n"
+    output += section_bar
+    output += "\n"
 
-    # Create Variable Name
-    var_name = f"base_ring_lord_palette_derived_{color}"
+    # Read and itterate through palette
+    with open(path, "r") as f:
+        data = json.load(f)
+        for color, hex in data.items():
 
-    # Create color name
-    color = color.replace("_", " ").title()
-    color = f"Base Ring Lord Derived {color}"
+            # Convert hex to rgb
+            r = int(hex[0:2],16)
+            g = int(hex[2:4],16)
+            b = int(hex[4:6],16)
 
-    # print(f"{var_name} = bpy.data.materials.new(name='{color}')")
-    # print(f"{var_name}.use_nodes = True")
-    # print(f"nodes = {var_name}.node_tree.nodes")
-    # print(f"node = nodes.get('Principled BSDF')")
-    # print(f"node.inputs['Base Color'].default_value = ({r:.2f}, {g:.2f}, {b:.2f}, 1.0)")
-    # print("node.inputs['Roughness'].default_value = 1")
-    # print()
-    # print()
+            # Convert sRGB to Linear
+            r, g, b = srgb_to_linear(r, g, b)
+
+            # Create Variable Name
+            var_name = f"base_{prefix.lower()}_{color}"
+
+            # Create color name
+            color = color.replace("_", " ").title()
+            color = f"Base {prefix} {color}"
+
+            output += f"{var_name} = bpy.data.materials.new(name='{color}')\n"
+            output += f"{var_name}.use_nodes = True\n"
+            output += f"nodes = {var_name}.node_tree.nodes\n"
+            output += f"node = nodes.get('Principled BSDF')\n"
+            output += f"node.inputs['Base Color'].default_value = ({r:.2f}, {g:.2f}, {b:.2f}, 1.0)\n"
+            output += "node.inputs['Roughness'].default_value = 1\n"
+            output += "\n\n"
+
+
+
 
 print(output)
