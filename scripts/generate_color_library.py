@@ -10,6 +10,8 @@ PALETTES = [
     ("palettes/ring_lord_palette_derived.json", "RLD")
 ]
 
+colors = list()
+
 ########################
 ### Helper Functions ###
 ########################
@@ -102,6 +104,8 @@ for var_name, color, r, g, b in tutoral_materials:
     output += "node.inputs['Roughness'].default_value = 1\n"
     output += "\n\n"
 
+    colors.append(var_name)
+
 
 #########################
 ### Palette Materials ###
@@ -146,6 +150,8 @@ for path, prefix in PALETTES:
             output += "node.inputs['Roughness'].default_value = 1\n"
             output += "\n\n"
 
+            colors.append(var_name)
+
 
 ###############
 ### Outline ###
@@ -165,8 +171,47 @@ node.inputs['Base Color'].default_value = (0.0, 0.0, 0.0, 1.0)
 node.inputs['Emission Color'].default_value = (0.0, 0.0, 0.0, 1.0)
 node.inputs['Roughness'].default_value = 1
 
-
 """
 
+##################
+### Make Rings ###
+##################
+
+output += """
+#############
+### Rings ###
+#############
+
+# List of ring colors
+colors = [
+"""
+for color in colors:
+    output += f"\t{color},\n"
+output += "]"
+
+
+output += """
+row_size = math.ceil(math.sqrt(len(colors)))
+
+for i in range(len(colors)):
+    row = i // row_size
+    col = i % row_size
+
+    bpy.ops.mesh.primitive_torus_add(
+        align="WORLD",
+        location=(dist_1 * col, dist_1 * row, 0),
+        rotation=(0,0,0),
+        major_radius=ring_major,
+        minor_radius=ring_minor,
+        major_segments=48,
+        minor_segments=12,
+    )
+
+    obj = bpy.context.object
+
+    shade_smooth(obj)
+    obj.data.materials.append(colors[i])
+
+"""
 
 print(output)
