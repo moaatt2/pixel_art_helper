@@ -191,12 +191,18 @@ output += "]"
 
 
 output += """
+
+# Determine how large rows should be
 row_size = math.ceil(math.sqrt(len(colors)))
 
+# Itterate over all colors
 for i in range(len(colors)):
+
+    # Determine position
     row = i // row_size
     col = i % row_size
 
+    # Create ring in proper position
     bpy.ops.mesh.primitive_torus_add(
         align="WORLD",
         location=(dist_1 * col, dist_1 * row, 0),
@@ -207,10 +213,23 @@ for i in range(len(colors)):
         minor_segments=12,
     )
 
+    # Get Active ring
     obj = bpy.context.object
-
+    
+    # Shade ring smooth
     shade_smooth(obj)
+    
+    # Add materials
     obj.data.materials.append(colors[i])
+    obj.data.materials.append(outline)
+    
+    # Add solidify modifier
+    solidify = obj.modifiers.new(name="Solidify", type="SOLIDIFY")
+    solidify.thickness = 0.10
+    solidify.offset = 0
+    solidify.use_flip_normals = True
+    solidify.material_offset = 1
+
 
 """
 
