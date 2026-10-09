@@ -28,6 +28,10 @@ def srgb_to_linear(r: int, g: int, b:int) -> Tuple[float,float,float]:
     return linearize_channel(r), linearize_channel(g), linearize_channel(b)
 
 
+def srgb_to_linear(r: int, g: int, b:int) -> Tuple[float,float,float]:
+    return tuple(map(linearize_channel, (r, g, b)))
+
+
 ####################
 ### Setup Output ###
 ####################
