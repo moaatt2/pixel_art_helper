@@ -90,25 +90,35 @@ def shade_smooth(object):
 
 # Hard code values for materials from tutorials
 tutoral_materials = [
-    ("base_tutorial_blue",    "Base Tutorial Blue",    0.019, 0.332, 0.617),
-    ("base_tutorial_green",   "Base Tutorial Green",   0.000, 1.000, 0.000),
-    ("base_tutorial_grey",    "Base Tutorial Grey",    0.300, 0.300, 0.300),
-    ("base_tutorial_yellow",  "Base Tutorial Yellow",  0.708, 0.624, 0.010),
-    ("base_tutorial_red",     "Base Tutorial Red",     0.800, 0.000, 0.000),
-    ("base_tutorial_orange",  "Base Tutorial Orange",  1.000, 0.333, 0.010),
+    ("base_tutorial_blue",    "Base Tutorial Blue",   "outline_tutorial_blue",   "Outline Tutorial Blue",   0.019, 0.332, 0.617),
+    ("base_tutorial_green",   "Base Tutorial Green",  "outline_tutorial_green",  "Outline Tutorial Green",  0.000, 1.000, 0.000),
+    ("base_tutorial_grey",    "Base Tutorial Grey",   "outline_tutorial_grey",   "Outline Tutorial Grey",   0.300, 0.300, 0.300),
+    ("base_tutorial_yellow",  "Base Tutorial Yellow", "outline_tutorial_yellow", "Outline Tutorial Yellow", 0.708, 0.624, 0.010),
+    ("base_tutorial_red",     "Base Tutorial Red",    "outline_tutorial_red",    "Outline Tutorial Red",    0.800, 0.000, 0.000),
+    ("base_tutorial_orange",  "Base Tutorial Orange", "outline_tutorial_orange", "Outline Tutorial Orange", 1.000, 0.333, 0.010),
 ]
 
 # Add tutorial materials to output
-for var_name, color, r, g, b in tutoral_materials:
-    output += f"{var_name} = bpy.data.materials.new(name='{color}')\n"
-    output += f"{var_name}.use_nodes = True\n"
-    output += f"nodes = {var_name}.node_tree.nodes\n"
+for base_name, color, outline_name, outline_color, r, g, b in tutoral_materials:
+    output += f"{base_name} = bpy.data.materials.new(name='{color}')\n"
+    output += f"{base_name}.use_nodes = True\n"
+    output += f"nodes = {base_name}.node_tree.nodes\n"
     output += f"node = nodes.get('Principled BSDF')\n"
     output += f"node.inputs['Base Color'].default_value = ({r:.2f}, {g:.2f}, {b:.2f}, 1.0)\n"
     output += "node.inputs['Roughness'].default_value = 1\n"
+    output += "\n"
+
+    output += f"{outline_name} = bpy.data.materials.new(name='{outline_color}')\n"
+    output += f"{outline_name}.use_nodes = True\n"
+    output += f"{outline_name}.use_backface_culling = True\n"
+    output += f"nodes = {outline_name}.node_tree.nodes\n"
+    output += f"node = nodes.get('Principled BSDF')\n"
+    output += f"node.inputs['Base Color'].default_value = ({r:.2f}, {g:.2f}, {b:.2f}, 1.0)\n"
+    output += "node.inputs['Emission Color'].default_value = (0.0, 0.0, 0.0, 1.0)\n"
+    output += "node.inputs['Roughness'].default_value = 1\n"
     output += "\n\n"
 
-    colors.append(var_name)
+    colors.append([base_name, outline_name])
 
 
 #########################
@@ -141,20 +151,32 @@ for path, prefix in PALETTES:
 
             # Create Variable Name
             var_name = f"base_{prefix.lower()}_{color}"
+            outline_name = f"outline_{prefix.lower()}_{color}"
 
             # Create color name
             color = color.replace("_", " ").title()
-            color = f"Base {prefix} {color}"
+            color_name = f"Base {prefix} {color}"
+            outline_color = f"Outline {prefix} {color}"
 
-            output += f"{var_name} = bpy.data.materials.new(name='{color}')\n"
+            output += f"{var_name} = bpy.data.materials.new(name='{color_name}')\n"
             output += f"{var_name}.use_nodes = True\n"
             output += f"nodes = {var_name}.node_tree.nodes\n"
             output += f"node = nodes.get('Principled BSDF')\n"
             output += f"node.inputs['Base Color'].default_value = ({r:.2f}, {g:.2f}, {b:.2f}, 1.0)\n"
             output += "node.inputs['Roughness'].default_value = 1\n"
+            output += "\n"
+
+            output += f"{outline_name} = bpy.data.materials.new(name='{outline_color}')\n"
+            output += f"{outline_name}.use_nodes = True\n"
+            output += f"{outline_name}.use_backface_culling = True\n"
+            output += f"nodes = {outline_name}.node_tree.nodes\n"
+            output += f"node = nodes.get('Principled BSDF')\n"
+            output += f"node.inputs['Base Color'].default_value = ({r:.2f}, {g:.2f}, {b:.2f}, 1.0)\n"
+            output += "node.inputs['Emission Color'].default_value = (0.0, 0.0, 0.0, 1.0)\n"
+            output += "node.inputs['Roughness'].default_value = 1\n"
             output += "\n\n"
 
-            colors.append(var_name)
+            colors.append([var_name, outline_name])
 
 
 ###############
@@ -183,6 +205,7 @@ nodes = transparency.node_tree.nodes
 node = nodes.get("Principled BSDF")
 node.inputs['Base Color'].default_value = (0.0, 0.0, 0.0, 0.0)
 node.inputs['Roughness'].default_value = 0.5
+node.inputs['Alpha'].default_value = 0.0
 
 """
 
@@ -198,8 +221,9 @@ output += """
 # List of ring colors
 colors = [
 """
-for color in colors:
-    output += f"\t{color},\n"
+for base, outline in colors:
+    # output += f"\t{color},\n"
+    output += f"\t[{base}, {outline}],\n"
 output += "]"
 
 
@@ -214,6 +238,10 @@ for i in range(len(colors)):
     # Determine position
     row = i // row_size
     col = i % row_size
+
+    ############
+    ### Ring ###
+    ############
 
     # Create ring in proper position
     bpy.ops.mesh.primitive_torus_add(
@@ -233,7 +261,7 @@ for i in range(len(colors)):
     shade_smooth(obj)
     
     # Add materials
-    obj.data.materials.append(colors[i])
+    obj.data.materials.append(colors[i][0])
     obj.data.materials.append(outline)
     
     # Add solidify modifier
@@ -243,6 +271,40 @@ for i in range(len(colors)):
     solidify.use_flip_normals = True
     solidify.material_offset = 1
 
+
+    ##############
+    ### Sphere ###
+    ##############
+
+    # Create Sphere
+    bpy.ops.mesh.primitive_uv_sphere_add(
+        segments=32,
+        ring_count=16,
+        radius=0.8,
+        calc_uvs=True,
+        enter_editmode=False,
+        align='WORLD',
+        location=(dist_1 * col, dist_1 * row, 0),
+        rotation=(0.0, 0.0, 0.0),
+        scale=(1.0, 1.0, 1.0),
+    )
+
+    # Get Sphere
+    obj = bpy.context.object
+
+    # Shade sphere smooth
+    shade_smooth(obj)
+
+    # Add materials
+    obj.data.materials.append(transparency)
+    obj.data.materials.append(colors[i][1])
+
+    # Add solidify modifier
+    solidify = obj.modifiers.new(name="Solidify", type="SOLIDIFY")
+    solidify.thickness = 0.10
+    solidify.offset = 0
+    solidify.use_flip_normals = True
+    solidify.material_offset = 1    
 
 """
 
