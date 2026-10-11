@@ -4,6 +4,7 @@
 ##########################
 
 import json
+import pyperclip
 from typing import Tuple
 
 PALETTES = [
@@ -309,3 +310,7 @@ for i in range(len(colors)):
 """
 
 print(output)
+
+pyperclip.copy(output)
+
+print("Output copied to clipboard!")
