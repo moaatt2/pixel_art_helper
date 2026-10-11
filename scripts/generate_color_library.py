@@ -1,3 +1,4 @@
+"""Generate a script to run in blender that creates a palette file with tutorial, materials, as well as materials from each palette item for each palette listed."""
 
 ##########################
 ### Imports & Settings ###
