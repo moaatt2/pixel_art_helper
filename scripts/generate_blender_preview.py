@@ -7,6 +7,7 @@
 # Imports
 import tkinter
 import pyperclip
+from PIL import Image
 from tkinter import filedialog
 
 # Typing imports
@@ -41,12 +42,113 @@ def srgb_to_linear(r: int, g: int, b:int) -> Tuple[float,float,float]:
     return tuple(map(linearize_channel, (r, g, b)))
     
 
+###############################
+### Fixed Script Components ###
+###############################
+
+START = """
+###############
+### Imports ###
+###############
+
+import bpy
+import math
+
+
+############
+### Prep ###
+############
+
+# Clear Scene
+bpy.ops.object.select_all(action='DESELECT')
+bpy.ops.object.select_by_type(type='MESH')
+bpy.ops.object.delete()
+
+
+##################
+### Parameters ###
+##################
+
+weave_name = "European 4-in-1"
+
+ring_minor = 0.20
+ring_major = 1.20
+
+dist_1 = 1.40 # Distance between rows - fixed at min distance
+dist_2 = 1.10 # Distance in rows
+
+angle_1 = math.radians(30)
+"""
+
+sample_colour_data = """
+###################
+### Colour Data ###
+###################
+
+colours = [
+    [None, None, None, None, None, ],
+    [None, None, None, None, None, ],
+    [None, None, None, None, None, ],
+    [None, None, None, None, None, ],
+    [None, None, None, None, None, ],
+    [None, None, None, None, None, ],
+]
+"""
+
+MODEL_CODE = """
+##################
+### Model Code ###
+##################
+
+rows    = len(colours)
+columns = len(colours[0])
+
+for i in range(rows):
+    for j in range(columns):
+        base_dist_y = i * dist_1
+        base_dist_x = j * dist_2
+
+        even = i%2 == 0
+        mod = 1 if even else -1
+
+        bpy.ops.mesh.primitive_torus_add(
+            align="WORLD",
+            location=(base_dist_y,base_dist_x,0),
+            rotation=(mod*angle_1,0,0),
+            major_radius=ring_major,
+            minor_radius=ring_minor,
+            major_segments=48,
+            minor_segments=12,
+        )
+"""
+
 ##################
 ### Main Logic ###
 ##################
 
 def generate_preview(image_path: str) -> str:
-    return get_image_path()
+    out = START[:]
+
+    # Open image
+    image_path = get_image_path()
+    with Image.open(image_path) as image:
+        x, y = image.size
+
+        out += f"""
+###################
+### Colour Data ###
+###################
+
+colours = {[[None]*y]*x}
+
+"""
+
+
+    out += MODEL_CODE
+
+    return out
+
+
 
 
 if __name__ == "__main__":
