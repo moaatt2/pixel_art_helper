@@ -78,22 +78,15 @@ dist_1 = 1.40 # Distance between rows - fixed at min distance
 dist_2 = 1.10 # Distance in rows
 
 angle_1 = math.radians(30)
-"""
 
-sample_colour_data = """
+
 ###################
 ### Colour Data ###
 ###################
 
 colours = [
-    [None, None, None, None, None, ],
-    [None, None, None, None, None, ],
-    [None, None, None, None, None, ],
-    [None, None, None, None, None, ],
-    [None, None, None, None, None, ],
-    [None, None, None, None, None, ],
-]
 """
+
 
 MODEL_CODE = """
 ##################
@@ -134,14 +127,11 @@ def generate_preview(image_path: str) -> str:
     with Image.open(image_path) as image:
         x, y = image.size
 
-        out += f"""
-###################
-### Colour Data ###
-###################
 
-colours = {[[None]*y]*x}
+        for _ in range(x):
+            out += f"\t{[None]*y},\n"
+        out += "]\n\n"
 
-"""
 
 
     out += MODEL_CODE
