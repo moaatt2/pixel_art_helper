@@ -80,6 +80,18 @@ dist_2 = 1.10 # Distance in rows
 angle_1 = math.radians(30)
 
 
+########################
+### Helper Functions ###
+########################
+
+# Helper function to shade a ring
+def shade_smooth(object):
+    polygons = object.data.polygons
+    for polygon in polygons:
+            polygon.use_smooth = not polygon.use_smooth
+    object.data.update()
+
+
 ###################
 ### Colour Data ###
 ###################
@@ -113,6 +125,12 @@ for i in range(rows):
             major_segments=48,
             minor_segments=12,
         )
+
+        # Get Active ring
+        obj = bpy.context.object
+        
+        # Shade ring smooth
+        shade_smooth(obj)
 """
 
 ##################
