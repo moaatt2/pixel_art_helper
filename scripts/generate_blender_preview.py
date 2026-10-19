@@ -92,6 +92,21 @@ def shade_smooth(object):
     object.data.update()
 
 
+#################
+### Materials ###
+#################
+
+# Black Outline
+outline = bpy.data.materials.new(name='Black Outline')
+outline.use_nodes = True
+outline.use_backface_culling = True
+nodes = outline.node_tree.nodes
+node = nodes.get("Principled BSDF")
+node.inputs['Base Color'].default_value = (0.0, 0.0, 0.0, 1.0)
+node.inputs['Emission Color'].default_value = (0.0, 0.0, 0.0, 1.0)
+node.inputs['Roughness'].default_value = 1
+
+
 ###################
 ### Colour Data ###
 ###################
@@ -131,6 +146,17 @@ for i in range(rows):
         
         # Shade ring smooth
         shade_smooth(obj)
+
+        # Add materials
+        obj.data.materials.append(outline)
+        obj.data.materials.append(outline)
+        
+        # Add solidify modifier
+        solidify = obj.modifiers.new(name="Solidify", type="SOLIDIFY")
+        solidify.thickness = 0.10
+        solidify.offset = 0
+        solidify.use_flip_normals = True
+        solidify.material_offset = 1
 """
 
 ##################
