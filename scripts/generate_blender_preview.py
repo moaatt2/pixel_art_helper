@@ -107,15 +107,16 @@ node.inputs['Emission Color'].default_value = (0.0, 0.0, 0.0, 1.0)
 node.inputs['Roughness'].default_value = 1
 
 
+{materials}
+
+
 ###################
 ### Colour Data ###
 ###################
 
-colours = [
-"""
+{colours}
 
 
-MODEL_CODE = """
 ##################
 ### Model Code ###
 ##################
@@ -159,28 +160,26 @@ for i in range(rows):
         solidify.material_offset = 1
 """
 
+
 ##################
 ### Main Logic ###
 ##################
 
 def generate_preview(image_path: str) -> str:
-    out = START[:]
 
     # Open image
     image_path = get_image_path()
     with Image.open(image_path) as image:
         x, y = image.size
 
+        colours = "colours = [\n"
 
         for _ in range(x):
-            out += f"\t{[None]*y},\n"
-        out += "]\n\n"
+            colours += f"\t{[None]*y},\n"
+        colours += "]"
 
 
-
-    out += MODEL_CODE
-
-    return out
+    return START.format(materials = "", colours = colours)
 
 
 
