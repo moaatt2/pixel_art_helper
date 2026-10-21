@@ -7,6 +7,7 @@
 # Imports
 import tkinter
 import pyperclip
+import numpy as np
 from PIL import Image
 from tkinter import filedialog
 
@@ -170,12 +171,25 @@ def generate_preview(image_path: str) -> str:
     # Open image
     image_path = get_image_path()
     with Image.open(image_path) as image:
-        x, y = image.size
 
+        # Remove alpha channel
+        image = image.convert("RGB")
+        image_data = np.array(image)
+
+        # Instantiate color array
         colours = "colours = [\n"
 
-        for _ in range(x):
-            colours += f"\t{[None]*y},\n"
+        # Itterate over pixels
+        x, y = image.size
+        for i in range(x):
+
+            line = "\t["
+            for j in range(y):
+                r, g, b = image_data[j, i]
+                material_name = f"m_{r:03}{g:03}{b:03}"
+                line += f"{material_name}, "
+
+            colours += f"{line}],\n"
         colours += "]"
 
 
