@@ -147,7 +147,7 @@ for i in range(rows):
         shade_smooth(obj)
 
         # Add materials
-        obj.data.materials.append(outline)
+        obj.data.materials.append(colours[j][i])
         obj.data.materials.append(outline)
         
         # Add solidify modifier
