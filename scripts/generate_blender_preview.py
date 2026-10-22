@@ -106,10 +106,7 @@ node = nodes.get("Principled BSDF")
 node.inputs['Base Color'].default_value = (0.0, 0.0, 0.0, 1.0)
 node.inputs['Emission Color'].default_value = (0.0, 0.0, 0.0, 1.0)
 node.inputs['Roughness'].default_value = 1
-
-
 {materials}
-
 
 ###################
 ### Colour Data ###
@@ -162,6 +159,15 @@ for i in range(rows):
 """
 
 
+COLOUR_TEMPLATE = """
+{name} = bpy.data.materials.new(name='{name}')
+{name}.use_nodes = True
+nodes = {name}.node_tree.nodes
+node = nodes.get('Principled BSDF')
+node.inputs['Base Color'].default_value = ({r:.2f}, {g:.2f}, {b:.2f}, 1.0)
+node.inputs['Roughness'].default_value = 1
+"""
+
 ##################
 ### Main Logic ###
 ##################
@@ -176,6 +182,9 @@ def generate_preview(image_path: str) -> str:
         image = image.convert("RGB")
         image_data = np.array(image)
 
+        # Instantiate set for materials
+        material_names = set()
+
         # Instantiate color array
         colours = "colours = [\n"
 
@@ -188,12 +197,27 @@ def generate_preview(image_path: str) -> str:
                 r, g, b = image_data[j, i]
                 material_name = f"m_{r:03}{g:03}{b:03}"
                 line += f"{material_name}, "
+                material_names.add(material_name)
 
             colours += f"{line}],\n"
         colours += "]"
 
+        # Create materials
+        materials = ""
+        for material_name in material_names:
+            r = int(material_name[2:5])
+            g = int(material_name[5:8])
+            b = int(material_name[8:11])
 
-    return START.format(materials = "", colours = colours)
+            r,g,b = srgb_to_linear(r,g,b)
+
+            colour = COLOUR_TEMPLATE.format(name=material_name, r=r, g=g, b=b)
+
+            materials += colour
+
+
+
+    return START.format(materials = materials, colours = colours)
 
 
 
