@@ -147,7 +147,7 @@ for i in range(rows):
         shade_smooth(obj)
 
         # Add materials
-        obj.data.materials.append(colours[j][i])
+        obj.data.materials.append(colours[i][j])
         obj.data.materials.append(outline)
         
         # Add solidify modifier
@@ -190,11 +190,11 @@ def generate_preview(image_path: str) -> str:
 
         # Itterate over pixels
         x, y = image.size
-        for i in range(x):
+        for i in range(y):
 
             line = "\t["
-            for j in range(y):
-                r, g, b = image_data[j, i]
+            for j in range(x):
+                r, g, b = image_data[i, j]
                 material_name = f"m_{r:03}{g:03}{b:03}"
                 line += f"{material_name}, "
                 material_names.add(material_name)
