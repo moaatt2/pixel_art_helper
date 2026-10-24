@@ -115,47 +115,72 @@ node.inputs['Roughness'].default_value = 1
 {colours}
 
 
-##################
-### Model Code ###
-##################
+############################
+### Create Ring Template ###
+############################
 
-rows    = len(colours)
-columns = len(colours[0])
+bpy.ops.mesh.primitive_torus_add(
+    align="WORLD",
+    location=(0, 0, 0),
+    major_radius=ring_major,
+    minor_radius=ring_minor,
+    major_segments=48,
+    minor_segments=12,
+)
 
-for i in range(rows):
-    for j in range(columns):
+template = bpy.context.object
+template.name = "Ring_Template"
+
+# Shade smooth once
+shade_smooth(template)
+
+# Set up material slots
+template.data.materials.append(None)
+template.data.materials.append(outline)
+
+
+######################
+### Generate Rings ###
+######################
+
+mesh = template.data
+collection = bpy.context.collection
+
+for i, row in enumerate(colours):
+    for j, material in enumerate(row):
+
         base_dist_y = i * dist_1
         base_dist_x = j * dist_2
 
-        even = i%2 == 0
-        mod = 1 if even else -1
+        mod = 1 if i % 2 == 0 else -1
 
-        bpy.ops.mesh.primitive_torus_add(
-            align="WORLD",
-            location=(base_dist_y,base_dist_x,0),
-            rotation=(mod*angle_1,0,0),
-            major_radius=ring_major,
-            minor_radius=ring_minor,
-            major_segments=48,
-            minor_segments=12,
+        ring = bpy.data.objects.new("ring", mesh)
+
+        ring.location = (base_dist_y, base_dist_x, 0)
+
+        ring.rotation_euler = (mod * angle_1, 0, 0)
+
+        collection.objects.link(ring)
+
+        # Set ring-specific colour
+        ring.material_slots[0].link = 'OBJECT'
+        ring.material_slots[0].material = material
+
+        # Assign outline material
+        ring.material_slots[1].link = 'DATA'
+
+        # Copy modifier settings from template
+        solidify = ring.modifiers.new(
+            name="Solidify",
+            type="SOLIDIFY"
         )
-
-        # Get Active ring
-        obj = bpy.context.object
-        
-        # Shade ring smooth
-        shade_smooth(obj)
-
-        # Add materials
-        obj.data.materials.append(colours[i][j])
-        obj.data.materials.append(outline)
-        
-        # Add solidify modifier
-        solidify = obj.modifiers.new(name="Solidify", type="SOLIDIFY")
         solidify.thickness = 0.10
         solidify.offset = 0
         solidify.use_flip_normals = True
         solidify.material_offset = 1
+
+# Remove template
+bpy.data.objects.remove(template, do_unlink=True)
 """
 
 
