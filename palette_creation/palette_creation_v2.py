@@ -399,9 +399,9 @@ class main_window(QMainWindow):
             rgb_values = {k:v for k, v in mask_values.items() if k != 'name'}
             self.config[self.current_image]['masks'][mask_values["name"]].update(rgb_values)
 
-            # Save updated config
-            with open(self.config_path, 'w') as config_file:
-                json.dump(self.config, config_file, indent=4)
+        # Save updated config
+        with open(self.config_path, 'w') as config_file:
+            json.dump(self.config, config_file, indent=4)
 
         # Create preview from numpy array
         self.image_preview = pil_to_pixmap(Image.fromarray(image_data, "RGBA"))
