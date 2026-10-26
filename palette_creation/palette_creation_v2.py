@@ -429,6 +429,10 @@ class main_window(QMainWindow):
             # Convert averages to QColor object
             background = QColor(r_avg, g_avg, b_avg)
 
+            # Updated listed average colour
+            avg_hex = f"#{r_avg:02x}{g_avg:02x}{b_avg:02x}"
+            self.average_color.setText(avg_hex)
+
         # If no data exists use black
         else:
             background = QColor(0, 0, 0)
