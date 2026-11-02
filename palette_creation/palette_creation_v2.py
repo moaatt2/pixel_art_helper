@@ -436,6 +436,7 @@ class main_window(QMainWindow):
         # If no data exists use black
         else:
             background = QColor(0, 0, 0)
+            self.average_color.setText("#000000")
             
 
         # Set Background color to average color
