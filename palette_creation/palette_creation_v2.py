@@ -445,6 +445,26 @@ class main_window(QMainWindow):
         self.image_box.setPalette(palette)
 
 
+    # Handle user clicking the accept button
+    def accept(self) -> None:
+
+        # Find current colour
+        current_color = self.average_color.text()[1:]
+        print(current_color)
+
+        # Find current image
+        current_image = self.current_image
+
+        # Update config
+        self.config[current_image]['hex_code'] = current_color
+
+        # save updated config
+        with open(self.config_path, 'w') as config_file:
+            json.dump(self.config, config_file, indent=4)
+
+        # TODO: Update folder box to reflect changes
+
+
     # Handle user clicking an image button
     def image_click(self, button=None):
         print(f"Clicked {button} image button")
@@ -479,6 +499,9 @@ class main_window(QMainWindow):
         # Create button
         accept_button = QPushButton("Accept")
         accept_layout.addWidget(accept_button)
+
+        # Hook up accept button to function
+        accept_button.clicked.connect(self.accept)
 
 
         ###################
