@@ -462,7 +462,15 @@ class main_window(QMainWindow):
         with open(self.config_path, 'w') as config_file:
             json.dump(self.config, config_file, indent=4)
 
-        # TODO: Update folder box to reflect changes
+        # Create new text for button
+        name = self.config[current_image]["image_name"]
+        new_text = f"✔️ {name}"
+
+        # Find button and update text
+        for button in self.image_buttons.buttons():
+            if name in button.text():
+                button.setText(new_text)
+                break
 
 
     # Handle user clicking an image button
