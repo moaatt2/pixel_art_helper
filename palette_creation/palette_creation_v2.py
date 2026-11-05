@@ -333,7 +333,11 @@ class main_window(QMainWindow):
 
     # Export a palette to main
     def export(self):
-        pass
+
+        # Handle case where no folder is open
+        if self.config is None:
+            QMessageBox.warning(self, "No Folder Open", "Please open a folder before exporting a palette.")
+            return
 
 
     # Resize image based on available space
