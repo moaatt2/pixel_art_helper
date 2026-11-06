@@ -5,7 +5,7 @@ import functools
 import numpy as np
 from PIL import Image, ImageQt
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup, QGridLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QCheckBox, QHBoxLayout, QStatusBar, QMessageBox, QFileDialog, QSplitter, QFrame, QScrollArea, QSizePolicy, QSpinBox, QButtonGroup, QGridLayout, QDialog
 from PySide6.QtGui import QPixmap, QColor, QPalette, QAction, QKeySequence, QImage, QIcon
 from PySide6.QtCore import Qt, QSize, Signal
 
@@ -337,6 +337,11 @@ class main_window(QMainWindow):
         # Handle case where no folder is open
         if self.config is None:
             QMessageBox.warning(self, "No Folder Open", "Please open a folder before exporting a palette.")
+            return
+
+        # Handle case where not all images have a hex code
+        if not all([self.config[key]["hex_code"] for key in self.config]):
+            QMessageBox.warning(self, "Incomplete Palette", "Please ensure all images have a hex code before exporting the palette.")
             return
 
 
