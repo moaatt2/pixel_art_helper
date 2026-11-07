@@ -341,8 +341,17 @@ class main_window(QMainWindow):
 
         # Handle case where not all images have a hex code
         if not all([self.config[key]["hex_code"] for key in self.config]):
-            QMessageBox.warning(self, "Incomplete Palette", "Please ensure all images have a hex code before exporting the palette.")
-            return
+            # Create warning message
+            warning = QMessageBox(self)
+            warning.setWindowTitle("Incomplete Palette")
+            warning.setText("Not all images have a color assigned.\n\nAbort - return to assign colors\nIgnore - export only assigned colors")
+            warning.setStandardButtons(QMessageBox.Abort | QMessageBox.Ignore)
+            warning.setIcon(QMessageBox.Warning)
+
+            # Run dialog and abort if anything other than ignore is selected
+            result = warning.exec()
+            if result != QMessageBox.Ignore:
+                return
 
 
     # Resize image based on available space
