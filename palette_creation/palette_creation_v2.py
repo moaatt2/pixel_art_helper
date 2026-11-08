@@ -353,6 +353,16 @@ class main_window(QMainWindow):
             if result != QMessageBox.Ignore:
                 return
 
+        # Get save location
+        path, _ = QFileDialog.getSaveFileName(self, "Export Palette", "", "JSON Files (*.json)")
+        if path:
+            # Create output dictionary
+            out = {v["image_name"].replace(" ", "_").lower(): v["hex_code"] for v in self.config.values() if v["hex_code"]}
+
+            # Write output dictionary to file
+            with open(path, 'w') as f:
+                json.dump(out, f, indent=4)
+
 
     # Resize image based on available space
     def update_image(self):
