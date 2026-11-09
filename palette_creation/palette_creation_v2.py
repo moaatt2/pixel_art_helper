@@ -724,6 +724,36 @@ class main_window(QMainWindow):
             self.open_folder(folder_path)
 
 
+    # Update preview area when user drags file to application
+    def dragEnterEvent(self, event):
+
+        # Handle case where user drags something other than a file
+        if not event.mimeData().hasUrls():
+            self.image_container.setText("Please drag and drop a folder")
+            return
+
+        # Handle case where user drags multiple files
+        urls = event.mimeData().urls()
+        if len(urls) > 1:
+            self.image_container.setText("Please drag and drop a single folder")
+            return
+
+        # Handle non local files
+        url = urls[0]
+        if not url.isLocalFile():
+            self.image_container.setText("Please drag and drop a local folder")
+            return
+
+        # Handle invalid file formats
+        path = pathlib.Path(url.toLocalFile())
+        if not path.is_dir():
+            self.image_container.setText("Please drag and drop a folder")
+            return
+
+        self.image_container.setText("Release to load the folder")
+        event.acceptProposedAction()
+
+
 # Start Application
 if __name__ == "__main__":
     app = QApplication([]) # Create application instance
