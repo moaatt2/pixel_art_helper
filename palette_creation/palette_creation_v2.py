@@ -754,6 +754,19 @@ class main_window(QMainWindow):
         event.acceptProposedAction()
 
 
+    # Handle case when user doesn't drop image
+    def dragLeaveEvent(self, event):
+        # Reset the image box
+        if self.image_preview is not None:
+            self.update_image()
+        else:
+            self.image_container.setText("Press Ctrl+O to open a folder or drag a folder here")
+
+        # Accept the event
+        event.accept()
+
+
+
 # Start Application
 if __name__ == "__main__":
     app = QApplication([]) # Create application instance
