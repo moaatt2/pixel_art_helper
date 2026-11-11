@@ -766,6 +766,14 @@ class main_window(QMainWindow):
         event.accept()
 
 
+    # Handle user drops
+    def dropEvent(self, event):
+        folder_path = event.mimeData().urls()[0].toLocalFile()
+        self.open_folder(folder_path)
+        event.acceptProposedAction()
+
+
+
 
 # Start Application
 if __name__ == "__main__":
