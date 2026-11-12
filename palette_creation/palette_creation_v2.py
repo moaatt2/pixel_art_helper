@@ -706,15 +706,20 @@ class main_window(QMainWindow):
         # update the folder box with config data
         self.update_folder_box()
 
-
         # Update Image box text
         self.image_container.setText("Select an image to continue")
+
+        # Update Acceptance box text
+        self.accept_container.setText("Select an image to continue")
 
         # Update Mask box text
         self.mask_container.setText("Select an image to continue")
 
-        # Update Acceptance box text
-        self.accept_container.setText("Select an image to continue")
+        # Clear image box background color
+        default_colour = self.mask_box.palette().color(QPalette.ColorRole.Window)
+        palette = self.image_box.palette()
+        palette.setColor(QPalette.ColorRole.Window, default_colour)
+        self.image_box.setPalette(palette)
 
 
     # Select the folder to open and pass it to the folder opening function
@@ -771,8 +776,6 @@ class main_window(QMainWindow):
         folder_path = event.mimeData().urls()[0].toLocalFile()
         self.open_folder(folder_path)
         event.acceptProposedAction()
-
-
 
 
 # Start Application
