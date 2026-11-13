@@ -709,8 +709,17 @@ class main_window(QMainWindow):
         # Update Image box text
         self.image_container.setText("Select an image to continue")
 
-        # Update Acceptance box text
-        self.accept_container.setText("Select an image to continue")
+        # Clear Accept Box
+        accept_layout = self.accept_box.layout()
+        for _ in range(accept_layout.count()):
+            w = accept_layout.itemAt(0).widget()
+            w.setParent(None)
+            w.deleteLater()
+
+        # Add Text to Accept Box
+        self.accept_container = QLabel("Select an image to continue", self.accept_box)
+        self.accept_container.setAlignment(Qt.AlignCenter)
+        accept_layout.addWidget(self.accept_container)
 
         # Update Mask box text
         self.mask_container.setText("Select an image to continue")
