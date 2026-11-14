@@ -709,6 +709,10 @@ class main_window(QMainWindow):
         # Update Image box text
         self.image_container.setText("Select an image to continue")
 
+        #########################
+        ### Update Accept Box ###
+        #########################
+
         # Clear Accept Box
         accept_layout = self.accept_box.layout()
         for _ in range(accept_layout.count()):
@@ -721,10 +725,30 @@ class main_window(QMainWindow):
         self.accept_container.setAlignment(Qt.AlignCenter)
         accept_layout.addWidget(self.accept_container)
 
-        # Update Mask box text
-        self.mask_container.setText("Select an image to continue")
+        #######################
+        ### Update Mask Box ###
+        #######################
 
-        # Clear image box background color
+        # Clear mask box
+        mask_layout = self.mask_box.layout()
+        for _ in range(mask_layout.count()):
+            w = mask_layout.itemAt(0).widget()
+            w.setParent(None)
+            w.deleteLater()
+
+
+        # Add text to mask box
+        self.mask_container = QLabel("Select an image to continue", self.mask_box)
+        self.mask_container.setAlignment(Qt.AlignCenter)
+        mask_layout.addWidget(self.mask_container)
+
+        # # Update Mask box text
+        # self.mask_container.setText("Select an image to continue")
+
+        ########################################
+        ### Clear Image Box Background Color ###
+        ########################################
+
         default_colour = self.mask_box.palette().color(QPalette.ColorRole.Window)
         palette = self.image_box.palette()
         palette.setColor(QPalette.ColorRole.Window, default_colour)
