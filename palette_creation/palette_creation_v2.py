@@ -742,9 +742,6 @@ class main_window(QMainWindow):
         self.mask_container.setAlignment(Qt.AlignCenter)
         mask_layout.addWidget(self.mask_container)
 
-        # # Update Mask box text
-        # self.mask_container.setText("Select an image to continue")
-
         ########################################
         ### Clear Image Box Background Color ###
         ########################################
