@@ -751,6 +751,9 @@ class main_window(QMainWindow):
         palette.setColor(QPalette.ColorRole.Window, default_colour)
         self.image_box.setPalette(palette)
 
+        # Clear image preview
+        self.image_preview = None
+
 
     # Select the folder to open and pass it to the folder opening function
     def select_folder(self):
