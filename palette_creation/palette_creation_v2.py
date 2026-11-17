@@ -157,6 +157,7 @@ class main_window(QMainWindow):
         self.image_buttons = None
         self.masks = None
         self.current_image = None
+        self.accept_warning = None
 
         # Set Status Bar
         self.setStatusBar(QStatusBar(self))
@@ -448,6 +449,9 @@ class main_window(QMainWindow):
         # Only take average if data exists
         if image_data[filter].shape[0] > 0:
 
+            # If there are visible pixels clear any warnings
+            self.accept_warning = None
+
             # Calculate color channel averages
             r_avg, g_avg, b_avg = img_rgb[filter].transpose().mean(axis=1)
 
@@ -465,6 +469,9 @@ class main_window(QMainWindow):
         else:
             background = QColor(0, 0, 0)
             self.average_color.setText("#000000")
+
+            # Add a warning if no pixels remain after applying the mask
+            self.accept_warning = "No pixels remain after applying the mask. Either adjust the mask or accept the default black."
             
 
         # Set Background color to average color
@@ -475,6 +482,19 @@ class main_window(QMainWindow):
 
     # Handle user clicking the accept button
     def accept(self) -> None:
+
+        # Warn user if warning is set
+        if self.accept_warning is not None:
+            warning = QMessageBox(self)
+            warning.setWindowTitle("Accept Warning")
+            warning.setText(self.accept_warning)
+            warning.setStandardButtons(QMessageBox.Abort | QMessageBox.Ignore)
+            warning.setIcon(QMessageBox.Warning)
+
+            # Run dialog and abort if anything other than ignore is selected
+            result = warning.exec()
+            if result != QMessageBox.Ignore:
+                return
 
         # Find current colour
         current_color = self.average_color.text()[1:]
