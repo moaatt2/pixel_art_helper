@@ -516,7 +516,8 @@ class main_window(QMainWindow):
 
         # Find button and update text
         for button in self.image_buttons.buttons():
-            if name in button.text():
+            # Match button text minus acceptance status
+            if button.text()[2:] == name:
                 button.setText(new_text)
                 break
 
