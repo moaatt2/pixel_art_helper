@@ -340,6 +340,11 @@ class main_window(QMainWindow):
             QMessageBox.warning(self, "No Folder Open", "Please open a folder before exporting a palette.")
             return
 
+        # Handle case where no images have a hex code assigned
+        if not any([self.config[key]["hex_code"] for key in self.config]):
+            QMessageBox.warning(self, "No Colors Accepted", "No images have an accepted color, please accept at least one color before exporting a palette.")
+            return
+
         # Handle case where not all images have a hex code
         if not all([self.config[key]["hex_code"] for key in self.config]):
             # Create warning message
