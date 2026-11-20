@@ -632,6 +632,10 @@ class main_window(QMainWindow):
 
         # Create buttons for each folder
         for key in self.config:
+            # Skip images that are not valid
+            if not self.config[key]['path_valid']:
+                continue
+
             name = self.config[key]["image_name"]
 
             text = f"✔️ {name}" if self.config[key]['hex_code'] else f"❌ {name}"
